@@ -1,0 +1,81 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<!-- Paper elements -->
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+<dom-module id="show-set">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <iron-ajax id="theAjax" url="http://rebrickable.com/api/get_set" params="{{params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
+    <paper-material elevation="1">
+
+      <div>Type {{_data.type}}</div>
+      <div>Descr {{_data.descr}}</div>
+      <div>Pieces {{_data.pieces}}</div>
+      <div>Theme {{_data.theme}}</div>
+      <div>Year {{_data.year}}</div>
+      <iron-image src="{{_data.img_big}}"></iron-image>
+    </paper-material>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'show-set',
+
+        properties: {
+          legoSetId: {
+            type: String,
+            value: '',
+            observer: '_onHashChanged',
+          },
+          userHash: {
+            type: String,
+            value: '',
+            observer: '_onHashChanged',
+          },
+        },
+
+        _handleResponse: function(response) {
+          if (response.detail.response && response.detail.response.length > 0) {
+            this._data = response.detail.response[0];
+            console.log('set', this._data);
+          }
+        },
+
+        _onHashChanged: function() {
+          if (this.userHash && this.legoSetId) {
+            this.params = {
+              key: 'p4GLMlcPxJ',
+              set_id: this.legoSetId,
+              format: 'json'
+            };
+            this.$.theAjax.generateRequest();
+            console.log(this.params);
+          }
+        },
+
+
+      });
+    })();
+  </script>
+</dom-module>

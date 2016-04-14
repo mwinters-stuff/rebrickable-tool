@@ -1,0 +1,122 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+
+<link rel="import" href="list-of-parts.html">
+
+<dom-module id="list-parts">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <iron-ajax auto
+      url="http://rebrickable.com/api/get_user_part_lists"
+      params="{{params}}"
+      handle-as="json"
+      on-response="_handleResponse"></iron-ajax>
+
+<!-- "set_id":"76063-1","qty":"1","pieces":"79","descr":"Mighty Micros: The Flash\u2122 vs. Captain Cold\u2122","year":"2016","img_tn":"http:\/\/rebrickable.com\/img\/sets-t\/76063-1.jpg","img_sm":"http:\/\/rebrickable.com\/img\/sets-s\/76063-1.jpg" -->
+
+    <paper-material elevation="1">
+      <paper-toolbar>
+        <paper-tabs selected="{{selectedId}}" attr-for-selected="partlistid">
+          <template is="dom-repeat" items="{{_data}}">
+            <paper-tab partlistid="{{item.partlist_id}}">{{item.descr}}</paper-tab>
+          </template>
+        </paper-tabs>
+       </paper-toolbar>
+       <list-of-parts user-hash="{{userHash}}" part-list-id="{{selectedId}}"></list-of-parts>
+    </template>
+      <!-- <iron-data-table id="dataTable" items="[[_data]]" >
+        <data-table-column align-right width="20px">
+          <template><iron-image  src="[[item.img_sm]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image></template>
+        </data-table-column>
+        <data-table-column align-right width="20px" name="Qty" >
+          <template>[[item.qty]]</template>
+        </data-table-column>
+        <data-table-column name="Description" flex="50">
+          <template>[[item.descr]]</template>
+        </data-table-column>
+        <data-table-column name="Pieces" align-right width="20px">
+          <template>[[item.pieces]]</template>
+        </data-table-column>
+        <data-table-column name="Year" align-right width="20px">
+          <template>[[item.year]]</template>
+        </data-table-column>
+      </iron-data-table> -->
+    </paper-material>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'list-parts',
+
+      properties: {
+        userHash: {
+          type: String,
+          value: '',
+          observer: '_onHashChanged',
+
+        },
+        params: {
+          type: String,
+          value: ''
+        },
+        selectedId: {
+          type: Number,
+          value: 0,
+          observer: '_onSelectedIdChanged'
+        },
+      },
+
+        ready: function() {
+          //this._dataTableHeight = 400;
+          this.selectedId = 0;
+        },
+
+        _handleResponse: function(response) {
+          if(response.detail.response) {
+            this._data = response.detail.response.partlists;
+            if(this._data.length > 0){
+              this.selectedId = this._data[0].partlist_id;
+            }
+            console.log(this._data, this.selectedId);
+          }
+          //this.$.dataTable.style = "height: " + (56 + (48 * this._data.length)) + "px" ;
+        },
+
+        _onHashChanged: function() {
+          this.params = {
+            key: 'p4GLMlcPxJ',
+            hash: this.userHash,
+            format: 'json'
+          };
+        },
+
+        _onSelectedIdChanged: function() {
+          console.log('selectedChanged',this.selectedId);
+        },
+
+
+    });
+  })();
+  </script>
+</dom-module>
