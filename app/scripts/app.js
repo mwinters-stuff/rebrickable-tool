@@ -17,11 +17,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   // Sets app default base URL
   app.baseUrl = '/';
-  if (window.location.port === '') {  // if production
+  if (window.location.port === '') { // if production
     // Uncomment app.baseURL below and
     // set app.baseURL to '/your-pathname/' if running from folder in production
     // app.baseUrl = '/polymer-starter-kit/';
   }
+
+  app.authorized = function(){
+    app.$.mainpages.selected = 1;
+  };
 
   app.displayInstalledToast = function() {
     // Check to make sure caching is actually enabled—it won't be in the dev environment.
@@ -34,6 +38,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   // have resolved and content has been stamped to the page
   app.addEventListener('dom-change', function() {
     console.log('Our app is ready to rock!');
+    app.$.mainpages.selected = 0;
   });
 
   // See https://github.com/Polymer/polymer/issues/1381
@@ -47,9 +52,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   // is shrunk to nothing on condensing.
   window.addEventListener('paper-header-transform', function(e) {
     var appName = Polymer.dom(document).querySelector('#mainToolbar .app-name');
-    var middleContainer = Polymer.dom(document).querySelector('#mainToolbar .middle-container');
-    var bottomContainer = Polymer.dom(document).querySelector('#mainToolbar .bottom-container');
-    if(!appName){
+    var middleContainer = Polymer.dom(document).querySelector(
+      '#mainToolbar .middle-container');
+    var bottomContainer = Polymer.dom(document).querySelector(
+      '#mainToolbar .bottom-container');
+    if (!appName) {
       return;
     }
     var detail = e.detail;

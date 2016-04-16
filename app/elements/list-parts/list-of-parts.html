@@ -17,6 +17,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <!-- Paper elements -->
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../colour-list/colour-list.html">
+<link rel="import" href="../show-part/show-part.html">
 
 <dom-module id="list-of-parts">
   <template>
@@ -29,22 +31,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         height: 800px
       }
     </style>
+    <colour-list id="colours"></colour-list>
+
     <iron-ajax id="theAjax"
       url="http://rebrickable.com/api/get_user_parts"
       params="{{params}}"
       handle-as="json"
       on-response="_handleResponse"></iron-ajax>
 
-      <iron-ajax id="theAjaxColours"
+      <!-- <iron-ajax id="theAjaxColours"
         url="http://rebrickable.com/api/get_colors"
         params="{{paramsColours}}"
         handle-as="json"
         auto
-        on-response="_handleResponseColours"></iron-ajax>
+        on-response="_handleResponseColours"></iron-ajax> -->
 <!-- "set_id":"76063-1","qty":"1","pieces":"79","descr":"Mighty Micros: The Flash\u2122 vs. Captain Cold\u2122","year":"2016","img_tn":"http:\/\/rebrickable.com\/img\/sets-t\/76063-1.jpg","img_sm":"http:\/\/rebrickable.com\/img\/sets-s\/76063-1.jpg" -->
 
 
-      <iron-data-table id="dataTable" items="[[_data]]" >
+      <iron-data-table id="dataTable" items="[[_data]]" selected-item="{{selectedPart}}" selection-enabled>
         <!-- <data-table-column align-right width="40px">
           <template><iron-image  src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image></template>
         </data-table-column> -->
@@ -55,12 +59,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <template>[[item.part_id]]</template>
         </data-table-column>
         <data-table-column name="Colour" flex="10">
-          <template>[[item.colour_name]]</template>
+          <template>
+            <div class="box" style="background-color: {{getColour(item.rb_color_id)}}"></div>
+            [[getColourName(item.rb_color_id)]]
+          </template>
         </data-table-column>
         <!-- <data-table-column name="Element ID" align-right width="20px">
           <template>[[item.element_id]]</template>
         </data-table-column> -->
       </iron-data-table>
+      <show-part id="showPart"></show-part>
 
   </template>
   <script>
@@ -89,45 +97,54 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value: ''
         },
 
-        paramsColours: {
-          type: String,
-          value: ''
+        selectedPart: {
+          type: Object,
+          observer: '_onSelectedChanged'
         },
+
       },
 
       ready: function() {
         //this._dataTableHeight = 400;
-        this.paramsColours = {
-            key: 'p4GLMlcPxJ',
-            format: 'json'
-        };
-        this._colours = [];
+        // this.paramsColours = {
+        //     key: 'p4GLMlcPxJ',
+        //     format: 'json'
+        // };
+        // this._colours = [];
       },
 
-      _handleResponseColours: function(response) {
-        if(response.detail.response) {
-          this._colours = response.detail.response;
-      //    this.$.dataTable.style = "height: " + (56 + (48 * this._data.length)) + "px" ;
-        //  console.log(this._data);
+      _onSelectedChanged: function() {
+        if(this.selectedPart) {
+          this.$.showPart.show(this.selectedPart.part_id);
         }
       },
+
+
+      // _handleResponseColours: function(response) {
+      //   if(response.detail.response) {
+      //     this._colours = response.detail.response;
+      // //    this.$.dataTable.style = "height: " + (56 + (48 * this._data.length)) + "px" ;
+      //   //  console.log(this._data);
+      //   }
+      // },
 
       _handleResponse: function(response) {
         if(response.detail.response) {
           this._data = response.detail.response.parts;
-          this._data.forEach(function(element, index, array){
-            element.colour_name = this._lookupColour(element.rb_color_id);
-          },this);
+          // this._data.forEach(function(element, index, array){
+          //   element.colour_name = this._lookupColour(element.rb_color_id);
+          // },this);
       //    this.$.dataTable.style = "height: " + (56 + (48 * this._data.length)) + "px" ;
         //  console.log(this._data);
         }
       },
 
-      _lookupColour: function(id){
-        var colour = this._colours.find(function(element) {
-          return element.rb_color_id == id;
-        });
-        return colour ? colour.color_name : 'Unknown';
+      getColour: function(colourid){
+        return this.$.colours.getColour(colourid);
+      },
+
+      getColourName: function(colourid){
+        return this.$.colours.getColourName(colourid);
       },
 
       _onHashChanged: function() {

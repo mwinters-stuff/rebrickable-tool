@@ -1,8 +1,9 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-styles/typography.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <!-- shared styles for all elements and index.html -->
-<dom-module id="shared-styles">
+<dom-module id="shared-styles" include="iron-flex iron-flex-alignment">
   <template>
     <style>
     :host {
@@ -183,6 +184,29 @@
         padding-right: 30px;
       }
 
+    }
+
+    div.horiz {
+      width: 100%;
+      @apply(--layout-horizontal);
+    }
+    div.aright {
+      @apply--layout-end);
+    }
+    div.aleft {
+      @apply(--layout-flex);
+    }
+    div.title{
+      @apply(--paper-font-display2);
+    }
+    table.info{
+      @apply(--paper-font-display1);
+    }
+
+    div.box{
+      width: 48px;
+      height: 48px;
+      margin-right: 8px;
     }
 
     </style>

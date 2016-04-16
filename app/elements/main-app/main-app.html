@@ -11,7 +11,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <!-- Iron elements -->
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
@@ -27,7 +26,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 
 <link rel="import" href="../../styles/app-theme.html">
-<!-- <link rel="import" href="../../styles/shared-styles.html"> -->
 <link rel="import" href="../list-sets/list-sets.html">
 <link rel="import" href="../list-parts/list-parts.html">
 <link rel="import" href="../show-set/show-set.html">
@@ -35,29 +33,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <dom-module id="main-app">
   <template>
     <style include="shared-styles">
-      /*:host {
-        display: block;
-      }
-      .page-title {
-        @apply(--paper-font-display2);
-      }
-
-      .app-menu {
-        --paper-menu-selected-item: {
-          color: #fff;
-          background: var(--light-primary-color);
-        }
-      }
-
-      paper-menu a > *, paper-menu paper-item > *, paper-menu paper-icon-item > * {
-        pointer-events: none;
-      }
-
-      @media (max-width: 600px) {
-        .page-title {
-          font-size: 24px!important;
-        }
-      }*/
     </style>
     <iron-pages attr-for-selected="data-route" selected="{{route}}">
       <section data-route="home" tabindex="-1">
@@ -104,7 +79,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           userHash: {
             type: String,
-            value: '5507d2c33cac67629cc329af09a19ee1'
+            value: ''
           },
           params: {
             type: Object,
@@ -112,10 +87,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
 
         },
-
-
-
-
       });
     })();
   </script>

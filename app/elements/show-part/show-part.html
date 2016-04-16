@@ -13,25 +13,60 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 
+<link rel="import" href="../colour-list/colour-list.html">
 
 <dom-module id="show-part">
   <template>
-    <style>
+    <style include="shared-styles">
       :host {
         display: block;
+
       }
+
+      iron-data-table{
+        height: 400px;
+
+      }
+      /*paper-dialog{
+        width: 400px;
+      }*/
     </style>
+    <colour-list id="colours"></colour-list>
     <iron-ajax id="theAjax" url="http://rebrickable.com/api/get_part" params="{{params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
 
     <paper-dialog id="dialog" entry-animation="fade-in-animation"
               exit-animation="fade-out-animation">
-      <h2>{{_partId}}</h2>
-      <div>Dialog body</div>
+      <div class="title">{{_partId}} {{_data.name}}</div>
+      <div>
+        <div class="horiz">
+          <div class="aleft">
+            <table>
+              <tr> <td>Category:</td><td>{{_data.category}}</td></tr>
+              <tr> <td>Years:</td><td>{{_data.year1}} to {{_data.year2}}</td></tr>
+              <tr> <td>URL:</td><td>{{_data.part_url}}</td></tr>
+            </table>
+          </div>
+          <div class="aright">
+            <iron-image src="{{_data.part_img_url}}"></iron-image>
+          </div>
+        </div>
+
+        <iron-data-table id="dataTable" items="[[_data.colors]]" selected-item="{{selectedPart}}" selection-enabled>
+          <data-table-column name="Colour">
+            <template>
+              <div class="box" style="background-color: {{getColour(item.rb_color_id)}}"></div>
+              [[item.color_name]]</template>
+          </data-table-column>
+          <data-table-column align-right name="Num Sets" width="50px">
+            <template>[[item.num_sets]]</template>
+          </data-table-column>
+        </iron-data-table>
+      </div>
+
     </paper-dialog>
   </template>
   <script>
@@ -49,19 +84,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       },
 
+      getColour: function(colourid){
+        return this.$.colours.getColour(colourid);
+      },
+
       show: function(partId) {
         this._partId = partId;
         this.params = {
           key: 'p4GLMlcPxJ',
-          set_id: this.legoSetId,
-          set: this.legoSetId,
-          format: 'json'
+          part_id: partId,
+          format: 'json',
+          inc_colors: 1
         };
         this.$.theAjax.generateRequest();
         this.$.dialog.toggle();
 
         console.log('show',partId);
       },
+
+      _handleResponse: function(response) {
+        if (response.detail.response) {
+          this._data = response.detail.response;
+          console.log('part', this._data);
+        }
+      },
+
     });
   })();
   </script>
