@@ -66,9 +66,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <template>  <div class="box" style="background-color: {{getColour(item.color_name)}}"></div>
             [[item.color_name]]</template>
         </data-table-column>
-        <!-- <data-table-column name="Lego ID" align-right flex="1">
-          <template>[[item.element_id]]</template>
-        </data-table-column> -->
       </iron-data-table>
     </paper-material>
     <show-part id="showPart"></show-part>
@@ -109,12 +106,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         _handleResponseParts: function(response) {
           if (response.detail.response) {
+          //  this.$.dataTable.style = "height: " + (56 + (48 * response.detail.response[0].parts.length)) + "px" ;
+          //  this.$.dataTable.pageSize = response.detail.response[0].parts.length;
             this._parts = response.detail.response[0].parts;
           }
         },
 
         _onHashChanged: function() {
           if (this.userHash && this.legoSetId) {
+            this._data = {};
+            this._parts = [];
             this.params = {
               key: 'p4GLMlcPxJ',
               set_id: this.legoSetId,

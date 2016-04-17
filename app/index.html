@@ -15,8 +15,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta charset="utf-8">
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="generator" content="Polymer Starter Kit">
-  <title>Polymer Starter Kit</title>
+  <meta name="generator" content="Rebrickable Tool">
+  <title>Rebrickable Tool</title>
 
   <!-- Place favicon.ico in the `app/` directory -->
 
@@ -67,7 +67,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template is="dom-bind" id="app">
     <iron-pages id="mainpages">
       <section tabindex="-1">
-        <logon-thing on-authorized="authorized" user-hash="{{userHash}}"></logon-thing>
+        <logon-thing id="logonThing" on-authorized="authorized" user-hash="{{userHash}}"></logon-thing>
       </section>
       <section tabindex="-1">
       <paper-drawer-panel id="paperDrawerPanel">
@@ -99,16 +99,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </paper-scroll-header-panel>
 
         <!-- Main Area -->
-        <paper-scroll-header-panel main id="headerPanelMain" condenses keep-condensed-header>
+        <paper-scroll-header-panel main id="headerPanelMain" fixed>
           <!-- Main Toolbar -->
-          <paper-toolbar id="mainToolbar" class="tall">
+          <paper-toolbar id="mainToolbar">
             <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
 
             <span class="space"></span>
 
             <!-- Toolbar icons -->
-            <paper-icon-button icon="refresh"></paper-icon-button>
-            <paper-icon-button icon="search"></paper-icon-button>
+            <!-- <paper-icon-button icon="refresh"></paper-icon-button>
+            <paper-icon-button icon="search"></paper-icon-button> -->
+            <paper-icon-button id="logout" icon="exit-to-app" on-click="logoutaction"></paper-icon-button>
 
             <!-- Application name -->
             <div class="middle middle-container">
@@ -116,9 +117,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </div>
 
             <!-- Application sub title -->
-            <div class="bottom bottom-container">
+            <!-- <div class="bottom bottom-container">
               <div class="bottom-title">Do something differently</div>
-            </div>
+            </div> -->
           </paper-toolbar>
 
           <!-- Main Content -->

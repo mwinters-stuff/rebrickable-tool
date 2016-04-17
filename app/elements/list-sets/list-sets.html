@@ -85,18 +85,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       ready: function() {
-        this._dataTableHeight = 400;
+        //this._dataTableHeight = 400;
         //this.selectedSet = undefined;
       },
 
       _handleResponse: function(response) {
         if(response.detail.response) {
+          this.$.dataTable.style = "height: " + (56 + (48 * response.detail.response[0].sets.length)) + "px" ;
+          this.$.dataTable.pageSize = response.detail.response[0].sets.length;
           this._data = response.detail.response[0].sets;
-          this.$.dataTable.style = "height: " + (56 + (48 * this._data.length)) + "px" ;
         }
       },
 
       _onHashChanged: function() {
+        this._data = [];
         this.params = {
           key: 'p4GLMlcPxJ',
           hash: this.userHash,

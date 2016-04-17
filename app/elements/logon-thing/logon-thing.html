@@ -11,9 +11,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/polymer-cookie/polymer-cookie.html">
+<link rel="import" href="../../bower_components/cookie-consent-polymer/cookie-consent-polymer.html">
+<link rel="import" href="../../bower_components/gold-email-input/gold-email-input.html">
 
 <dom-module id="logon-thing">
   <template>
@@ -23,90 +26,114 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         height: 100%;
         width: 100%;
       }
-      div.whole{
+
+      div.whole {
         height: 100%;
         width: 100%;
         @apply(--layout-flex);
         @apply(--layout-horizontal);
         @apply(--layout-center-justified);
       }
-      div.wholeh{
+
+      div.wholeh {
         @apply(--layout-vertical);
         @apply(--layout-center-justified);
       }
-      div.horiz{
+
+      div.horiz {
         @apply(--layout-horizontal);
         @apply(--layout-center-justified);
-
       }
     </style>
-    <iron-ajax id="theAjax" url="http://rebrickable.com/api/get_user_hash" params="{{params}}" handle-as="text" on-response="_handleResponse"></iron-ajax>
+    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_user_hash" params="{{params}}" handle-as="text" on-response="_handleResponse"></iron-ajax>
 
     <div class="whole">
       <div class="wholeh">
-        <div class="title"><center>Rebrickable Tool</center></div>
-        <div class="horiz"><paper-input id="username" label="EMail Address" autofocus required value="{{inputUsername}}" size="20" ></paper-input></div>
-        <div class="horiz"><paper-input id="password" label="Password" required value="{{inputPassword}}" size="20" type="password"></paper-input></div>
-        <div class="horiz"><paper-button id="doit" raised on-tap="doLogin">Login</paper-button></div>
+        <div class="title">
+          <center>Rebrickable Tool</center>
+        </div>
+        <div class="horiz">Rebrickable Credentials</paper-input>
+        </div>
+        <div class="horiz">
+          <gold-email-input id="username" label="E-Mail Address" autofocus auto-validate required value="{{inputUsername}}" size="30"></gold-email-input>
+        </div>
+        <div class="horiz">
+          <paper-input id="password" label="Password" required value="{{inputPassword}}" size="30" type="password"></paper-input>
+        </div>
+        <div class="horiz">
+          <paper-checkbox id="savelogin" checked="{{inputSaveLogin}}">Remember</paper-checkbox>
+        </div>
+
+        <div class="horiz">
+          <paper-button id="doit" raised on-tap="doLogin">Login</paper-button>
+        </div>
       </div>
     </div>
     <paper-toast id="failedToast" text="Logon failed!">
     </paper-toast>
     <polymer-cookie id="cookie" time="30" format="d" value="{{cookieValue}}" name="rebrickableHash"></polymer-cookie>
+    <cookie-consent-polymer dialog-text="This website uses cookies to save a login token if you choose to." button-text="Accept" expires-in-days="30"></cookie-consent-polymer>
   </template>
   <script>
-  (function() {
-    'use strict';
+    (function() {
+      'use strict';
 
-    Polymer({
-      is: 'logon-thing',
+      Polymer({
+        is: 'logon-thing',
 
-      properties: {
-        userHash: {
-          type: String,
-          value: '',
-          notify: true
-        }
-      },
-
-      ready: function() {
-        this.async(function(){
-          var hash = this.$.cookie.readCookie();
-          if(hash) {
-            this.userHash = hash;
-            console.log('CookieuserHash',this.userHash);
-
-            this.fire('authorized');
+        properties: {
+          userHash: {
+            type: String,
+            value: '',
+            notify: true
           }
-        }.bind(this),200);
-      },
+        },
 
-      doLogin: function() {
-        this.params = {
-          key: 'p4GLMlcPxJ',
-          email: this.inputUsername,
-          pass: this.inputPassword,
-          format: 'json'
-        };
-        this.$.theAjax.generateRequest();
-      },
+        ready: function() {
+          this.async(function() {
+            var hash = this.$.cookie.readCookie();
+            if (hash) {
+              this.userHash = hash;
+              console.log('CookieuserHash', this.userHash);
 
-      _handleResponse: function(response) {
-        if (response.detail.response) {
-          if(response.detail.response === 'INVALIDUSERPASS') {
-            this.$.failedToast.open();
-          }else{
-            this.userHash = response.detail.response;
-            this.cookieValue = this.userHash;
-            this.$.cookie.createCookie();
-            console.log('userHash',this.userHash);
-            this.fire('authorized');
+              this.fire('authorized');
+            }
+          }.bind(this), 200);
+        },
+
+        doLogin: function() {
+          this.params = {
+            key: 'p4GLMlcPxJ',
+            email: this.inputUsername,
+            pass: this.inputPassword,
+            format: 'json'
+          };
+          this.$.theAjax.generateRequest();
+        },
+
+        _handleResponse: function(response) {
+          if (response.detail.response) {
+            if (response.detail.response === 'INVALIDUSERPASS') {
+              this.$.failedToast.open();
+            } else {
+              this.userHash = response.detail.response;
+              if (this.inputSaveLogin) {
+                this.cookieValue = this.userHash;
+                this.$.cookie.createCookie();
+              }
+              console.log('userHash', this.userHash);
+              this.fire('authorized');
+            }
           }
-        }
-      },
+        },
+
+        logout: function() {
+          this.$.cookie.eraseCookie();
+          this.inputPassword = '';
+        },
 
 
-    });
-  })();
+      });
+    })();
   </script>
 </dom-module>
