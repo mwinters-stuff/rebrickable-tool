@@ -23,6 +23,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     app.baseUrl = '/rebrickable-tool/';
   }
 
+  app.properties = {
+    tabsToShow:{
+      type: Object,
+      value: {},
+      notify: true,
+      observer: '_onTabsToShowChange'
+    },
+  };
+
+  app._onTabsToShowChange = function(){
+    console.log('tabsToShow',app.tabsToShow, app.tabsToShow.tabs[0].title);
+  };
+
   app.authorized = function() {
     app.$.mainpages.selected = 1;
   };

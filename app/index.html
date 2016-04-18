@@ -105,8 +105,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <!-- Main Area -->
         <paper-scroll-header-panel main id="headerPanelMain" fixed>
           <!-- Main Toolbar -->
+
           <paper-toolbar id="mainToolbar">
             <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
+            <div class="app-name">Rebrickable Tool</div>
+            <paper-tabs selected="{{tabsToShow.selected}}" attr-for-selected="selid">
+              <template is="dom-repeat" items="{{tabsToShow.tabs}}">
+                <paper-tab selid="{{item.id}}">{{item.title}}</paper-tab>
+              </template>
+            </paper-tabs>
 
             <span class="space"></span>
 
@@ -115,10 +122,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <paper-icon-button icon="search"></paper-icon-button> -->
             <paper-icon-button id="logout" icon="exit-to-app" on-click="logoutaction"></paper-icon-button>
 
-            <!-- Application name -->
-            <div class="middle middle-container">
-              <div class="app-name">Rebrickable Tool</div>
-            </div>
 
             <!-- Application sub title -->
             <!-- <div class="bottom bottom-container">
@@ -128,7 +131,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           <!-- Main Content -->
           <div class="content">
-            <main-app user-hash="{{userHash}}" route="{{route}}" params="{{params}}">
+            <main-app tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}" route="{{route}}" params="{{params}}">
             </main-app>
           </div>
         </paper-scroll-header-panel>

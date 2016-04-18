@@ -12,8 +12,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
-<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
-<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+<!-- <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html"> -->
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 
 <link rel="import" href="list-of-parts.html">
@@ -35,13 +35,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <!-- "set_id":"76063-1","qty":"1","pieces":"79","descr":"Mighty Micros: The Flash\u2122 vs. Captain Cold\u2122","year":"2016","img_tn":"http:\/\/rebrickable.com\/img\/sets-t\/76063-1.jpg","img_sm":"http:\/\/rebrickable.com\/img\/sets-s\/76063-1.jpg" -->
 
     <paper-material elevation="1">
-      <paper-toolbar>
+      <!-- <paper-toolbar>
         <paper-tabs selected="{{selectedId}}" attr-for-selected="partlistid">
           <template is="dom-repeat" items="{{_data}}">
             <paper-tab partlistid="{{item.partlist_id}}">{{item.descr}}</paper-tab>
           </template>
         </paper-tabs>
-       </paper-toolbar>
+       </paper-toolbar> -->
        <list-of-parts user-hash="{{userHash}}" part-list-id="{{selectedId}}"></list-of-parts>
     </paper-material>
   </template>
@@ -75,7 +75,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           observer: '_onShowingChanged'
         },
 
-
+        tabsToShow:{
+          type: Object,
+          value: {},
+          notify: true,
+        }
       },
 
         ready: function() {
@@ -93,6 +97,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this._data = response.detail.response.partlists;
             if(this._data.length > 0){
               this.selectedId = this._data[0].partlist_id;
+            }
+
+            if(this.showing) {
+              var tabsToShow = {
+                selected: this.selectedId,
+                tabs: []
+              };
+
+              this._data.forEach(function(element){
+                tabsToShow.tabs.push({
+                  id: element.partlist_id,
+                  title: element.descr
+                });
+              }.bind(this));
+              this.set('tabsToShow',tabsToShow);
             }
           //  console.log(this._data, this.selectedId);
           }

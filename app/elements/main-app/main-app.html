@@ -37,11 +37,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
     <iron-pages attr-for-selected="data-route" selected="{{route}}">
       <section data-route="home" tabindex="-1">
-        <list-sets showing="{{_isShowing(route, 'home')}}" user-hash="{{userHash}}"></list-sets>
+        <list-sets tabs-to-show="{{tabsToShow}}" showing="{{_isShowing(route, 'home')}}" user-hash="{{userHash}}"></list-sets>
       </section>
 
       <section data-route="parts" tabindex="-1">
-        <list-parts showing="{{_isShowing(route, 'parts')}}" user-hash="{{userHash}}"></list-parts>
+        <list-parts tabs-to-show="{{tabsToShow}}" showing="{{_isShowing(route, 'parts')}}" user-hash="{{userHash}}"></list-parts>
       </section>
 
       <section data-route="set" tabindex="-1">
@@ -51,7 +51,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <section data-route="manage-moc-parts" tabindex="-1">
         <manage-moc-parts showing="{{_isShowing(route, 'manage-moc-parts')}}" user-has="{{userHash}}"> </manage-moc-parts>
       </section>
-    
+
     </iron-pages>
 
   </template>
@@ -76,6 +76,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           params: {
             type: Object,
             value: {}
+          },
+
+          tabsToShow:{
+            type: Array,
+            value: {},
+            notify: true,
           }
 
         },
