@@ -1,0 +1,81 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<!-- Paper elements -->
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
+
+<dom-module id="manage-moc-parts">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+    </style>
+    <!-- <iron-ajax auto
+      url="https://rebrickable.com/api/get_user_sets"
+      params="{{params}}"
+      handle-as="json"
+      on-response="_handleResponse"></iron-ajax> -->
+
+<!-- "set_id":"76063-1","qty":"1","pieces":"79","descr":"Mighty Micros: The Flash\u2122 vs. Captain Cold\u2122","year":"2016","img_tn":"http:\/\/rebrickable.com\/img\/sets-t\/76063-1.jpg","img_sm":"http:\/\/rebrickable.com\/img\/sets-s\/76063-1.jpg" -->
+
+    <paper-material elevation="1">
+
+    </paper-material>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'manage-moc-parts',
+
+      properties: {
+        userHash: {
+          type: String,
+          value: '',
+          observer: '_onHashChanged',
+        },
+      },
+
+        _handleResponse: function(response) {
+          // if (response.detail.response && response.detail.response.length > 0) {
+          //   this._data = response.detail.response[0];
+          //   // console.log('set', this._data);
+          // }
+        },
+
+        _onHashChanged: function() {
+          // if (this.userHash && this.legoSetId) {
+          //   this._data = {};
+          //   this._parts = [];
+          //   this.params = {
+          //     key: 'p4GLMlcPxJ',
+          //     set_id: this.legoSetId,
+          //     set: this.legoSetId,
+          //     format: 'json'
+          //   };
+          //   this.$.theAjax.generateRequest();
+          //   this.$.theAjaxParts.generateRequest();
+          //  console.log(this.params);
+          }
+        },
+
+      
+    });
+  })();
+  </script>
+</dom-module>

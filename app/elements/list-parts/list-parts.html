@@ -25,8 +25,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
     </style>
-    <iron-ajax auto
-      url="http://rebrickable.com/api/get_user_part_lists"
+    <iron-ajax
+      id="theAjax"
+      url="https://rebrickable.com/api/get_user_part_lists"
       params="{{params}}"
       handle-as="json"
       on-response="_handleResponse"></iron-ajax>
@@ -42,24 +43,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </paper-tabs>
        </paper-toolbar>
        <list-of-parts user-hash="{{userHash}}" part-list-id="{{selectedId}}"></list-of-parts>
-    </template>
-      <!-- <iron-data-table id="dataTable" items="[[_data]]" >
-        <data-table-column align-right width="20px">
-          <template><iron-image  src="[[item.img_sm]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image></template>
-        </data-table-column>
-        <data-table-column align-right width="20px" name="Qty" >
-          <template>[[item.qty]]</template>
-        </data-table-column>
-        <data-table-column name="Description" flex="50">
-          <template>[[item.descr]]</template>
-        </data-table-column>
-        <data-table-column name="Pieces" align-right width="20px">
-          <template>[[item.pieces]]</template>
-        </data-table-column>
-        <data-table-column name="Year" align-right width="20px">
-          <template>[[item.year]]</template>
-        </data-table-column>
-      </iron-data-table> -->
     </paper-material>
   </template>
   <script>
@@ -85,6 +68,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value: 0,
           observer: '_onSelectedIdChanged'
         },
+
+        showing: {
+          type: Boolean,
+          value: false,
+          observer: '_onShowingChanged'
+        },
+
+
       },
 
         ready: function() {
@@ -92,13 +83,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.selectedId = 0;
         },
 
+        _onShowingChanged: function() {
+          this.$.theAjax.auto = this.showing;
+        },
+
+
         _handleResponse: function(response) {
           if(response.detail.response) {
             this._data = response.detail.response.partlists;
             if(this._data.length > 0){
               this.selectedId = this._data[0].partlist_id;
             }
-            console.log(this._data, this.selectedId);
+          //  console.log(this._data, this.selectedId);
           }
           //this.$.dataTable.style = "height: " + (56 + (48 * this._data.length)) + "px" ;
         },

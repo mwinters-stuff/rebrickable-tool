@@ -31,20 +31,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         height: 400px;
 
       }
+      paper-toolbar{
+        margin-top: 0px;
+      }
       /*paper-dialog{
         width: 400px;
       }*/
     </style>
     <colour-list id="colours"></colour-list>
-    <iron-ajax id="theAjax" url="http://rebrickable.com/api/get_part" params="{{params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
+    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_part" params="{{params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
 
     <paper-dialog id="dialog" entry-animation="fade-in-animation"
               exit-animation="fade-out-animation">
-      <div class="title">{{_partId}} {{_data.name}}</div>
+      <paper-toolbar>
+        <span class="space"></span>
+        <paper-icon-button id="cancel" icon="close" on-click="cancelaction"></paper-icon-button>
+
+        <div class="middle middle-container">
+          <div class="app-name">{{_partId}}</div>
+        </div>
+      </paper-toolbar>
       <div>
         <div class="horiz">
           <div class="aleft">
             <table>
+              <tr><td colspan="2"><div class="">{{_data.name}}</div></td></tr>
               <tr> <td>Category:</td><td>{{_data.category}}</td></tr>
               <tr> <td>Years:</td><td>{{_data.year1}} to {{_data.year2}}</td></tr>
               <tr> <td>URL:</td><td>{{_data.part_url}}</td></tr>
@@ -100,6 +111,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.$.dialog.toggle();
 
         console.log('show',partId);
+      },
+
+      cancelaction: function() {
+        this.$.dialog.close();
       },
 
       _handleResponse: function(response) {

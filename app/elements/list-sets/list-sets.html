@@ -29,13 +29,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         height: 800px
       }*/
     </style>
-    <iron-ajax auto
-      url="http://rebrickable.com/api/get_user_sets"
+    <iron-ajax
+      id="theAjax"
+      url="https://rebrickable.com/api/get_user_sets"
       params="{{params}}"
       handle-as="json"
-      on-response="_handleResponse"></iron-ajax>
-
-<!-- "set_id":"76063-1","qty":"1","pieces":"79","descr":"Mighty Micros: The Flash\u2122 vs. Captain Cold\u2122","year":"2016","img_tn":"http:\/\/rebrickable.com\/img\/sets-t\/76063-1.jpg","img_sm":"http:\/\/rebrickable.com\/img\/sets-s\/76063-1.jpg" -->
+      on-response="_handleResponse">
+    </iron-ajax>
 
     <paper-material elevation="1">
       <iron-data-table id="dataTable" items="[[_data]]" selected-item="{{selectedSet}}" selection-enabled>
@@ -81,6 +81,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           observer: '_onSelectedChanged'
         },
 
+        showing: {
+          type: Boolean,
+          value: false,
+          observer: '_onShowingChanged'
+        },
+
 
       },
 
@@ -105,6 +111,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           format: 'json'
         };
       },
+
+      _onShowingChanged: function() {
+        this.$.theAjax.auto = this.showing;
+      },
+
 
       _onSelectedChanged: function() {
         if(this.selectedSet){

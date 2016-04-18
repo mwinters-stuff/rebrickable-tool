@@ -29,6 +29,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../list-sets/list-sets.html">
 <link rel="import" href="../list-parts/list-parts.html">
 <link rel="import" href="../show-set/show-set.html">
+<link rel="import" href="../manage-moc-parts/manage-moc-parts.html">
 
 <dom-module id="main-app">
   <template>
@@ -36,30 +37,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
     <iron-pages attr-for-selected="data-route" selected="{{route}}">
       <section data-route="home" tabindex="-1">
-        <list-sets user-hash="{{userHash}}"></list-sets>
+        <list-sets showing="{{_isShowing(route, 'home')}}" user-hash="{{userHash}}"></list-sets>
       </section>
 
       <section data-route="parts" tabindex="-1">
-        <list-parts user-hash="{{userHash}}"></list-parts>
+        <list-parts showing="{{_isShowing(route, 'parts')}}" user-hash="{{userHash}}"></list-parts>
       </section>
 
       <section data-route="set" tabindex="-1">
-        <show-set user-hash="{{userHash}}" lego-set-id="{{params.id}}"></show-set>
+        <show-set showing="{{_isShowing(route, 'set')}}" user-hash="{{userHash}}" lego-set-id="{{params.id}}"></show-set>
       </section>
 
-      <section data-route="user-info" tabindex="-1">
-        <paper-material elevation="-1">
-          <h1 class="page-title" tabindex="-1">User: {{params.name}}</h1>
-          <div>This is {{params.name}}'s section</div>
-        </paper-material>
+      <section data-route="manage-moc-parts" tabindex="-1">
+        <manage-moc-parts showing="{{_isShowing(route, 'manage-moc-parts')}}" user-has="{{userHash}}"> </manage-moc-parts>
       </section>
-
-      <section data-route="contact" tabindex="-1">
-        <paper-material elevation="1">
-          <h1 class="page-title" tabindex="-1">Contact</h1>
-          <p>This is the contact section</p>
-        </paper-material>
-      </section>
+    
     </iron-pages>
 
   </template>
@@ -87,6 +79,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
 
         },
+
+        _isShowing: function(route, aRoute) {
+          return aRoute == route;
+        }
       });
     })();
   </script>
