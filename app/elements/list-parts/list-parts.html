@@ -42,7 +42,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </template>
         </paper-tabs>
        </paper-toolbar> -->
-       <list-of-parts user-hash="{{userHash}}" part-list-id="{{selectedId}}"></list-of-parts>
+       <list-of-parts user-hash="{{userHash}}" part-list-id="{{partListId}}"></list-of-parts>
     </paper-material>
   </template>
   <script>
@@ -63,11 +63,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: String,
           value: ''
         },
-        selectedId: {
-          type: Number,
-          value: 0,
-          observer: '_onSelectedIdChanged'
-        },
 
         showing: {
           type: Boolean,
@@ -79,39 +74,49 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Object,
           value: {},
           notify: true,
+        },
+
+        partListId: {
+          type: Number,
+          value: -1,
+          notify: true,
         }
       },
 
         ready: function() {
           //this._dataTableHeight = 400;
-          this.selectedId = 0;
+
         },
 
         _onShowingChanged: function() {
           this.$.theAjax.auto = this.showing;
+          this.$.theAjax.generateRequest();
         },
 
 
         _handleResponse: function(response) {
           if(response.detail.response) {
             this._data = response.detail.response.partlists;
-            if(this._data.length > 0){
-              this.selectedId = this._data[0].partlist_id;
+            if(this._data.length > 0 && this.partListId < 0){
+              this.partListId = this._data[0].partlist_id;
             }
 
             if(this.showing) {
               var tabsToShow = {
-                selected: this.selectedId,
+                selected: this.partListId,
+                route: 'parts',
                 tabs: []
               };
 
               this._data.forEach(function(element){
                 tabsToShow.tabs.push({
                   id: element.partlist_id,
-                  title: element.descr
+                  title: element.descr,
+
                 });
               }.bind(this));
               this.set('tabsToShow',tabsToShow);
+              this.saveTabsToShow = tabsToShow;
             }
           //  console.log(this._data, this.selectedId);
           }
@@ -126,9 +131,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           };
         },
 
-        _onSelectedIdChanged: function() {
-          console.log('selectedChanged',this.selectedId);
-        },
 
 
     });

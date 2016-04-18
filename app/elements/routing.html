@@ -51,8 +51,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       setFocus(app.route);
     });
 
-    page('/parts', function() {
+    page('/parts/:partListId', function(data) {
       app.route = 'parts';
+      app.params = data.params;
       setFocus(app.route);
     });
 

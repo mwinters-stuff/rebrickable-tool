@@ -86,7 +86,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <span>Sets</span>
             </a>
 
-            <a data-route="parts" href="{{baseUrl}}parts">
+            <a data-route="parts" href="{{baseUrl}}parts/0">
               <iron-icon icon="info"></iron-icon>
               <span>Parts</span>
             </a>
@@ -109,7 +109,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-toolbar id="mainToolbar">
             <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
             <div class="app-name">Rebrickable Tool</div>
-            <paper-tabs selected="{{tabsToShow.selected}}" attr-for-selected="selid">
+            <paper-tabs selected="{{selectedTabId}}" attr-for-selected="selid">
               <template is="dom-repeat" items="{{tabsToShow.tabs}}">
                 <paper-tab selid="{{item.id}}">{{item.title}}</paper-tab>
               </template>

@@ -49,30 +49,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value: '',
           observer: '_onHashChanged',
         },
+
+        showing: {
+          type: Boolean,
+          value: false,
+          observer: '_onShowingChanged'
+        },
+
+        tabsToShow:{
+          type: Object,
+          value: {},
+          notify: true,
+        },
+
       },
 
-        _handleResponse: function(response) {
-          // if (response.detail.response && response.detail.response.length > 0) {
-          //   this._data = response.detail.response[0];
-          //   // console.log('set', this._data);
-          // }
-        },
+      _onShowingChanged: function() {
+        if(this.showing) {
+          this.set('tabsToShow.tabs',[]);
+        };
+      },
 
-        _onHashChanged: function() {
-          // if (this.userHash && this.legoSetId) {
-          //   this._data = {};
-          //   this._parts = [];
-          //   this.params = {
-          //     key: 'p4GLMlcPxJ',
-          //     set_id: this.legoSetId,
-          //     set: this.legoSetId,
-          //     format: 'json'
-          //   };
-          //   this.$.theAjax.generateRequest();
-          //   this.$.theAjaxParts.generateRequest();
-          //  console.log(this.params);
-          //}
-        },
+
+      _handleResponse: function(response) {
+        // if (response.detail.response && response.detail.response.length > 0) {
+        //   this._data = response.detail.response[0];
+        //   // console.log('set', this._data);
+        // }
+      },
+
+      _onHashChanged: function() {
+        // if (this.userHash && this.legoSetId) {
+        //   this._data = {};
+        //   this._parts = [];
+        //   this.params = {
+        //     key: 'p4GLMlcPxJ',
+        //     set_id: this.legoSetId,
+        //     set: this.legoSetId,
+        //     format: 'json'
+        //   };
+        //   this.$.theAjax.generateRequest();
+        //   this.$.theAjaxParts.generateRequest();
+        //  console.log(this.params);
+        //}
+      },
 
 
     });

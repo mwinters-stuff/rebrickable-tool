@@ -24,16 +24,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   }
 
   app.properties = {
-    tabsToShow:{
+    tabsToShow: {
       type: Object,
       value: {},
       notify: true,
       observer: '_onTabsToShowChange'
     },
+
+    selectedTabId: {
+      type: Number,
+      value: -1,
+      observer: '_onSelectedTabChanged'
+    }
   };
 
-  app._onTabsToShowChange = function(){
-    console.log('tabsToShow',app.tabsToShow, app.tabsToShow.tabs[0].title);
+  app._onTabsToShowChange = function() {
+    console.log('tabsToShow', app.tabsToShow);
+  };
+
+  app._onSelectedTabChanged = function() {
+    console.log('selected tab changed ', app.selectedTabId);
+    page.redirect(app.baseUrl + app.tabsToShow.route + "/" + app.selectedTabId);
+
   };
 
   app.authorized = function() {
