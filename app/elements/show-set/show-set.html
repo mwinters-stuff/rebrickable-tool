@@ -27,7 +27,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
 
-      iron-data-table{
+      iron-data-table {
         height: 800px;
       }
     </style>
@@ -40,9 +40,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div class="title">{{_data.set_id}} {{_data.descr}}</div>
           <div>&nbsp; </div>
           <table class="info">
-            <tr> <td>Theme:</td><td>{{_data.theme}}</td></tr>
-            <tr> <td>Pieces:</td><td>{{_data.pieces}}</td></tr>
-            <tr> <td>Year:</td><td>{{_data.year}}</td></tr>
+            <tr>
+              <td>Theme:</td>
+              <td>{{_data.theme}}</td>
+            </tr>
+            <tr>
+              <td>Pieces:</td>
+              <td>{{_data.pieces}}</td>
+            </tr>
+            <tr>
+              <td>Year:</td>
+              <td>{{_data.year}}</td>
+            </tr>
           </table>
         </div>
         <div class="aright">
@@ -51,9 +60,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </div>
       <iron-data-table id="dataTable" items="[[_parts]]" selected-item="{{selectedPart}}" selection-enabled>
         <data-table-column align-right width="40px">
-          <template><iron-image  src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image></template>
+          <template>
+            <iron-image src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
+          </template>
         </data-table-column>
-        <data-table-column align-right width="20px" name="Qty" >
+        <data-table-column align-right width="20px" name="Qty">
           <template>[[item.qty]]</template>
         </data-table-column>
         <data-table-column name="Part ID" width="100px">
@@ -62,8 +73,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <data-table-column name="Name" flex="100">
           <template>[[item.part_name]]</template>
         </data-table-column>
-        <data-table-column name="Colour" width="250px" >
-          <template>  <div class="box" style="background-color: {{getColour(item.color_name)}}"></div>
+        <data-table-column name="Colour" width="250px">
+          <template>
+            <div class="box" style="background-color: {{getColour(item.color_name)}}"></div>
             [[item.color_name]]</template>
         </data-table-column>
       </iron-data-table>
@@ -95,7 +107,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             observer: '_onSelectedChanged'
           },
 
+
+          tabsToShow: {
+            type: Object,
+            value: {},
+            notify: true,
+          },
+
+
+          showing: {
+            type: Boolean,
+            value: false,
+            observer: '_onShowingChanged'
+          },
+
+          _data: [],
+          _parts: [],
+
         },
+
+        _onShowingChanged: function() {
+          if (this.showing) {
+            this.set('tabsToShow.tabs', []);
+          };
+        },
+
 
         _handleResponse: function(response) {
           if (response.detail.response && response.detail.response.length > 0) {
@@ -106,8 +142,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         _handleResponseParts: function(response) {
           if (response.detail.response) {
-          //  this.$.dataTable.style = "height: " + (56 + (48 * response.detail.response[0].parts.length)) + "px" ;
-          //  this.$.dataTable.pageSize = response.detail.response[0].parts.length;
+            //  this.$.dataTable.style = "height: " + (56 + (48 * response.detail.response[0].parts.length)) + "px" ;
+            //  this.$.dataTable.pageSize = response.detail.response[0].parts.length;
             this._parts = response.detail.response[0].parts;
           }
         },
@@ -124,17 +160,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             };
             this.$.theAjax.generateRequest();
             this.$.theAjaxParts.generateRequest();
-          //  console.log(this.params);
+            //  console.log(this.params);
           }
         },
 
         _onSelectedChanged: function() {
-          if(this.selectedPart) {
+          if (this.selectedPart) {
             this.$.showPart.show(this.selectedPart.part_id);
           }
         },
 
-        getColour: function(name){
+        getColour: function(name) {
           return this.$.colours.getNamedColour(name);
         },
 

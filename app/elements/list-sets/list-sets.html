@@ -8,7 +8,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 <!-- Iron elements -->
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
@@ -18,43 +18,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
 
+<link rel="import" href="list-of-sets.html">
+
 <dom-module id="list-sets">
   <template>
     <style include="shared-styles">
       :host {
         display: block;
       }
-
-      /*#dataTable{
-        height: 800px
-      }*/
     </style>
     <iron-ajax
       id="theAjax"
-      url="https://rebrickable.com/api/get_user_sets"
-      params="{{params}}"
+      url="https://rebrickable.com/api/get_user_setlists"
+      params="{{_params}}"
       handle-as="json"
       on-response="_handleResponse">
     </iron-ajax>
 
+
     <paper-material elevation="1">
-      <iron-data-table id="dataTable" items="[[_data]]" selected-item="{{selectedSet}}" selection-enabled>
-        <data-table-column align-right width="20px">
-          <template><iron-image  src="[[item.img_sm]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image></template>
-        </data-table-column>
-        <data-table-column align-right width="20px" name="Qty" >
-          <template>[[item.qty]]</template>
-        </data-table-column>
-        <data-table-column name="Description" flex="50">
-          <template>[[item.descr]]</template>
-        </data-table-column>
-        <data-table-column name="Pieces" align-right width="20px">
-          <template>[[item.pieces]]</template>
-        </data-table-column>
-        <data-table-column name="Year" align-right width="20px">
-          <template>[[item.year]]</template>
-        </data-table-column>
-      </iron-data-table>
+      <list-of-sets set-list-id="{{setListId}}" user-hash="{{userHash}}"></list-of-sets>
     </paper-material>
   </template>
   <script>
@@ -71,14 +54,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           observer: '_onHashChanged',
 
         },
-        params: {
+
+        _params: {
           type: String,
           value: ''
-        },
-
-        selectedSet: {
-          type: Object,
-          observer: '_onSelectedChanged'
         },
 
         showing: {
@@ -87,40 +66,60 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           observer: '_onShowingChanged'
         },
 
+        tabsToShow:{
+          type: Object,
+          value: {},
+          notify: true,
+        },
 
-      },
+        setListId: {
+          type: Number,
+          value: -1,
+          notify: true,
+        },
 
-      ready: function() {
-        //this._dataTableHeight = 400;
-        //this.selectedSet = undefined;
-      },
 
-      _handleResponse: function(response) {
-        if(response.detail.response) {
-          this.$.dataTable.style = "height: " + (56 + (48 * response.detail.response[0].sets.length)) + "px" ;
-          this.$.dataTable.pageSize = response.detail.response[0].sets.length;
-          this._data = response.detail.response[0].sets;
-        }
+        _data: [],
       },
 
       _onHashChanged: function() {
         this._data = [];
-        this.params = {
+        if(this.userHash && this.setListId)
+        this._params = {
           key: 'p4GLMlcPxJ',
           hash: this.userHash,
           format: 'json'
         };
       },
 
-      _onShowingChanged: function() {
-        this.$.theAjax.auto = this.showing;
+      _handleResponse: function(response) {
+        if (response.detail.response) {
+          this._data = response.detail.response.sets;
+          if (this._data.length > 0 && this.setListId < 0) {
+            this.setListId = this._data[0].setlist_id;
+          }
+
+          if (this.showing) {
+            var tabsToShow = {
+              selected: this.setListId,
+              route: 'sets',
+              tabs: []
+            };
+
+            this._data.forEach(function(element) {
+              tabsToShow.tabs.push({
+                id: element.setlist_id,
+                title: element.name,
+              });
+            }.bind(this));
+            this.set('tabsToShow', tabsToShow);
+            this.saveTabsToShow = tabsToShow;
+          }
+        }
       },
 
-
-      _onSelectedChanged: function() {
-        if(this.selectedSet){
-          page.redirect("/set/" + this.selectedSet.set_id);
-        }
+      _onShowingChanged: function() {
+        this.$.theAjax.auto = this.showing;
       },
 
     });

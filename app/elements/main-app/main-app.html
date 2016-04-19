@@ -37,7 +37,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
     <iron-pages attr-for-selected="data-route" selected="{{route}}">
       <section data-route="home" tabindex="-1">
-        <list-sets tabs-to-show="{{tabsToShow}}" showing="{{_isShowing(route, 'home')}}" user-hash="{{userHash}}"></list-sets>
+        <div></div>
+      </section>
+
+      <section data-route="sets" tabindex="-1">
+        <list-sets set-list-id="{{params.setListId}}" tabs-to-show="{{tabsToShow}}" showing="{{_isShowing(route, 'sets')}}" user-hash="{{userHash}}"></list-sets>
       </section>
 
       <section data-route="parts" tabindex="-1">
@@ -45,11 +49,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </section>
 
       <section data-route="set" tabindex="-1">
-        <show-set showing="{{_isShowing(route, 'set')}}" user-hash="{{userHash}}" lego-set-id="{{params.id}}"></show-set>
+        <show-set showing="{{_isShowing(route, 'set')}}"  tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}" lego-set-id="{{params.id}}"></show-set>
       </section>
 
       <section data-route="manage-moc-parts" tabindex="-1">
-        <manage-moc-parts showing="{{_isShowing(route, 'manage-moc-parts')}}" user-has="{{userHash}}"> </manage-moc-parts>
+        <manage-moc-parts tabs-to-show="{{tabsToShow}}" showing="{{_isShowing(route, 'manage-moc-parts')}}" user-has="{{userHash}}"> </manage-moc-parts>
       </section>
 
     </iron-pages>
