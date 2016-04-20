@@ -11,11 +11,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
+<link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 <!-- Paper elements -->
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+
+<link rel="import" href="../set-search-dialog/set-search-dialog.html">
+<link rel="import" href="../show-set/show-set-parts.html">
 
 <dom-module id="manage-moc-parts">
   <template>
@@ -29,6 +37,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <div class="horiz">
         <paper-material elevation="1">
           <div>Select MOC or Set</div>
+          <paper-input readonly value="{{_selectedSearchSet.set_id}} {{_selectedSearchSet.descr}}" label="Set">
+            <paper-icon-button suffix icon="search" on-click="_onSearchMOCClick"></paper-icon-button>
+          </paper-input>
+          <show-set-parts user-hash="{{user-hash}}" set-id="{{_selectedSearchSet.set_id}}"></show-set-parts>
         </paper-material>
         <paper-material elevation="1">
           <div>Choose Part List</div>
@@ -38,68 +50,86 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </paper-material>
       </div>
 
+
     </paper-material>
+
+    <set-search-dialog id="_setSearchDialog" result="{{_selectedSearchSet}}" on-accepted="_searchSetDialogAccepted"></set-search-dialog>
   </template>
   <script>
-  (function() {
-    'use strict';
+    (function() {
+      'use strict';
 
-    Polymer({
-      is: 'manage-moc-parts',
+      Polymer({
+        is: 'manage-moc-parts',
 
-      properties: {
-        userHash: {
-          type: String,
-          value: '',
-          observer: '_onHashChanged',
+        properties: {
+          userHash: {
+            type: String,
+            value: '',
+            observer: '_onHashChanged',
+          },
+
+          showing: {
+            type: Boolean,
+            value: false,
+            observer: '_onShowingChanged'
+          },
+
+          tabsToShow: {
+            type: Object,
+            value: {},
+            notify: true,
+          },
+
+          _selectedSearchSet: {
+            type: Object,
+            value: {}
+          },
+
+
+
         },
 
-        showing: {
-          type: Boolean,
-          value: false,
-          observer: '_onShowingChanged'
+
+        _onShowingChanged: function() {
+          if (this.showing) {
+            this.set('tabsToShow.tabs', []);
+          };
         },
 
-        tabsToShow:{
-          type: Object,
-          value: {},
-          notify: true,
+        _onSearchMOCClick: function() {
+          this.$._setSearchDialog.open();
         },
 
-      },
-
-      _onShowingChanged: function() {
-        if(this.showing) {
-          this.set('tabsToShow.tabs',[]);
-        };
-      },
+        _searchSetDialogAccepted: function() {
+          console.log('searched ', this._selectedSearchSet);
+        },
 
 
-      _handleResponse: function(response) {
-        // if (response.detail.response && response.detail.response.length > 0) {
-        //   this._data = response.detail.response[0];
-        //   // console.log('set', this._data);
-        // }
-      },
+        _handleResponse: function(response) {
+          // if (response.detail.response && response.detail.response.length > 0) {
+          //   this._data = response.detail.response[0];
+          //   // console.log('set', this._data);
+          // }
+        },
 
-      _onHashChanged: function() {
-        // if (this.userHash && this.legoSetId) {
-        //   this._data = {};
-        //   this._parts = [];
-        //   this.params = {
-        //     key: 'p4GLMlcPxJ',
-        //     set_id: this.legoSetId,
-        //     set: this.legoSetId,
-        //     format: 'json'
-        //   };
-        //   this.$.theAjax.generateRequest();
-        //   this.$.theAjaxParts.generateRequest();
-        //  console.log(this.params);
-        //}
-      },
+        _onHashChanged: function() {
+          // if (this.userHash && this.legoSetId) {
+          //   this._data = {};
+          //   this._parts = [];
+          //   this.params = {
+          //     key: 'p4GLMlcPxJ',
+          //     set_id: this.legoSetId,
+          //     set: this.legoSetId,
+          //     format: 'json'
+          //   };
+          //   this.$.theAjax.generateRequest();
+          //   this.$.theAjaxParts.generateRequest();
+          //  console.log(this.params);
+          //}
+        },
 
-
-    });
-  })();
+      });
+    })();
   </script>
 </dom-module>

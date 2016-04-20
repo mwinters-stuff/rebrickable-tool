@@ -1,0 +1,116 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<!-- Paper elements -->
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
+
+<link rel="import" href="../show-part/show-part.html">
+<link rel="import" href="../colour-list/colour-list.html">
+
+<dom-module id="show-set-parts">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+
+      iron-data-table {
+        height: 800px;
+      }
+    </style>
+    <colour-list id="colours"></colour-list>
+    <iron-ajax id="theAjaxParts" url="https://rebrickable.com/api/get_set_parts" params="{{params}}" handle-as="json" on-response="_handleResponseParts"></iron-ajax>
+      <iron-data-table id="dataTable" items="[[_parts]]" selected-item="{{selectedPart}}" selection-enabled>
+        <data-table-column align-right width="40px">
+          <template>
+            <iron-image src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
+          </template>
+        </data-table-column>
+        <data-table-column align-right width="20px" name="Qty">
+          <template>[[item.qty]]</template>
+        </data-table-column>
+        <data-table-column name="Part ID" width="100px">
+          <template>[[item.part_id]]</template>
+        </data-table-column>
+        <data-table-column name="Name" flex="100">
+          <template>[[item.part_name]]</template>
+        </data-table-column>
+        <data-table-column name="Colour" width="250px">
+          <template>
+            <div class="box" style="background-color: {{getColour(item.color_name)}}"></div>
+            [[item.color_name]]</template>
+        </data-table-column>
+      </iron-data-table>
+    <show-part id="showPart"></show-part>
+
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'show-set-parts',
+
+        properties: {
+          setId: {
+            type: String,
+            value: '',
+            observer: '_onHashChanged',
+          },
+
+          selectedPart: {
+            type: Object,
+            observer: '_onSelectedChanged'
+          },
+
+          _parts: [],
+
+        },
+
+        _handleResponseParts: function(response) {
+          if (response.detail.response) {
+            //  this.$.dataTable.style = "height: " + (56 + (48 * response.detail.response[0].parts.length)) + "px" ;
+            //  this.$.dataTable.pageSize = response.detail.response[0].parts.length;
+            this._parts = response.detail.response[0].parts;
+          }
+        },
+
+        _onHashChanged: function() {
+          if (this.setId) {
+            this._parts = [];
+            this.params = {
+              key: 'p4GLMlcPxJ',
+              set: this.setId,
+              format: 'json'
+            };
+            this.$.theAjaxParts.generateRequest();
+          }
+        },
+
+        _onSelectedChanged: function() {
+          if (this.selectedPart) {
+            this.$.showPart.show(this.selectedPart.part_id);
+          }
+        },
+
+        getColour: function(name) {
+          return this.$.colours.getNamedColour(name);
+        },
+
+      });
+    })();
+  </script>
+</dom-module>

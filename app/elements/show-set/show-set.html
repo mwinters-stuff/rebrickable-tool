@@ -17,8 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
 
-<link rel="import" href="../show-part/show-part.html">
-<link rel="import" href="../colour-list/colour-list.html">
+<link rel="import" href="show-set-parts.html">
 
 <dom-module id="show-set">
   <template>
@@ -31,9 +30,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         height: 800px;
       }
     </style>
-    <colour-list id="colours"></colour-list>
     <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_set" params="{{params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
-    <iron-ajax id="theAjaxParts" url="https://rebrickable.com/api/get_set_parts" params="{{params}}" handle-as="json" on-response="_handleResponseParts"></iron-ajax>
+
     <paper-material elevation="1">
       <div class="horiz">
         <div class="aleft">
@@ -58,29 +56,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <iron-image src="{{_data.img_big}}"></iron-image>
         </div>
       </div>
-      <iron-data-table id="dataTable" items="[[_parts]]" selected-item="{{selectedPart}}" selection-enabled>
-        <data-table-column align-right width="40px">
-          <template>
-            <iron-image src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
-          </template>
-        </data-table-column>
-        <data-table-column align-right width="20px" name="Qty">
-          <template>[[item.qty]]</template>
-        </data-table-column>
-        <data-table-column name="Part ID" width="100px">
-          <template>[[item.part_id]]</template>
-        </data-table-column>
-        <data-table-column name="Name" flex="100">
-          <template>[[item.part_name]]</template>
-        </data-table-column>
-        <data-table-column name="Colour" width="250px">
-          <template>
-            <div class="box" style="background-color: {{getColour(item.color_name)}}"></div>
-            [[item.color_name]]</template>
-        </data-table-column>
-      </iron-data-table>
+      <show-set-parts user-hash="{{user-hash}}" lego-set-id="{{_showSetId}}"></show-set-parts>
+
     </paper-material>
-    <show-part id="showPart"></show-part>
 
   </template>
   <script>
@@ -122,7 +100,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
 
           _data: [],
-          _parts: [],
+          _showSetId: -1,
 
         },
 
@@ -140,38 +118,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
 
-        _handleResponseParts: function(response) {
-          if (response.detail.response) {
-            //  this.$.dataTable.style = "height: " + (56 + (48 * response.detail.response[0].parts.length)) + "px" ;
-            //  this.$.dataTable.pageSize = response.detail.response[0].parts.length;
-            this._parts = response.detail.response[0].parts;
-          }
-        },
-
         _onHashChanged: function() {
           if (this.userHash && this.legoSetId) {
             this._data = {};
-            this._parts = [];
             this.params = {
               key: 'p4GLMlcPxJ',
-              set_id: this.legoSetId,
               set: this.legoSetId,
               format: 'json'
             };
             this.$.theAjax.generateRequest();
-            this.$.theAjaxParts.generateRequest();
+            this.set('_showSetId',this.legoSetId);
+
             //  console.log(this.params);
           }
-        },
-
-        _onSelectedChanged: function() {
-          if (this.selectedPart) {
-            this.$.showPart.show(this.selectedPart.part_id);
-          }
-        },
-
-        getColour: function(name) {
-          return this.$.colours.getNamedColour(name);
         },
 
       });
