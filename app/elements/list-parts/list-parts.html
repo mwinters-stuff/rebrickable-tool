@@ -25,7 +25,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
     </style>
-    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_user_part_lists" params="{{params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
+    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_user_part_lists" params="{{_params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
 
     <paper-material elevation="1">
       <list-of-parts user-hash="{{userHash}}" part-list-id="{{partListId}}"></list-of-parts>
@@ -45,9 +45,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             observer: '_onHashChanged',
 
           },
-          params: {
-            type: String,
-            value: ''
+          _params: {
+            type: Object,
+            value: {}
           },
 
           showing: {
@@ -103,7 +103,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _onHashChanged: function() {
-          this.params = {
+          this._params = {
             key: 'p4GLMlcPxJ',
             hash: this.userHash,
             format: 'json'

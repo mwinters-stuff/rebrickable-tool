@@ -30,7 +30,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         height: 800px;
       }
     </style>
-    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_set" params="{{params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
+    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_set" params="{{_params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
 
     <paper-material elevation="1">
       <div class="horiz">
@@ -56,7 +56,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <iron-image src="{{_data.img_big}}"></iron-image>
         </div>
       </div>
-      <show-set-parts user-hash="{{user-hash}}" lego-set-id="{{_showSetId}}"></show-set-parts>
+      <show-set-parts user-hash="{{userHash}}" set-id="{{_showSetId}}"></show-set-parts>
 
     </paper-material>
 
@@ -69,7 +69,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         is: 'show-set',
 
         properties: {
-          legoSetId: {
+          setId: {
             type: String,
             value: '',
             observer: '_onHashChanged',
@@ -79,12 +79,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             value: '',
             observer: '_onHashChanged',
           },
-
-          selectedPart: {
-            type: Object,
-            observer: '_onSelectedChanged'
-          },
-
 
           tabsToShow: {
             type: Object,
@@ -101,6 +95,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           _data: [],
           _showSetId: -1,
+          _params: {
+            type: Object,
+          },
 
         },
 
@@ -119,15 +116,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _onHashChanged: function() {
-          if (this.userHash && this.legoSetId) {
+          if (this.userHash && this.setId) {
             this._data = {};
-            this.params = {
+            this._params = {
               key: 'p4GLMlcPxJ',
-              set: this.legoSetId,
+              set_id: this.setId,
               format: 'json'
             };
             this.$.theAjax.generateRequest();
-            this.set('_showSetId',this.legoSetId);
+            this.set('_showSetId',this.setId);
 
             //  console.log(this.params);
           }

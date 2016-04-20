@@ -38,7 +38,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         width: 600px;
       }
     </style>
-    <paper-dialog id="_dialog">
+    <paper-dialog id="_dialog" on-iron-overlay-closed="_onDialogClosed">
       <h2>Search MOC or Set</h2>
       <div class="horiz">
         <div>Search Types</div>
@@ -160,9 +160,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.set('_searchDialogOk', this._selectedSearchSet != null);
         },
 
-        _onAcceptClicked: function() {
-          this.set('result', this._selectedSearchSet);
-          this.fire('accepted');
+        _onDialogClosed: function(closingReason) {
+          if(closingReason.detail.confirmed) {
+            this.set('result', this._selectedSearchSet);
+            this.fire('accepted');
+          }
         },
 
         open: function() {

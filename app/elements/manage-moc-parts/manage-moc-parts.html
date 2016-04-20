@@ -21,9 +21,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
 
 <link rel="import" href="../set-search-dialog/set-search-dialog.html">
 <link rel="import" href="../show-set/show-set-parts.html">
+<link rel="import" href="../list-parts/list-of-parts.html">
 
 <dom-module id="manage-moc-parts">
   <template>
@@ -32,19 +36,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
     </style>
+    <iron-ajax id="theAjaxPartLists" url="https://rebrickable.com/api/get_user_part_lists" params="{{_paramsPartLists}}" handle-as="json" on-response="_handleResponsePartLists"></iron-ajax>
+
     <paper-material elevation="1">
 
-      <div class="horiz">
+      <div class="horiztop">
         <paper-material elevation="1">
           <div>Select MOC or Set</div>
-          <paper-input readonly value="{{_selectedSearchSet.set_id}} {{_selectedSearchSet.descr}}" label="Set">
+          <paper-input readonly value="{{_selectedSearchSet.set_id}} {{_selectedSearchSet.descr}}">
             <paper-icon-button suffix icon="search" on-click="_onSearchMOCClick"></paper-icon-button>
           </paper-input>
-          <show-set-parts user-hash="{{user-hash}}" set-id="{{_selectedSearchSet.set_id}}"></show-set-parts>
+          <show-set-parts set-id="{{_selectedSearchSet.set_id}}"></show-set-parts>
         </paper-material>
+
         <paper-material elevation="1">
           <div>Choose Part List</div>
+          <paper-dropdown-menu label="Part List" on-iron-select="_onPartListSelected" selected-item="{{_selectedPartList}}">
+            <paper-listbox class="dropdown-content">
+              <template is="dom-repeat" items="{{_dataPartLists}}">
+                <paper-item id="{{item.partlist_id}}">{{item.descr}}</paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+          <list-of-parts user-hash="{{userHash}}" part-list-id="{{_selectedPartListId}}"></list-of-parts>
         </paper-material>
+
         <paper-material elevation="1">
           <div>Create Part Lists</div>
         </paper-material>
@@ -86,8 +102,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             value: {}
           },
 
+          _selectedPartList: {
+          type: Object,
+          value: {}
+        },
 
+          _paramsPartLists: {
+            type: Object,
+            value: {}
+          },
 
+          _dataPartLists: {
+            type: Array,
+            value: [],
+          },
+
+          _selectedPartListId: -1,
         },
 
 
@@ -95,6 +125,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if (this.showing) {
             this.set('tabsToShow.tabs', []);
           };
+          this.$.theAjaxPartLists.auto = this.showing;
         },
 
         _onSearchMOCClick: function() {
@@ -106,27 +137,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
 
-        _handleResponse: function(response) {
-          // if (response.detail.response && response.detail.response.length > 0) {
-          //   this._data = response.detail.response[0];
-          //   // console.log('set', this._data);
-          // }
+        _handleResponsePartLists: function(response) {
+          if (response.detail.response) {
+            this.set('_dataPartLists',response.detail.response.partlists);
+          }
         },
 
         _onHashChanged: function() {
-          // if (this.userHash && this.legoSetId) {
-          //   this._data = {};
-          //   this._parts = [];
-          //   this.params = {
-          //     key: 'p4GLMlcPxJ',
-          //     set_id: this.legoSetId,
-          //     set: this.legoSetId,
-          //     format: 'json'
-          //   };
-          //   this.$.theAjax.generateRequest();
-          //   this.$.theAjaxParts.generateRequest();
-          //  console.log(this.params);
-          //}
+          if (this.userHash) {
+            this._dataPartLists = [];
+            this._paramsPartLists = {
+              key: 'p4GLMlcPxJ',
+              hash: this.userHash,
+              format: 'json'
+            };
+          }
+        },
+
+        _onPartListSelected: function() {
+          this.set('_selectedPartListId',this._selectedPartList.id);
         },
 
       });

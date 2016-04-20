@@ -32,7 +32,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
     <colour-list id="colours"></colour-list>
-    <iron-ajax id="theAjaxParts" url="https://rebrickable.com/api/get_set_parts" params="{{params}}" handle-as="json" on-response="_handleResponseParts"></iron-ajax>
+    <iron-ajax id="theAjaxParts" url="https://rebrickable.com/api/get_set_parts" params="{{_params}}" handle-as="json" on-response="_handleResponseParts"></iron-ajax>
       <iron-data-table id="dataTable" items="[[_parts]]" selected-item="{{selectedPart}}" selection-enabled>
         <data-table-column align-right width="40px">
           <template>
@@ -77,6 +77,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
 
           _parts: [],
+          _params: {
+            type: Object,
+          },
 
         },
 
@@ -91,7 +94,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         _onHashChanged: function() {
           if (this.setId) {
             this._parts = [];
-            this.params = {
+            this._params = {
               key: 'p4GLMlcPxJ',
               set: this.setId,
               format: 'json'

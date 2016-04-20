@@ -27,12 +27,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
     </style>
-    <iron-ajax
-      id="theAjax"
-      url="https://rebrickable.com/api/get_user_setlists"
-      params="{{_params}}"
-      handle-as="json"
-      on-response="_handleResponse">
+    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_user_setlists" params="{{_params}}" handle-as="json" on-response="_handleResponse">
     </iron-ajax>
 
 
@@ -41,88 +36,89 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </paper-material>
   </template>
   <script>
-  (function() {
-    'use strict';
+    (function() {
+      'use strict';
 
-    Polymer({
-      is: 'list-sets',
+      Polymer({
+        is: 'list-sets',
 
-      properties: {
-        userHash: {
-          type: String,
-          value: '',
-          observer: '_onHashChanged',
+        properties: {
+          userHash: {
+            type: String,
+            value: '',
+            observer: '_onHashChanged',
 
+          },
+
+          _params: {
+            type: String,
+            value: ''
+          },
+
+          showing: {
+            type: Boolean,
+            value: false,
+            observer: '_onShowingChanged'
+          },
+
+          tabsToShow: {
+            type: Object,
+            value: {},
+            notify: true,
+          },
+
+          setListId: {
+            type: Number,
+            value: -1,
+            notify: true,
+          },
+
+
+          _data: [],
         },
 
-        _params: {
-          type: String,
-          value: ''
-        },
-
-        showing: {
-          type: Boolean,
-          value: false,
-          observer: '_onShowingChanged'
-        },
-
-        tabsToShow:{
-          type: Object,
-          value: {},
-          notify: true,
-        },
-
-        setListId: {
-          type: Number,
-          value: -1,
-          notify: true,
-        },
-
-
-        _data: [],
-      },
-
-      _onHashChanged: function() {
-        this._data = [];
-        if(this.userHash && this.setListId)
-        this._params = {
-          key: 'p4GLMlcPxJ',
-          hash: this.userHash,
-          format: 'json'
-        };
-      },
-
-      _handleResponse: function(response) {
-        if (response.detail.response) {
-          this._data = response.detail.response.sets;
-          if (this._data.length > 0 && this.setListId < 0) {
-            this.setListId = this._data[0].setlist_id;
-          }
-
-          if (this.showing) {
-            var tabsToShow = {
-              selected: this.setListId,
-              route: 'sets',
-              tabs: []
+        _onHashChanged: function() {
+          this._data = [];
+          if (this.userHash) {
+            this._params = {
+              key: 'p4GLMlcPxJ',
+              hash: this.userHash,
+              format: 'json'
             };
-
-            this._data.forEach(function(element) {
-              tabsToShow.tabs.push({
-                id: element.setlist_id,
-                title: element.name,
-              });
-            }.bind(this));
-            this.set('tabsToShow', tabsToShow);
-            this.saveTabsToShow = tabsToShow;
           }
-        }
-      },
+        },
 
-      _onShowingChanged: function() {
-        this.$.theAjax.auto = this.showing;
-      },
+        _handleResponse: function(response) {
+          if (response.detail.response) {
+            this._data = response.detail.response.sets;
+            if (this._data.length > 0 && this.setListId < 0) {
+              this.setListId = this._data[0].setlist_id;
+            }
 
-    });
-  })();
+            if (this.showing) {
+              var tabsToShow = {
+                selected: this.setListId,
+                route: 'sets',
+                tabs: []
+              };
+
+              this._data.forEach(function(element) {
+                tabsToShow.tabs.push({
+                  id: element.setlist_id,
+                  title: element.name,
+                });
+              }.bind(this));
+              this.set('tabsToShow', tabsToShow);
+              this.saveTabsToShow = tabsToShow;
+            }
+          }
+        },
+
+        _onShowingChanged: function() {
+          this.$.theAjax.auto = this.showing;
+        },
+
+      });
+    })();
   </script>
 </dom-module>
