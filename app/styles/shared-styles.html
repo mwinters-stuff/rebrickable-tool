@@ -228,6 +228,8 @@
         font-weight: 600;
         height: 56px;
       }*/
+      text-overflow: ellipsis;
+      white-space: nowrap;
       --iron-data-table-row: {
         border-bottom: 1px solid #e3e3e3;
       }
@@ -258,8 +260,12 @@
         -webkit-transform: scaleX(1.0);
         transform: scaleX(1.0);
       }
-    }
 
+    }
+    data-table-cell {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
     </style>
   </template>
 </dom-module>

@@ -17,6 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <!-- Paper elements -->
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../colour-list/colour-list.html">
 <link rel="import" href="../show-part/show-part.html">
 
@@ -48,20 +49,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <!-- "set_id":"76063-1","qty":"1","pieces":"79","descr":"Mighty Micros: The Flash\u2122 vs. Captain Cold\u2122","year":"2016","img_tn":"http:\/\/rebrickable.com\/img\/sets-t\/76063-1.jpg","img_sm":"http:\/\/rebrickable.com\/img\/sets-s\/76063-1.jpg" -->
 
 
-      <iron-data-table id="dataTable" items="[[_data]]" selected-item="{{selectedPart}}" selection-enabled>
+      <iron-data-table id="dataTable" items="[[parts]]" selected-item="{{selectedPart}}" selection-enabled>
         <!-- <data-table-column align-right width="40px">
           <template><iron-image  src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image></template>
         </data-table-column> -->
         <data-table-column align-right width="20px" name="Qty" >
           <template>[[item.qty]]</template>
         </data-table-column>
-        <data-table-column name="Part ID" flex="50">
+        <data-table-column name="Part ID" width="50px">
           <template>[[item.part_id]]</template>
         </data-table-column>
-        <data-table-column name="Colour" flex="10">
+        <data-table-column name="Part" flex="2">
+          <template>[[item.part_name]]</template>
+        </data-table-column>
+        <data-table-column name="Colour">
           <template>
-            <div class="box" style="background-color: {{getColour(item.rb_color_id)}}"></div>
-            [[getColourName(item.rb_color_id)]]
+            <div class="box" style="background-color: {{getColour(item.rb_color_id)}}">
+              <!-- <paper-tooltip>[[getColourName(item.rb_color_id)]]</paper-tooltip> -->
+            </div>
           </template>
         </data-table-column>
         <!-- <data-table-column name="Element ID" align-right width="20px">
@@ -99,18 +104,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         selectedPart: {
           type: Object,
-          observer: '_onSelectedChanged'
+          observer: '_onSelectedChanged',
+          notify: true,
         },
 
-      },
+        parts: {
+          type: Array,
+          value: [],
+          notify: true,
+        },
 
-      ready: function() {
-        //this._dataTableHeight = 400;
-        // this.paramsColours = {
-        //     key: 'p4GLMlcPxJ',
-        //     format: 'json'
-        // };
-        // this._colours = [];
       },
 
       _onSelectedChanged: function() {
@@ -118,26 +121,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.$.showPart.show(this.selectedPart.part_id);
         }
       },
-
-
-      // _handleResponseColours: function(response) {
-      //   if(response.detail.response) {
-      //     this._colours = response.detail.response;
-      // //    this.$.dataTable.style = "height: " + (56 + (48 * this._data.length)) + "px" ;
-      //   //  console.log(this._data);
-      //   }
-      // },
-
+      
       _handleResponse: function(response) {
         if(response.detail.response) {
-        //  this.$.dataTable.style = "height: " + (56 + (48 * response.detail.response.parts.length)) + "px" ;
-        //  this.$.dataTable.pageSize = response.detail.response.parts.length;
-          this._data = response.detail.response.parts;
-          // this._data.forEach(function(element, index, array){
-          //   element.colour_name = this._lookupColour(element.rb_color_id);
-          // },this);
-      //   console.log('list-parts',this._data.length);
-      //   console.log('list-parts',this._data);
+          this.set('parts',response.detail.response.parts);
+        }else{
+          this.set('parts',[]);
         }
       },
 
@@ -151,7 +140,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _onHashChanged: function() {
         if(this.userHash && this.partListId){
-          this._data = [];
+          this.parts = [];
           this.params = {
             key: 'p4GLMlcPxJ',
             hash: this.userHash,
@@ -159,7 +148,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             format: 'json'
           };
           this.$.theAjax.generateRequest();
-          console.log(this.params);
         }
       },
 

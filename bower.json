@@ -18,5 +18,9 @@
   "devDependencies": {
     "web-component-tester": "^4.0.0"
   },
-  "ignore": []
+  "ignore": [],
+  "resolutions": {
+    "neon-animation": "^1.2.0",
+    "web-animations-js": "2.1.4"
+  }
 }

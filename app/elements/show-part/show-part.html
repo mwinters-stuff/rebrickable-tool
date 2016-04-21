@@ -70,7 +70,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <data-table-column name="Colour">
             <template>
               <div class="box" style="background-color: {{getColour(item.rb_color_id)}}"></div>
-              [[item.color_name]]</template>
+              </template>
+          </data-table-column>
+          <data-table-column name="">
+            <template>[[item.color_name]]</template>
           </data-table-column>
           <data-table-column align-right name="Num Sets" width="50px">
             <template>[[item.num_sets]]</template>
@@ -86,14 +89,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     Polymer({
       is: 'show-part',
-
-      properties: {
-        foo: {
-          type: String,
-          value: 'show-part',
-          notify: true
-        }
-      },
 
       getColour: function(colourid){
         return this.$.colours.getColour(colourid);

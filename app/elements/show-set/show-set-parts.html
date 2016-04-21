@@ -14,6 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 <!-- Paper elements -->
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
 
@@ -33,7 +34,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
     <colour-list id="colours"></colour-list>
     <iron-ajax id="theAjaxParts" url="https://rebrickable.com/api/get_set_parts" params="{{_params}}" handle-as="json" on-response="_handleResponseParts"></iron-ajax>
-      <iron-data-table id="dataTable" items="[[_parts]]" selected-item="{{selectedPart}}" selection-enabled>
+      <iron-data-table id="dataTable" items="[[parts]]" selected-item="{{selectedPart}}" selection-enabled>
         <data-table-column align-right width="40px">
           <template>
             <iron-image src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
@@ -42,16 +43,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <data-table-column align-right width="20px" name="Qty">
           <template>[[item.qty]]</template>
         </data-table-column>
-        <data-table-column name="Part ID" width="100px">
+        <data-table-column name="Part ID" width="50px">
           <template>[[item.part_id]]</template>
         </data-table-column>
-        <data-table-column name="Name" flex="100">
+        <data-table-column name="Name" flex="2">
           <template>[[item.part_name]]</template>
         </data-table-column>
-        <data-table-column name="Colour" width="250px">
+        <data-table-column name="Colour">
           <template>
-            <div class="box" style="background-color: {{getColour(item.color_name)}}"></div>
-            [[item.color_name]]</template>
+            <div class="box" style="background-color: {{getColour(item.rb_color_id)}}"></div>
+          <!-- <paper-tooltip elevation="10">[[item.color_name]]</paper-tooltip> -->
+          </template>
         </data-table-column>
       </iron-data-table>
     <show-part id="showPart"></show-part>
@@ -73,10 +75,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           selectedPart: {
             type: Object,
-            observer: '_onSelectedChanged'
+            observer: '_onSelectedChanged',
+            notify: true
           },
 
-          _parts: [],
+          parts: {
+            type: Array,
+            value: [],
+            notify: true,
+          },
+
           _params: {
             type: Object,
           },
@@ -87,13 +95,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if (response.detail.response) {
             //  this.$.dataTable.style = "height: " + (56 + (48 * response.detail.response[0].parts.length)) + "px" ;
             //  this.$.dataTable.pageSize = response.detail.response[0].parts.length;
-            this._parts = response.detail.response[0].parts;
+            this.set('parts',response.detail.response[0].parts);
+          }else{
+            this.set('parts',[]);
           }
         },
 
         _onHashChanged: function() {
           if (this.setId) {
-            this._parts = [];
+            this.parts = [];
             this._params = {
               key: 'p4GLMlcPxJ',
               set: this.setId,
@@ -109,8 +119,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
 
-        getColour: function(name) {
-          return this.$.colours.getNamedColour(name);
+        getColour: function(rb_color_id) {
+          return this.$.colours.getColour(rb_color_id);
         },
 
       });
