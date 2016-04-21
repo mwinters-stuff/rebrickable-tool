@@ -35,6 +35,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host {
         display: block;
       }
+      div.ch{
+          @apply(--layout-flex);
+          padding-right: 12px;
+          padding-left: 12px;
+          border-right: 1px solid #e3e3e3;
+
+      }
+
+      div div.ch:last-of-type{
+        border-right: none;
+      }
     </style>
     <iron-ajax id="theAjaxPartLists" url="https://rebrickable.com/api/get_user_part_lists" params="{{_paramsPartLists}}" handle-as="json" on-response="_handleResponsePartLists"></iron-ajax>
     <colour-list id="colours"></colour-list>
@@ -42,15 +53,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <paper-material elevation="1">
 
       <div class="horiztop">
-        <paper-material elevation="1">
+        <div class="ch">
           <div>Select MOC or Set</div>
           <paper-input readonly value="{{_selectedSearchSet.set_id}} {{_selectedSearchSet.descr}}">
             <paper-icon-button suffix icon="search" on-click="_onSearchMOCClick"></paper-icon-button>
           </paper-input>
           <show-set-parts set-id="{{_selectedSearchSet.set_id}}" parts="{{_setParts}}"></show-set-parts>
-        </paper-material>
-
-        <paper-material elevation="1">
+        </div>
+        <div class="ch">
           <div>Choose Part List</div>
           <paper-dropdown-menu label="Part List" on-iron-select="_onPartListSelected" selected-item="{{_selectedPartList}}">
             <paper-listbox class="dropdown-content">
@@ -60,9 +70,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </paper-listbox>
           </paper-dropdown-menu>
           <list-of-parts user-hash="{{userHash}}" part-list-id="{{_selectedPartListId}}" parts="{{_partListParts}}"></list-of-parts>
-        </paper-material>
-
-        <paper-material elevation="1">
+        </div>
+        <div class="ch">
           <div>Create Part Lists</div>
           <div>Have Parts</div>
           <iron-data-table id="dataTableHave" items="[[_buildHaveParts]]">
@@ -83,13 +92,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <data-table-column name="Colour">
               <template>
                 <div class="box" style="background-color: {{getColour(item.rb_color_id)}}"></div>
-              <!-- <paper-tooltip elevation="10">[[item.color_name]]</paper-tooltip> -->
+                <!-- <paper-tooltip elevation="10">[[item.color_name]]</paper-tooltip> -->
               </template>
             </data-table-column>
           </iron-data-table>
-
+        
           <div>Dont Have Parts</div>
-          <iron-data-table id="dataTableDont" items="[[_buildDontHaveParts]]" >
+          <iron-data-table id="dataTableDont" items="[[_buildDontHaveParts]]">
             <data-table-column align-right width="40px">
               <template>
                 <iron-image src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
@@ -107,11 +116,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <data-table-column name="Colour">
               <template>
                 <div class="box" style="background-color: {{getColour(item.rb_color_id)}}"></div>
-              <!-- <paper-tooltip elevation="10">[[item.color_name]]</paper-tooltip> -->
+                <!-- <paper-tooltip elevation="10">[[item.color_name]]</paper-tooltip> -->
               </template>
             </data-table-column>
           </iron-data-table>
-        </paper-material>
+        </div>
       </div>
 
 
@@ -151,9 +160,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
 
           _selectedPartList: {
-          type: Object,
-          value: {}
-        },
+            type: Object,
+            value: {}
+          },
 
           _paramsPartLists: {
             type: Object,
@@ -209,7 +218,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         _handleResponsePartLists: function(response) {
           if (response.detail.response) {
-            this.set('_dataPartLists',response.detail.response.partlists);
+            this.set('_dataPartLists', response.detail.response.partlists);
           }
         },
 
@@ -225,31 +234,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _onPartListSelected: function() {
-          this.set('_selectedPartListId',this._selectedPartList.id);
+          this.set('_selectedPartListId', this._selectedPartList.id);
         },
 
         _onPartsListsChanged: function() {
-          if(this._partListParts && this._setParts && this._partListParts.length && this._setParts.length) {
+          if (this._partListParts && this._setParts && this._partListParts.length && this._setParts.length) {
             this._buildHaveParts = [];
             this._buildDontHaveParts = [];
 
             var buildHaveParts = [];
             var buildDontHaveParts = [];
 
-            XP.forEach(this._setParts,function(part){
-              console.log('finding part',part.part_id, part.rb_color_id, part.qty);
-              var havePart = XP.find(this._partListParts, function(sparePart){
+            XP.forEach(this._setParts, function(part) {
+              console.log('finding part', part.part_id, part.rb_color_id, part.qty);
+              var havePart = XP.find(this._partListParts, function(sparePart) {
                 return part.part_id == sparePart.part_id && part.rb_color_id == sparePart.rb_color_id;
-              },this);
+              }, this);
 
-              if(havePart){
-                console.log('found part',havePart.part_id, havePart.rb_color_id, havePart.qty);
+              if (havePart) {
+                console.log('found part', havePart.part_id, havePart.rb_color_id, havePart.qty);
                 var qtyNeed = part.qty;
                 var qtyHave = havePart.qty;
-                if(qtyHave >= qtyNeed){
+                if (qtyHave >= qtyNeed) {
                   buildHaveParts.push(part);
                   havePart.qty = qtyHave - qtyNeed;
-                }else{
+                } else {
                   var qtyDontHave = qtyNeed - qtyHave;
                   havePart.qty = 0;
                   part.qty = qtyHave;
@@ -257,12 +266,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   part.qty = qtyDontHave;
                   buildDontHaveParts.push(part);
                 }
-              }else{
+              } else {
                 buildDontHaveParts.push(part);
               }
-            },this);
-            this.set('_buildHaveParts',buildHaveParts);
-            this.set('_buildDontHaveParts',buildDontHaveParts);
+            }, this);
+            this.set('_buildHaveParts', buildHaveParts);
+            this.set('_buildDontHaveParts', buildDontHaveParts);
           }
         },
 

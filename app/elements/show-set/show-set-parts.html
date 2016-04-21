@@ -43,10 +43,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <data-table-column align-right width="20px" name="Qty">
           <template>[[item.qty]]</template>
         </data-table-column>
-        <data-table-column name="Part ID" width="50px">
+        <data-table-column name="Part ID" width="50px" filter-by="part_id">
           <template>[[item.part_id]]</template>
         </data-table-column>
-        <data-table-column name="Name" flex="2">
+        <data-table-column name="Name" flex="500" filter-by="part_name">
           <template>[[item.part_name]]</template>
         </data-table-column>
         <data-table-column name="Colour">
