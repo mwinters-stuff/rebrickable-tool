@@ -23,39 +23,39 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     app.baseUrl = '/rebrickable-tool/';
   }
 
-  app.properties = {
-    tabsToShow: {
-      type: Object,
-      value: {},
-      notify: true,
-      observer: '_onTabsToShowChange'
-    },
+  // app.properties = {
+  //   tabsToShow: {
+  //     type: Object,
+  //     value: {},
+  //     notify: true,
+  //     observer: '_onTabsToShowChange'
+  //   },
+  //
+  //   selectedTabId: {
+  //     type: Number,
+  //     value: -1,
+  //     observer: '_onSelectedTabChanged'
+  //   }
+  // };
 
-    selectedTabId: {
-      type: Number,
-      value: -1,
-      observer: '_onSelectedTabChanged'
-    }
-  };
-
-  app._onTabsToShowChange = function() {
-    console.log('tabsToShow', app.tabsToShow);
-  };
-
-  app._onSelectedTabChanged = function() {
-    console.log('selected tab changed ', app.selectedTabId);
-    page.redirect(app.baseUrl + app.tabsToShow.route + "/" + app.selectedTabId);
-
-  };
-
-  app.authorized = function() {
-    app.$.mainpages.selected = 1;
-  };
-
-  app.logoutaction = function() {
-    app.$.logonThing.logout();
-    app.$.mainpages.selected = 0;
-  };
+  // app._onTabsToShowChange = function() {
+  //   console.log('tabsToShow', app.tabsToShow);
+  // };
+  //
+  // app._onSelectedTabChanged = function() {
+  //   console.log('selected tab changed ', app.selectedTabId);
+  //   page.redirect(app.baseUrl + app.tabsToShow.route + "/" + app.selectedTabId);
+  //
+  // };
+  //
+  // app.authorized = function() {
+  //   app.$.mainpages.selected = 1;
+  // };
+  //
+  // app.logoutaction = function() {
+  //   app.$.logonThing.logout();
+  //   app.$.mainpages.selected = 0;
+  // };
 
   app.displayInstalledToast = function() {
     // Check to make sure caching is actually enabled—it won't be in the dev environment.
@@ -68,7 +68,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   // have resolved and content has been stamped to the page
   app.addEventListener('dom-change', function() {
     console.log('Our app is ready to rock!');
-    app.$.mainpages.selected = 0;
+  
   });
 
   // See https://github.com/Polymer/polymer/issues/1381
@@ -110,12 +110,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   // });
 
   // Scroll page to top and expand header
-  app.scrollPageToTop = function() {
-    app.$.headerPanelMain.scrollToTop(true);
-  };
-
-  app.closeDrawer = function() {
-    app.$.paperDrawerPanel.closeDrawer();
-  };
+  // app.scrollPageToTop = function() {
+  //   app.$.headerPanelMain.scrollToTop(true);
+  // };
+  //
+  // app.closeDrawer = function() {
+  //   app.$.paperDrawerPanel.closeDrawer();
+  // };
 
 })(document);

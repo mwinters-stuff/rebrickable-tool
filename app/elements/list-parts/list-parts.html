@@ -25,7 +25,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
     </style>
-    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_user_part_lists" params="{{_params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
+    <iron-ajax id="theAjax" auto="{{showing}}" url="https://rebrickable.com/api/get_user_part_lists" params="{{_params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
 
     <paper-material elevation="1">
       <list-of-parts user-hash="{{userHash}}" part-list-id="{{partListId}}"></list-of-parts>
@@ -53,7 +53,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           showing: {
             type: Boolean,
             value: false,
-            observer: '_onShowingChanged'
+            // observer: '_onShowingChanged'
           },
 
           tabsToShow: {
@@ -69,17 +69,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
 
-        _onShowingChanged: function() {
-          this.$.theAjax.auto = this.showing;
-          this.$.theAjax.generateRequest();
-        },
+        // _onShowingChanged: function() {
+        //   this.$.theAjax.auto = this.showing;
+        //   this.$.theAjax.generateRequest();
+        // },
 
 
         _handleResponse: function(response) {
           if (response.detail.response) {
             this._data = response.detail.response.partlists;
-            if (this._data.length > 0 && this.partListId < 0) {
-              this.partListId = this._data[0].partlist_id;
+            if (this._data.length > 0 && !this.partListId) {
+              this.set('route.path',"/parts/" + this._data[0].partlist_id);
             }
 
             if (this.showing) {
@@ -91,9 +91,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
               this._data.forEach(function(element) {
                 tabsToShow.tabs.push({
-                  id: element.partlist_id,
+                  route: "/parts/" + element.partlist_id,
                   title: element.descr,
-
                 });
               }.bind(this));
               this.set('tabsToShow', tabsToShow);

@@ -96,7 +96,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               </template>
             </data-table-column>
           </iron-data-table>
-        
+
           <div>Dont Have Parts</div>
           <iron-data-table id="dataTableDont" items="[[_buildDontHaveParts]]">
             <data-table-column align-right width="40px">
@@ -238,7 +238,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _onPartsListsChanged: function() {
-          if (this._partListParts && this._setParts && this._partListParts.length && this._setParts.length) {
+          if (this._partListParts && this._setParts && this._partListParts.parts && this._partListParts.parts.length && this._setParts.length) {
             this._buildHaveParts = [];
             this._buildDontHaveParts = [];
 
@@ -247,7 +247,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             XP.forEach(this._setParts, function(part) {
               console.log('finding part', part.part_id, part.rb_color_id, part.qty);
-              var havePart = XP.find(this._partListParts, function(sparePart) {
+              var havePart = XP.find(this._partListParts.parts, function(sparePart) {
                 return part.part_id == sparePart.part_id && part.rb_color_id == sparePart.rb_color_id;
               }, this);
 
@@ -256,18 +256,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 var qtyNeed = part.qty;
                 var qtyHave = havePart.qty;
                 if (qtyHave >= qtyNeed) {
-                  buildHaveParts.push(part);
-                  havePart.qty = qtyHave - qtyNeed;
+                  buildHaveParts.push(Object.assign(part));
+                  //havePart.qty = qtyHave - qtyNeed;
                 } else {
                   var qtyDontHave = qtyNeed - qtyHave;
-                  havePart.qty = 0;
+                  //havePart.qty = 0;
                   part.qty = qtyHave;
-                  buildHaveParts.push(part);
+                  buildHaveParts.push(Object.assign(part));
                   part.qty = qtyDontHave;
-                  buildDontHaveParts.push(part);
+                  buildDontHaveParts.push(Object.assign(part));
                 }
               } else {
-                buildDontHaveParts.push(part);
+                buildDontHaveParts.push(Object.assign(part));
               }
             }, this);
             this.set('_buildHaveParts', buildHaveParts);

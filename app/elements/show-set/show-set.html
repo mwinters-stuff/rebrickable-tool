@@ -30,30 +30,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         height: 800px;
       }
     </style>
-    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_set" params="{{_params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
+    <iron-ajax id="theAjax" auto="{{showing}}"
+      url="https://rebrickable.com/api/get_set"
+      params="{{_params}}"
+      handle-as="json"
+      last-response="{{_data}}"></iron-ajax>
 
     <paper-material elevation="1">
       <div class="horiz">
         <div class="aleft">
-          <div class="title">{{_data.set_id}} {{_data.descr}}</div>
+          <div class="title">{{_data.0.set_id}} {{_data.0.descr}}</div>
           <div>&nbsp; </div>
           <table class="info">
             <tr>
               <td>Theme:</td>
-              <td>{{_data.theme}}</td>
+              <td>{{_data.0.theme}}</td>
             </tr>
             <tr>
               <td>Pieces:</td>
-              <td>{{_data.pieces}}</td>
+              <td>{{_data.0.pieces}}</td>
             </tr>
             <tr>
               <td>Year:</td>
-              <td>{{_data.year}}</td>
+              <td>{{_data.0.year}}</td>
             </tr>
           </table>
         </div>
         <div class="aright">
-          <iron-image src="{{_data.img_big}}"></iron-image>
+          <iron-image src="{{_data.0.img_big}}"></iron-image>
         </div>
       </div>
       <show-set-parts user-hash="{{userHash}}" set-id="{{_showSetId}}"></show-set-parts>
@@ -108,12 +112,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
 
-        _handleResponse: function(response) {
-          if (response.detail.response && response.detail.response.length > 0) {
-            this._data = response.detail.response[0];
-            // console.log('set', this._data);
-          }
-        },
+        // _handleResponse: function(response) {
+        //   if (response.detail.response && response.detail.response.length > 0) {
+        //     this._data = response.detail.response[0];
+        //   }
+        // },
 
         _onHashChanged: function() {
           if (this.userHash && this.setId) {
@@ -123,7 +126,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               set_id: this.setId,
               format: 'json'
             };
-            this.$.theAjax.generateRequest();
+            //this.$.theAjax.generateRequest();
             this.set('_showSetId',this.setId);
 
             //  console.log(this.params);

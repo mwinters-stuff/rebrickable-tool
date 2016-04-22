@@ -34,15 +34,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       url="https://rebrickable.com/api/get_user_sets"
       params="{{_params}}"
       handle-as="json"
-      on-response="_handleResponse">
+      last-response="{{_data}}" >
     </iron-ajax>
 
-    <iron-data-table id="dataTable" items="[[_data]]" selected-item="{{_selectedSet}}" selection-enabled>
+    <iron-data-table id="dataTable" items="[[_data.0.sets]]" selection-enabled on-selected-item-changed="_onSelectedChanged">
       <data-table-column align-right width="20px">
         <template><iron-image  src="[[item.img_sm]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image></template>
       </data-table-column>
       <data-table-column align-right width="20px" name="Qty" >
         <template>[[item.qty]]</template>
+      </data-table-column>
+      <data-table-column width="80px" name="ID" >
+        <template>[[item.set_id]]</template>
       </data-table-column>
       <data-table-column name="Description" flex="50">
         <template>[[item.descr]]</template>
@@ -76,21 +79,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         },
 
-        _selectedSet: {
-          type: Object,
-          observer: '_onSelectedChanged'
-        },
-
         _data: [],
         _params: {},
-      },
-
-      _handleResponse: function(response) {
-        if(response.detail.response) {
-          // this.$.dataTable.style = "height: " + (56 + (48 * response.detail.response[0].sets.length)) + "px" ;
-          // this.$.dataTable.pageSize = response.detail.response[0].sets.length;
-          this._data = response.detail.response[0].sets;
-        }
       },
 
       _onHashChanged: function() {
@@ -106,9 +96,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       },
 
-      _onSelectedChanged: function() {
-        if(this._selectedSet){
-          page.redirect("/set/" + this._selectedSet.set_id);
+      _onSelectedChanged: function(e) {
+        if(e.detail && e.detail.value){
+          this.set('route.path','/set/' + e.detail.value.set_id);
         }
       },
 
