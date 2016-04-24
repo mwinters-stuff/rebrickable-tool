@@ -1,0 +1,84 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>input-dialog</title>
+
+  <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../bower_components/web-component-tester/browser.js"></script>
+  <script src="../bower_components/iron-test-helpers/mock-interactions.js"></script>
+  <!-- Step 1: import the element to test -->
+  <link rel="import" href="../elements/input-dialog/input-dialog.html">
+
+</head>
+
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <input-dialog></input-dialog>
+    </template>
+  </test-fixture>
+
+  <script>
+
+  function runAfterOpen(dialog, callback) {
+    dialog.$$('paper-dialog').addEventListener('iron-overlay-opened', callback);
+    dialog.open();
+  }
+
+    suite('input-dialog tests', function() {
+      var dialog;
+
+      setup(function() {
+        dialog = fixture('basic');
+      });
+
+
+
+      test('test the dialog', function(done) {
+        dialog.title = "Title Text";
+        dialog.label = "Label Text";
+        dialog.value = "Initial Value";
+
+
+        runAfterOpen(dialog, function() {
+          var heading = dialog.$$('h2');
+          expect(heading).to.be.ok;
+          expect(heading.innerText).to.equal("Title Text");
+
+          var input = dialog.$$('paper-input');
+          expect(input).to.be.ok;
+          expect(input.label).to.equal("Label Text");
+          expect(input.value).to.equal("Initial Value");
+
+          input.value = "New Value";
+          expect(dialog.value).to.equal("New Value");
+
+          dialog.addEventListener('dialog-closed', function(e) {
+            expect(e.detail.confirmed).to.be.true;
+            done();
+          });
+
+
+          MockInteractions.tap(Polymer.dom(dialog).querySelector('[dialog-confirm]'));
+        });
+      });
+
+    });
+  </script>
+
+</body>
+
+</html>

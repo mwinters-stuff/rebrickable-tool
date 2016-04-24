@@ -1,0 +1,67 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<dom-module id="input-dialog">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <paper-dialog id="_dialog" on-iron-overlay-closed="_onDialogClosed">
+      <h2>{{title}}</h2>
+      <paper-input label="{{label}}" value="{{value}}"></paper-input>
+
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm>Ok</paper-button>
+      </div>
+
+    </paper-dialog>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'input-dialog',
+
+      properties: {
+        title: {
+          type: String,
+          value: '',
+        },
+        label: {
+          type: String,
+          value: '',
+        },
+        value: {
+          type: String,
+          value: '',
+        }
+      },
+
+      _onDialogClosed: function(e) {
+        console.log('dialog-closed',e);
+        this.fire('dialog-closed',e.detail);
+      },
+
+      open: function() {
+        this.$._dialog.open();
+      },
+    });
+  })();
+  </script>
+</dom-module>

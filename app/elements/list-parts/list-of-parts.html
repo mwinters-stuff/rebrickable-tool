@@ -40,7 +40,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       handle-as="json"
       last-response="{{parts}}"></iron-ajax>
 
-      <iron-data-table id="dataTable" items="[[parts.parts]]" selected-item="{{selectedPart}}" on-selected-item-changed="_onSelectedChanged" selection-enabled>
+      <iron-data-table id="dataTable" items="[[parts.parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled>
         <data-table-column align-right width="20px" name="Qty" >
           <template>[[item.qty]]</template>
         </data-table-column>
@@ -101,12 +101,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           notify: true,
         },
 
+        disablePopup:{
+          type: Boolean,
+          value: false,
+        }
+
       },
 
       _onSelectedChanged: function(e) {
-        if(e.detail && e.detail.value){
+        if(!this.disablePopup && e.detail && e.detail.value){
           this.$.showPart.show(e.detail.value.part_id);
         }
+        this.fire('selected-item-changed',e.detail);
       },
 
       getColour: function(colourid){

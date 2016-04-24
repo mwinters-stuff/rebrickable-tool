@@ -13,6 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
 <link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/iron-icons/editor-icons.html">
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 <!-- Paper elements -->
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
@@ -24,6 +25,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 
 <link rel="import" href="../set-search-dialog/set-search-dialog.html">
 <link rel="import" href="../show-set/show-set-parts.html">
@@ -46,34 +48,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       div div.ch:last-of-type{
         border-right: none;
       }
+
+
     </style>
     <iron-ajax id="theAjaxPartLists" url="https://rebrickable.com/api/get_user_part_lists" params="{{_paramsPartLists}}" handle-as="json" on-response="_handleResponsePartLists"></iron-ajax>
     <colour-list id="colours"></colour-list>
 
+    <paper-toast id="toast">
+    </paper-toast>
+
     <paper-material elevation="1">
 
       <div class="horiztop">
+
         <div class="ch">
-          <div>Select MOC or Set</div>
+          <paper-toolbar>
+            <div>Select MOC or Set</div>
+          </paper-toolbar>
           <paper-input readonly value="{{_selectedSearchSet.set_id}} {{_selectedSearchSet.descr}}">
             <paper-icon-button suffix icon="search" on-click="_onSearchMOCClick"></paper-icon-button>
           </paper-input>
-          <show-set-parts set-id="{{_selectedSearchSet.set_id}}" parts="{{_setParts}}"></show-set-parts>
+          <show-set-parts set-id="{{_selectedSearchSet.set_id}}" parts="{{_setParts}}" disable-popup></show-set-parts>
         </div>
+
         <div class="ch">
-          <div>Choose Part List</div>
-          <paper-dropdown-menu label="Part List" on-iron-select="_onPartListSelected" selected-item="{{_selectedPartList}}">
+          <paper-toolbar>
+            <div>Choose Part List</div>
+            <span class="space"></span>
+            <paper-icon-button icon="editor:merge-type" on-click="_onUsePartClick" disabled="{{_usePartDisabled}}"></paper-icon-button>
+          </paper-toolbar>
+          <paper-dropdown-menu label="Part List" on-iron-select="_onPartListSelected" selected-item="{{_selectedPartList}}" style="padding-top: 16px">
             <paper-listbox class="dropdown-content">
               <template is="dom-repeat" items="{{_dataPartLists}}">
                 <paper-item id="{{item.partlist_id}}">{{item.descr}}</paper-item>
               </template>
             </paper-listbox>
           </paper-dropdown-menu>
-          <list-of-parts user-hash="{{userHash}}" part-list-id="{{_selectedPartListId}}" parts="{{_partListParts}}"></list-of-parts>
+          <list-of-parts user-hash="{{userHash}}" part-list-id="{{_selectedPartListId}}" parts="{{_partListParts}}" disable-popup on-selected-item-changed="_onPartListItemSelected"></list-of-parts>
         </div>
+
+
         <div class="ch">
-          <div>Create Part Lists</div>
-          <div>Have Parts</div>
+          <paper-toolbar>
+            <div>Have Parts</div>
+          </paper-toolbar>
           <iron-data-table id="dataTableHave" items="[[_buildHaveParts]]">
             <data-table-column align-right width="40px">
               <template>
@@ -97,8 +115,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </data-table-column>
           </iron-data-table>
 
-          <div>Dont Have Parts</div>
-          <iron-data-table id="dataTableDont" items="[[_buildDontHaveParts]]">
+          <paper-toolbar style="margin-top:12px">
+            <div>Don't Have Parts</div>
+          </paper-toolbar>
+          <iron-data-table id="dataTableDont" items="[[_buildDontHaveParts]]" on-selected-item-changed="_onDontHaveItemSelected" selection-enabled>
             <data-table-column align-right width="40px">
               <template>
                 <iron-image src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
@@ -127,6 +147,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </paper-material>
 
     <set-search-dialog id="_setSearchDialog" result="{{_selectedSearchSet}}" on-accepted="_searchSetDialogAccepted"></set-search-dialog>
+
+    <paper-dialog id="partUseDialog" on-iron-overlay-closed="_partUseDialogClosed">
+      <h2>Use alternate part in Build</h2>
+      <div>
+        <iron-image src="[[_dontHaveSelectedPart.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
+        <!-- <iron-icon icon="icons:arrow-forward"></iron-icon>
+        <iron-image src="[[_partListSelectedPart.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image> -->
+      </div>
+      <div>Do you want to use part</div>
+      <div>{{_partListSelectedPart.part_id}} {{_partListSelectedPart.part_name}} which you have {{_partListSelectedPart.qty}} in {{getColourName(_partListSelectedPart.rb_color_id)}}</div>
+      <div>In place of {{_dontHaveSelectedPart.part_id}} {{_dontHaveSelectedPart.part_name}} which you need {{_dontHaveSelectedPart.qty}} in {{getColourName(_dontHaveSelectedPart.rb_color_id)}}</div>
+      <div><paper-input value="{{_usePartQty}}" min="0" max="{{_dontHaveSelectedPart.qty}}" type="number" label="Use"></paper-input>
+
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm>Ok</paper-button>
+      </div>
+
+
+    </paper-dialog>
   </template>
   <script>
     (function() {
@@ -197,6 +237,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
 
           _selectedPartListId: -1,
+
+          _usePartDisabled: true,
+          _usePartQty: 0,
+          _partListSelectedPart:{
+            type: Object,
+            value: {}
+          },
         },
 
 
@@ -245,7 +292,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             var buildHaveParts = [];
             var buildDontHaveParts = [];
 
-            XP.forEach(this._setParts, function(part) {
+            XP.forEach(this._setParts[0].parts, function(part) {
               console.log('finding part', part.part_id, part.rb_color_id, part.qty);
               var havePart = XP.find(this._partListParts.parts, function(sparePart) {
                 return part.part_id == sparePart.part_id && part.rb_color_id == sparePart.rb_color_id;
@@ -277,6 +324,57 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         getColour: function(rb_color_id) {
           return this.$.colours.getColour(rb_color_id);
+        },
+
+        getColourName: function(rb_color_id) {
+          return this.$.colours.getColourName(rb_color_id);
+        },
+
+        _onPartListItemSelected: function(e){
+          console.log(e);
+          this._partListSelectedPart = e.detail.value;
+          this.set('_usePartDisabled',!this._partListSelectedPart || !this._dontHaveSelectedPart);
+
+        },
+
+        _onDontHaveItemSelected: function(e){
+          console.log(e);
+          this._dontHaveSelectedPart = e.detail.value;
+          this.set('_usePartDisabled',!this._partListSelectedPart || !this._dontHaveSelectedPart);
+        },
+
+        _onUsePartClick: function(){
+          if(this._partListSelectedPart && this._dontHaveSelectedPart) {
+            this._usePartQty = this._dontHaveSelectedPart.qty >= this._partListSelectedPart.qty ? this._dontHaveSelectedPart.qty : this._partListSelectedPart.qty;
+            this.$.partUseDialog.open();
+          }else{
+            this.$.toast.text = "No Parts to use selected!";
+            this.$.toast.open();
+          }
+        },
+
+        _partUseDialogClosed: function(closingReason) {
+          if(closingReason.detail.confirmed) {
+            var newPart = {
+              part_id: this._partListSelectedPart.part_id,
+              part_name: this._partListSelectedPart.part_name,
+              rb_color_id: this._partListSelectedPart.rb_color_id,
+              qty: this._usePartQty,
+              part_img_url: ''
+            };
+            this.push('_buildHaveParts',newPart);
+
+            if(this._usePartQty == this._dontHaveSelectedPart.qty){
+              this.arrayDelete('_buildDontHaveParts',this._dontHaveSelectedPart);
+              this.set('_dontHaveSelectedPart',null);
+            }else{
+              var idx = XP.indexOf(this._buildDontHaveParts,this._dontHaveSelectedPart);
+              if(idx >= 0){
+                this._dontHaveSelectedPart.qty = this._dontHaveSelectedPart.qty - this._usePartQty;
+                this.set('_buildDontHaveParts.' + idx + '.qty',this._dontHaveSelectedPart.qty);
+              }
+            }
+          }
         },
 
       });
