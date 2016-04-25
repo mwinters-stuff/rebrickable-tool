@@ -26,7 +26,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <div class="buttons">
         <paper-button dialog-dismiss>Cancel</paper-button>
-        <paper-button dialog-confirm>Ok</paper-button>
+        <paper-button id="btnOk" dialog-confirm>Ok</paper-button>
       </div>
 
     </paper-dialog>
@@ -50,12 +50,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         value: {
           type: String,
           value: '',
-        }
+        },
+
+        confirmCallback: {
+          type: Function,
+          value: null
+        },
       },
 
       _onDialogClosed: function(e) {
         console.log('dialog-closed',e);
         this.fire('dialog-closed',e.detail);
+        if(this.confirmCallback) {
+          this.confirmCallback(this.value);
+        }
       },
 
       open: function() {

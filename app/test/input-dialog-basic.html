@@ -19,6 +19,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../bower_components/web-component-tester/browser.js"></script>
   <script src="../bower_components/iron-test-helpers/mock-interactions.js"></script>
   <!-- Step 1: import the element to test -->
+  <link rel="import" href="../bower_components/iron-test-helpers/iron-test-helpers.html">
   <link rel="import" href="../elements/input-dialog/input-dialog.html">
 
 </head>
@@ -39,40 +40,45 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   }
 
     suite('input-dialog tests', function() {
-      var dialog;
+      var element;
 
       setup(function() {
-        dialog = fixture('basic');
+        element = fixture('basic');
       });
 
 
 
       test('test the dialog', function(done) {
-        dialog.title = "Title Text";
-        dialog.label = "Label Text";
-        dialog.value = "Initial Value";
+        element.title = "Title Text";
+        element.label = "Label Text";
+        element.value = "Initial Value";
 
 
-        runAfterOpen(dialog, function() {
-          var heading = dialog.$$('h2');
-          expect(heading).to.be.ok;
-          expect(heading.innerText).to.equal("Title Text");
+        runAfterOpen(element, function() {
+          flush(function(){
+            var heading = element.$$('h2');
+            expect(heading).to.be.ok;
+            expect(heading.innerText).to.equal("Title Text");
 
-          var input = dialog.$$('paper-input');
-          expect(input).to.be.ok;
-          expect(input.label).to.equal("Label Text");
-          expect(input.value).to.equal("Initial Value");
+            var input = element.$$('paper-input');
+            expect(input).to.be.ok;
+            expect(input.label).to.equal("Label Text");
+            expect(input.value).to.equal("Initial Value");
 
-          input.value = "New Value";
-          expect(dialog.value).to.equal("New Value");
+            input.value = "New Value";
+            expect(element.value).to.equal("New Value");
 
-          dialog.addEventListener('dialog-closed', function(e) {
-            expect(e.detail.confirmed).to.be.true;
-            done();
+            element.addEventListener('dialog-closed', function(e) {
+              expect(e.detail.confirmed).to.be.true;
+              done();
+            });
+            //var pd = dialog.$$('paper-dialog');
+
+            //var el = dialog.root.querySelector('[dialog-confirm]');
+            //console.log(el);
+
+             MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-confirm]'));
           });
-
-
-          MockInteractions.tap(Polymer.dom(dialog).querySelector('[dialog-confirm]'));
         });
       });
 
