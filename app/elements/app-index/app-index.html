@@ -42,18 +42,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
     <carbon-location route="{{route}}" use-hash-as-path></carbon-location>
     <carbon-route route="{{route}}"
-      pattern="/:page"
+      pattern="/:app/:page"
       data="{{pageData}}"
       tail="{{pageTail}}"
       active="{{pageActive}}">
     </carbon-route>
 
 
-    <iron-pages id="mainpages">
-      <section tabindex="-1">
+    <iron-pages id="mainpages" attr-for-selected="app-page" selected="{{pageData.app}}" >
+      <section tabindex="-1" app-page="/login" >
         <logon-thing id="logonThing" on-authorized="authorized" user-hash="{{userHash}}"></logon-thing>
       </section>
-      <section tabindex="-1">
+      <section tabindex="-1" app-page="/app">
       <paper-drawer-panel id="paperDrawerPanel">
         <!-- Drawer Scroll Header Panel -->
         <paper-scroll-header-panel drawer fixed>
@@ -65,16 +65,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           <!-- Drawer Content -->
           <paper-menu class="app-menu" attr-for-selected="data-route" selected="{{pageData.page}}">
-            <a data-route="sets" href="#/sets/">
+            <a data-route="sets" href="#/app/sets/">
               <iron-icon icon="home"></iron-icon>
               <span>Sets</span>
             </a>
 
-            <a data-route="parts" href="#/parts/">
+            <a data-route="parts" href="#/app/parts/">
               <iron-icon icon="info"></iron-icon>
               <span>Parts</span>
             </a>
-            <a data-route="manage-moc-parts" href="#/manage-moc-parts">
+            <a data-route="manage-moc-parts" href="#/app/manage-moc-parts">
               <iron-icon icon="build"></iron-icon>
               <span>Manage Moc Parts</span>
             </a>
@@ -138,36 +138,45 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           // notify: true,
           // observer: '_onTabsToShowChange'
         },
+      },
 
-        _tabsRoute: {
-          type: String,
-          value: '',
-          observer: '_onTabRouteChanged'
-        }
+      observers:[
+        '_routeChanged(route.*)',
+        '_pageDataChanged(pageData.*)'
+      ],
+
+      _routeChanged: function(xxx){
+        console.log('routeChanged',xxx,this.route);
+      },
+
+      _pageDataChanged: function(xxx){
+        console.log('pageDataChanged',xxx);
+        console.log('pageData',this.pageData);
       },
 
       attached: function() {
-        if (!this.route.path) {
+        if(!this.userHash)
+        {
           this.async(function(){
-            this.set('route.path', '/sets/');
+            this.set('route.path', '/login');
           }.bind(this));
-
+        }else{
+          if (!this.route.path) {
+            this.async(function(){
+                this.set('route.path', '/app/sets/');
+            }.bind(this));
+          }
         }
       },
 
-      _onTabRouteChanged: function() {
-        // console.log('selected tab changed ', this.selectedTabId);
-        // var app = document.querySelector('#app');
-    //    page.redirect(app.baseUrl + this.tabsToShow.route + "/" + this.selectedTabId);
-      },
-
       authorized: function() {
-        this.$.mainpages.selected = 1;
+        // this.$.mainpages.selected = 1;
+        this.set('route.path', '/app/sets/');
       },
 
       logoutaction: function() {
         this.$.logonThing.logout();
-        this.$.mainpages.selected = 0;
+        this.set('route.path', '/login');
       },
 
       scrollPageToTop: function() {
