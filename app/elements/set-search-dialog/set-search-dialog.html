@@ -49,7 +49,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </div>
       <div class="horiz">
         <iron-a11y-keys id="_a11y" target="[[_targetKeys]]" keys="enter" on-keys-pressed="_onSearchDialogSearch"></iron-a11y-keys>
-        <paper-input id="_searchDialogInput" label="Search" value="{{_searchInput::input}}">
+        <paper-input autofocus id="_searchDialogInput" label="Search" value="{{_searchInput::input}}">
           <paper-icon-button suffix icon="search" raised on-click="_onSearchDialogSearch" disabled="{{_searchTermsBad}}"></paper-icon-button>
         </paper-input>
       </div>
