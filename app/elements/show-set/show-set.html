@@ -75,21 +75,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         properties: {
           setId: {
             type: String,
-            value: '',
             observer: '_onHashChanged',
           },
           userHash: {
             type: String,
-            value: '',
             observer: '_onHashChanged',
           },
 
           tabsToShow: {
             type: Object,
-            value: {},
             notify: true,
           },
-
 
           showing: {
             type: Boolean,
@@ -97,8 +93,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             observer: '_onShowingChanged'
           },
 
-          _data: [],
-          _showSetId: -1,
+          _data: {
+            type: Array,
+          },
+
+          _showSetId: {
+            type: Number,
+          },
+
           _params: {
             type: Object,
           },
@@ -111,25 +113,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           };
         },
 
-
-        // _handleResponse: function(response) {
-        //   if (response.detail.response && response.detail.response.length > 0) {
-        //     this._data = response.detail.response[0];
-        //   }
-        // },
-
         _onHashChanged: function() {
           if (this.userHash && this.setId) {
-            this._data = {};
-            this._params = {
+            this.set('_data',{});
+            this.set('_params',{
               key: 'p4GLMlcPxJ',
               set_id: this.setId,
               format: 'json'
-            };
-            //this.$.theAjax.generateRequest();
+            });
             this.set('_showSetId',this.setId);
-
-            //  console.log(this.params);
           }
         },
 

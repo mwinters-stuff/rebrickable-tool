@@ -24,14 +24,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style include="shared-styles">
       :host {
         display: block;
-
       }
 
-      iron-data-table{
+      iron-data-table {
         height: 400px;
-
       }
-      paper-toolbar{
+
+      paper-toolbar {
         margin-top: 0px;
       }
       /*paper-dialog{
@@ -39,13 +38,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }*/
     </style>
     <colour-list id="colours"></colour-list>
-    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_part" params="{{params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
+    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_part" params="{{_params}}" handle-as="json" last-response="{{_data}}"></iron-ajax>
 
-    <paper-dialog id="dialog" entry-animation="fade-in-animation"
-              exit-animation="fade-out-animation">
+    <paper-dialog id="dialog" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
       <paper-toolbar>
         <span class="space"></span>
-        <paper-icon-button id="cancel" icon="close" on-click="cancelaction"></paper-icon-button>
+        <paper-icon-button id="cancel" icon="close" on-click="_onCancelClicked"></paper-icon-button>
 
         <div class="middle middle-container">
           <div class="app-name">{{_partId}}</div>
@@ -55,10 +53,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="horiz">
           <div class="aleft">
             <table>
-              <tr><td colspan="2"><div class="">{{_data.name}}</div></td></tr>
-              <tr> <td>Category:</td><td>{{_data.category}}</td></tr>
-              <tr> <td>Years:</td><td>{{_data.year1}} to {{_data.year2}}</td></tr>
-              <tr> <td>URL:</td><td>{{_data.part_url}}</td></tr>
+              <tr>
+                <td colspan="2">
+                  <div class="">{{_data.name}}</div>
+                </td>
+              </tr>
+              <tr>
+                <td>Category:</td>
+                <td>{{_data.category}}</td>
+              </tr>
+              <tr>
+                <td>Years:</td>
+                <td>{{_data.year1}} to {{_data.year2}}</td>
+              </tr>
+              <tr>
+                <td>URL:</td>
+                <td>{{_data.part_url}}</td>
+              </tr>
             </table>
           </div>
           <div class="aright">
@@ -69,8 +80,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <iron-data-table id="dataTable" items="[[_data.colors]]" selected-item="{{selectedPart}}" selection-enabled>
           <data-table-column name="Colour">
             <template>
-              <div class="box" style="background-color: {{getColour(item.rb_color_id)}}"></div>
-              </template>
+              <div class="box" style="background-color: {{_getColour(item.rb_color_id)}}"></div>
+            </template>
           </data-table-column>
           <data-table-column name="">
             <template>[[item.color_name]]</template>
@@ -84,42 +95,53 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </paper-dialog>
   </template>
   <script>
-  (function() {
-    'use strict';
+    (function() {
+      'use strict';
 
-    Polymer({
-      is: 'show-part',
+      Polymer({
+        is: 'show-part',
 
-      getColour: function(colourid){
-        return this.$.colours.getColour(colourid);
-      },
+        properties:{
+          _params:{
+            type: Object,
+          },
 
-      show: function(partId) {
-        this._partId = partId;
-        this.params = {
-          key: 'p4GLMlcPxJ',
-          part_id: partId,
-          format: 'json',
-          inc_colors: 1
-        };
-        this.$.theAjax.generateRequest();
-        this.$.dialog.toggle();
+          selectedPart:{
+            type: Object,
+          },
+          _partId:{
+            type: String,
+          },
 
-        console.log('show',partId);
-      },
+        },
 
-      cancelaction: function() {
-        this.$.dialog.close();
-      },
+        _getColour: function(colourid) {
+          return this.$.colours.getColour(colourid);
+        },
 
-      _handleResponse: function(response) {
-        if (response.detail.response) {
-          this._data = response.detail.response;
-          console.log('part', this._data);
-        }
-      },
+        show: function(partId) {
+          this._partId = partId;
+          this.set('_params', {
+            key: 'p4GLMlcPxJ',
+            part_id: partId,
+            format: 'json',
+            inc_colors: 1
+          });
+          this.$.theAjax.generateRequest();
+          this.$.dialog.toggle();
+        },
 
-    });
-  })();
+        _onCancelClicked: function() {
+          this.$.dialog.close();
+        },
+
+        // _handleResponse: function(response) {
+        //   if (response.detail.response) {
+        //     this. = response.detail.response;
+        //   }
+        // },
+
+      });
+    })();
   </script>
 </dom-module>

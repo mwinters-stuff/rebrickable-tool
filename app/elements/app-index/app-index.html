@@ -41,22 +41,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
     <carbon-location route="{{route}}" use-hash-as-path></carbon-location>
-    <carbon-route route="{{route}}"
-      pattern="/:app/:page"
-      data="{{pageData}}"
-      tail="{{pageTail}}"
-      active="{{pageActive}}">
+
+    <carbon-route route="{{route}}" pattern="/login" active="{{_loginActive}}">
     </carbon-route>
 
+    <carbon-route route="{{route}}" pattern="/app/:page" data="{{_pageData}}" tail="{{_pageTail}}" active="{{_pageActive}}">
+    </carbon-route>
 
-    <iron-pages id="mainpages" attr-for-selected="app-page" selected="{{pageData.app}}" >
-      <section tabindex="-1" app-page="/login" >
-        <logon-thing id="logonThing" on-authorized="authorized" user-hash="{{userHash}}"></logon-thing>
-      </section>
-      <section tabindex="-1" app-page="/app">
+    <logon-thing id="logonThing" hidden$="{{!_loginActive}}" on-authorized="_onAuthorized" on-un-authorized="_onUnAuthorized" user-hash="{{userHash}}"></logon-thing>
+    <div hidden$="{{_loginActive}}">
       <paper-drawer-panel id="paperDrawerPanel">
         <!-- Drawer Scroll Header Panel -->
-        <paper-scroll-header-panel drawer fixed>
+        <paper-scroll-header-panel id="headerPanelDrawer" drawer fixed>
 
           <!-- Drawer Toolbar -->
           <paper-toolbar id="drawerToolbar">
@@ -64,7 +60,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </paper-toolbar>
 
           <!-- Drawer Content -->
-          <paper-menu class="app-menu" attr-for-selected="data-route" selected="{{pageData.page}}">
+          <paper-menu class="app-menu" attr-for-selected="data-route" selected="{{_pageData.page}}">
             <a data-route="sets" href="#/app/sets/">
               <iron-icon icon="home"></iron-icon>
               <span>Sets</span>
@@ -78,11 +74,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <iron-icon icon="build"></iron-icon>
               <span>Manage Moc Parts</span>
             </a>
-
-            <!-- <a data-route="contact" href="{{baseUrl}}contact">
-              <iron-icon icon="mail"></iron-icon>
-              <span>Contact</span>
-            </a> -->
           </paper-menu>
         </paper-scroll-header-panel>
 
@@ -94,100 +85,84 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
             <div class="app-name" style="padding-right: 48px;">Rebrickable Tool</div>
             <paper-tabs selected="{{route.path}}" attr-for-selected="route">
-              <template is="dom-repeat" items="{{tabsToShow.tabs}}">
+              <template is="dom-repeat" items="{{_tabsToShow.tabs}}">
                 <paper-tab route="{{item.route}}">{{item.title}}</paper-tab>
               </template>
             </paper-tabs>
 
             <span class="space"></span>
 
-            <!-- Toolbar icons -->
-            <!-- <paper-icon-button icon="refresh"></paper-icon-button>
-            <paper-icon-button icon="search"></paper-icon-button> -->
-            <paper-icon-button id="logout" icon="exit-to-app" on-click="logoutaction"></paper-icon-button>
-
-
-            <!-- Application sub title -->
-            <!-- <div class="bottom bottom-container">
-              <div class="bottom-title">Do something differently</div>
-            </div> -->
+            <paper-icon-button id="logout" icon="exit-to-app" on-click="_onLogoutClick"></paper-icon-button>
           </paper-toolbar>
-
           <!-- Main Content -->
           <div class="content">
-            <main-app tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}" page="{{pageData.page}}" route="{{route}}" params="{{params}}">
+            <main-app tabs-to-show="{{_tabsToShow}}" user-hash="{{userHash}}" page="{{_pageData.page}}" route="{{route}}">
             </main-app>
           </div>
         </paper-scroll-header-panel>
       </paper-drawer-panel>
-    </section>
-    </iron-pages>
-
+    </div>
   </template>
   <script>
-  (function() {
-    'use strict';
+    (function() {
+      'use strict';
 
-    Polymer({
-      is: 'app-index',
+      Polymer({
+        is: 'app-index',
 
-      properties:{
-        tabsToShow: {
-          type: Object,
-          value: {},
-          // notify: true,
-          // observer: '_onTabsToShowChange'
-        },
-      },
-
-      observers:[
-        '_routeChanged(route.*)',
-        '_pageDataChanged(pageData.*)'
-      ],
-
-      _routeChanged: function(xxx){
-        console.log('routeChanged',xxx,this.route);
-      },
-
-      _pageDataChanged: function(xxx){
-        console.log('pageDataChanged',xxx);
-        console.log('pageData',this.pageData);
-      },
-
-      attached: function() {
-        if(!this.userHash)
-        {
-          this.async(function(){
-            this.set('route.path', '/login');
-          }.bind(this));
-        }else{
-          if (!this.route.path) {
-            this.async(function(){
-                this.set('route.path', '/app/sets/');
-            }.bind(this));
+        properties: {
+          _tabsToShow: {
+            type: Object,
+            value: {},
+          },
+          _pageActive: {
+            type: Boolean,
+            observer: '_onPageActiveChanged',
+          },
+          _pageTail: {
+            type: String,
+          },
+          _loginActive:{
+            type: Boolean,
+            value: true,
+          },
+          userHash: {
+            type: String,
+            value: '',
           }
-        }
-      },
+        },
 
-      authorized: function() {
-        // this.$.mainpages.selected = 1;
-        this.set('route.path', '/app/sets/');
-      },
+        _onPageActiveChanged: function() {
+          this.async(function() {
+            this.$.headerPanelMain.measureHeaderHeight();
+            this.$.headerPanelDrawer.measureHeaderHeight();
+          }.bind(this));
+        },
 
-      logoutaction: function() {
-        this.$.logonThing.logout();
-        this.set('route.path', '/login');
-      },
+        _onUnAuthorized: function() {
+          this.set('route.path', '/login');
+        },
 
-      scrollPageToTop: function() {
-        this.$.headerPanelMain.scrollToTop(true);
-      },
+        _onAuthorized: function() {
+          if(!this.route.path || this.route.path === '/login'){
+            this.set('route.path', '/app/sets/');
+          }
+        },
 
-      closeDrawer: function() {
-        this.$.paperDrawerPanel.closeDrawer();
-      },
+        _onLogoutClick: function() {
+          this.$.logonThing.logout();
+          this.set('route.path', '/login');
+        },
 
-    });
-  })();
+        scrollPageToTop: function() {
+          this.$.headerPanelMain.scrollToTop(true);
+        },
+
+        closeDrawer: function() {
+          this.$.paperDrawerPanel.closeDrawer();
+        },
+
+      });
+    })();
   </script>
 </dom-module>

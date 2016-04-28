@@ -72,7 +72,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <div class="buttons">
         <paper-button dialog-dismiss>Cancel</paper-button>
-        <paper-button dialog-confirm disabled="{{!_searchDialogOk}}" on-click="_onAcceptClicked">Accept</paper-button>
+        <paper-button dialog-confirm disabled="{{!_searchDialogOk}}">Accept</paper-button>
       </div>
     </paper-dialog>
     <iron-ajax id="theAjaxSearch" url="https://rebrickable.com/api/search" params="{{_paramsSearch}}" handle-as="json" on-response="_handleResponseSearch">
@@ -90,14 +90,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         properties: {
           result: {
             type: Object,
-            value: null,
             notify: true,
           },
 
           _paramsSearch: {
             type: Object,
-            value: {},
           },
+
           _searchSetType: {
             type: String,
             value: 'M',
@@ -105,19 +104,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           _searchInput: {
             type: String,
-            value: '',
             observer: '_searchTermsChanged'
           },
 
           _dataSearch: {
             type: Array,
-            value: []
           },
 
           _selectedSearchSet: {
-            value: null,
+            type: Object,
             observer: '_onSelectedSearchChanged'
           },
+
           _searchDialogOk: {
             type: Boolean,
             value: false,
@@ -137,12 +135,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _onSearchDialogSearch: function() {
-          this._paramsSearch = {
+          this.set('_paramsSearch',{
             key: 'p4GLMlcPxJ',
             format: 'json',
             type: this._searchSetType,
             query: this._searchInput
-          };
+          });
           this.$.theAjaxSearch.generateRequest();
         },
 

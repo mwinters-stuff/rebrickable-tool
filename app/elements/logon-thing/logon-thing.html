@@ -45,7 +45,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         @apply(--layout-center-justified);
       }
     </style>
-    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_user_hash" params="{{params}}" handle-as="text" on-response="_handleResponse"></iron-ajax>
+    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_user_hash" params="{{_params}}" handle-as="text" on-response="_handleResponse"></iron-ajax>
 
     <div class="whole">
       <div class="wholeh">
@@ -55,13 +55,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="horiz">Rebrickable Credentials</paper-input>
         </div>
         <div class="horiz">
-          <gold-email-input id="username" label="E-Mail Address" autofocus auto-validate required value="{{inputUsername}}" size="30"></gold-email-input>
+          <gold-email-input id="username" label="E-Mail Address" autofocus auto-validate required value="{{_inputUsername}}" size="30"></gold-email-input>
         </div>
         <div class="horiz">
-          <paper-input id="password" label="Password" required value="{{inputPassword}}" size="30" type="password"></paper-input>
+          <paper-input id="password" label="Password" required value="{{_inputPassword}}" size="30" type="password"></paper-input>
         </div>
         <div class="horiz">
-          <paper-checkbox id="savelogin" checked="{{inputSaveLogin}}">Remember</paper-checkbox>
+          <paper-checkbox id="savelogin" checked="{{_inputSaveLogin}}">Remember</paper-checkbox>
         </div>
 
         <div class="horiz">
@@ -71,7 +71,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </div>
     <paper-toast id="failedToast" text="Logon failed!">
     </paper-toast>
-    <polymer-cookie id="cookie" time="30" format="d" value="{{cookieValue}}" name="rebrickableHash"></polymer-cookie>
+    <polymer-cookie id="cookie" time="30" format="d" value="{{_cookieValue}}" name="rebrickableHash"></polymer-cookie>
     <cookie-consent-polymer dialog-text="This website uses cookies to save a login token if you choose to." button-text="Accept" expires-in-days="30"></cookie-consent-polymer>
   </template>
   <script>
@@ -86,28 +86,46 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: String,
             value: '',
             notify: true
-          }
+          },
+          _params: {
+            type: Object,
+            value: {}
+          },
+          _inputUsername:{
+            type: String,
+          },
+          _inputPassword:{
+            type: String,
+          },
+          _inputSaveLogin:{
+            type: String,
+          },
+          _cookieValue:{
+            type: String,
+          },
+
         },
 
         ready: function() {
           this.async(function() {
             var hash = this.$.cookie.readCookie();
             if (hash) {
-              this.userHash = hash;
-              console.log('CookieuserHash', this.userHash);
-
+              this.set('userHash',hash);
               this.fire('authorized');
+            }else{
+              this.set('userHash','');
+              this.fire('un-authorized');
             }
           }.bind(this), 200);
         },
 
         doLogin: function() {
-          this.params = {
+          this.set('_params',{
             key: 'p4GLMlcPxJ',
-            email: this.inputUsername,
-            pass: this.inputPassword,
+            email: this._inputUsername,
+            pass: this._inputPassword,
             format: 'json'
-          };
+          });
           this.$.theAjax.generateRequest();
         },
 
@@ -117,11 +135,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               this.$.failedToast.open();
             } else {
               this.userHash = response.detail.response;
-              if (this.inputSaveLogin) {
-                this.cookieValue = this.userHash;
+              if (this._inputSaveLogin) {
+                this.set('_cookieValue',this.userHash);
                 this.$.cookie.createCookie();
               }
-              console.log('userHash', this.userHash);
+              //console.log('userHash', this.userHash);
               this.fire('authorized');
             }
           }
@@ -129,9 +147,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         logout: function() {
           this.$.cookie.eraseCookie();
-          this.inputPassword = '';
+          this.set('_inputPassword','');
         },
-
 
       });
     })();

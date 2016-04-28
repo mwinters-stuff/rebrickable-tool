@@ -18,7 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: none;
       }
     </style>
-    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_part_types" params="{{params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
+    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_part_types" params="{{_params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
     </template>
   <script>
   (function() {
@@ -37,20 +37,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       ready: function() {
         if(!this.partTypes) {
-          this.params = {
+          this.set('_params',{
             key: 'p4GLMlcPxJ',
             format: 'json'
-          };
+          });
           this.$.theAjax.generateRequest();
         }else{
-          this.partTypes = window.partTypes;
+          this.partTypes = window._partTypes;
         }
       },
 
       _handleResponse: function(response) {
         if (response.detail.response) {
           this.partTypes = response.detail.response.part_types;
-          window.partTypes = this.partTypes;
+          window._partTypes = this.partTypes;
         }
       },
 
@@ -59,8 +59,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           return element.part_type_id == id;
         });
       },
-
-
     });
   })();
   </script>

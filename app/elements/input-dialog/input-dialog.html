@@ -41,25 +41,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       properties: {
         title: {
           type: String,
-          value: '',
         },
         label: {
           type: String,
-          value: '',
         },
         value: {
           type: String,
-          value: '',
         },
 
         confirmCallback: {
           type: Function,
-          value: null
         },
       },
 
       _onDialogClosed: function(e) {
-        console.log('dialog-closed',e);
         this.fire('dialog-closed',e.detail);
         if(this.confirmCallback) {
           this.confirmCallback(this.value);

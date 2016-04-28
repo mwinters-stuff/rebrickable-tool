@@ -68,37 +68,39 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       properties: {
         userHash: {
           type: String,
-          value: '',
           observer: '_onHashChanged',
         },
 
         setListId: {
           type: Number,
-          value: undefined,
           observer: '_onHashChanged',
 
         },
 
-        _data: [],
-        _params: {},
+        _data:{
+          type: Array,
+        },
+        _params: {
+          type: Object,
+        },
       },
 
       _onHashChanged: function() {
-        this._data = [];
+        this.set('_data',[]);
         if(this.userHash && this.setListId)
-        this._params = {
+        this.set('_params',{
           key: 'p4GLMlcPxJ',
           hash: this.userHash,
           format: 'json',
           setlist_id: this.setListId,
-        };
+        });
         this.$.theAjax.generateRequest();
 
       },
 
       _onSelectedChanged: function(e) {
         if(e.detail && e.detail.value){
-          this.set('route.path','/set/' + e.detail.value.set_id);
+          this.set('route.path','/app/set/' + e.detail.value.set_id);
         }
       },
 

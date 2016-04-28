@@ -36,7 +36,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <iron-ajax id="theAjax"
       url="https://rebrickable.com/api/get_user_parts"
-      params="{{params}}"
+      params="{{_params}}"
       handle-as="json"
       last-response="{{parts}}"></iron-ajax>
 
@@ -53,16 +53,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <data-table-column name="Colour">
           <template>
             <div class="box" style="background-color: {{getColour(item.rb_color_id)}}">
-              <!-- <paper-tooltip>[[getColourName(item.rb_color_id)]]</paper-tooltip> -->
             </div>
           </template>
         </data-table-column>
-        <!-- <data-table-column name="Element ID" align-right width="20px">
-          <template>[[item.element_id]]</template>
-        </data-table-column> -->
       </iron-data-table>
       <show-part id="showPart"></show-part>
-
   </template>
   <script>
   (function() {
@@ -74,20 +69,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       properties: {
         partListId: {
           type: String,
-          // value: '',
           observer: '_onHashChanged',
-
         },
         userHash: {
           type: String,
-          // value: '',
           observer: '_onHashChanged',
-
         },
 
-        params: {
-          type: String,
-          value: ''
+        _params: {
+          type: Object,
         },
 
         selectedPart: {
@@ -97,7 +87,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         parts: {
           type: Object,
-          value: {},
           notify: true,
         },
 
@@ -105,7 +94,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Boolean,
           value: false,
         }
-
       },
 
       _onSelectedChanged: function(e) {
@@ -125,13 +113,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _onHashChanged: function() {
         if(this.userHash && this.partListId){
-          this.parts = {};
-          this.params = {
+          this.set('parts',{});
+          this.set('_params',{
             key: 'p4GLMlcPxJ',
             hash: this.userHash,
             partlist_id: this.partListId,
             format: 'json'
-          };
+          });
           this.$.theAjax.generateRequest();
         }
       },

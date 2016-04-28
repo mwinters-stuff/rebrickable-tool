@@ -312,7 +312,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _onShowingChanged: function() {
         if (this.showing) {
           this.set('tabsToShow.tabs', []);
-        };
+        }
         this.$.theAjaxPartLists.auto = this.showing;
       },
 
@@ -321,7 +321,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       _searchSetDialogAccepted: function() {
-        console.log('searched ', this._selectedSearchSet);
+        //console.log('searched ', this._selectedSearchSet);
       },
 
 
@@ -348,7 +348,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _onPartsListsChanged: function() {
         if (this._partListParts && this._setParts && this._partListParts.parts && this._partListParts.parts.length && this._setParts.length) {
-          this.set('_partListPartsDisabled', this._partListParts.parts.length == 0);
+          this.set('_partListPartsDisabled', this._partListParts.parts.length === 0);
           this._buildHaveParts = [];
           this._buildDontHaveParts = [];
 
@@ -356,9 +356,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           var buildDontHaveParts = [];
 
           XP.forEach(this._setParts[0].parts, function(part) {
-            console.log('finding part', part.part_id, part.rb_color_id, part.qty);
+            //console.log('finding part', part.part_id, part.rb_color_id, part.qty);
             var havePart = XP.find(this._partListParts.parts, function(sparePart) {
-              return part.part_id == sparePart.part_id && part.rb_color_id == sparePart.rb_color_id;
+              return part.part_id === sparePart.part_id && part.rb_color_id === sparePart.rb_color_id;
             }, this);
 
             if (havePart) {
@@ -381,16 +381,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
           }, this);
           this.set('_buildHaveParts', buildHaveParts);
-          this.set('_buildHavePartsDisabled', buildHaveParts.length == 0);
+          this.set('_buildHavePartsDisabled', buildHaveParts.length === 0);
           this.set('_buildDontHaveParts',buildDontHaveParts);
-          this.set('_buildDontHavePartsDisabled',buildDontHaveParts.length == 0);
+          this.set('_buildDontHavePartsDisabled',buildDontHaveParts.length === 0);
         }
       },
 
       _onRemoveHavePartsClick: function() {
         XP.forEach(this._buildHaveParts, function(part) {
           var listPart = XP.find(this._partListParts.parts, function(sparePart) {
-            return part.part_id == sparePart.part_id && part.rb_color_id == sparePart.rb_color_id;
+            return part.part_id === sparePart.part_id && part.rb_color_id === sparePart.rb_color_id;
           }, this);
           if (listPart) {
             var idx = XP.indexOf(this._partListParts.parts,listPart);
@@ -410,14 +410,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       _onPartListItemSelected: function(e) {
-        console.log(e);
+        //console.log(e);
         this._partListSelectedPart = e.detail.value;
         this.set('_usePartDisabled', !this._partListSelectedPart || !this._dontHaveSelectedPart);
 
       },
 
       _onDontHaveItemSelected: function(e) {
-        console.log(e);
+        //console.log(e);
         this._dontHaveSelectedPart = e.detail.value;
         this.set('_usePartDisabled', !this._partListSelectedPart || !this._dontHaveSelectedPart);
       },
@@ -427,7 +427,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this._usePartQty = this._dontHaveSelectedPart.qty >= this._partListSelectedPart.qty ? this._dontHaveSelectedPart.qty : this._partListSelectedPart.qty;
           this.$.partUseDialog.open();
         } else {
-          this.$.toast.text = "No Parts to use selected!";
+          this.$.toast.text = 'No Parts to use selected!';
           this.$.toast.open();
         }
       },
@@ -443,7 +443,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           };
           this.push('_buildHaveParts', newPart);
 
-          if (this._usePartQty == this._dontHaveSelectedPart.qty) {
+          if (this._usePartQty === this._dontHaveSelectedPart.qty) {
             this.arrayDelete('_buildDontHaveParts', this._dontHaveSelectedPart);
             this.set('_dontHaveSelectedPart', null);
           } else {
@@ -486,7 +486,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.$._inputDialog.confirmCallback = function(inputValue) {
 
           var existingPartList = XP.find(this._dataPartLists.partlists, function(partlist){
-            return partlist.descr == inputValue;
+            return partlist.descr === inputValue;
           });
 
           if(!existingPartList){
@@ -494,17 +494,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this._addUserPartList(inputValue,0, function(isOk, partListId){
               if(isOk){
                 this._setUserPartList(partListId, parts, function(ok){
-                  this.$.toast.text = ok ? "Part List Saved..." : "ERROR Saving Part List";
+                  this.$.toast.text = ok ? 'Part List Saved...' : 'ERROR Saving Part List';
                   this.$.toast.open();
                 }.bind(this));
               }else{
-                this.$.toast.text = "ERROR Creating Saving Part List";
+                this.$.toast.text = 'ERROR Creating Saving Part List';
                 this.$.toast.open();
               }
             }.bind(this));
           }else{
             this._setUserPartList(existingPartList.partlist_id, parts, function(ok){
-              this.$.toast.text = ok ? "Part List Saved..." : "ERROR Saving Part List";
+              this.$.toast.text = ok ? 'Part List Saved...' : 'ERROR Saving Part List';
               this.$.toast.open();
             }.bind(this));
           }
@@ -516,38 +516,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       _deleteUserPartList: function(partListId, callback) {
-        theAjaxDeletePartLists.body = {
-          "key": 'p4GLMlcPxJ',
-          "hash": this.userHash,
-          "format": 'json',
-          "partlist_id": partListId
+        this.theAjaxDeletePartLists.body = {
+          'key': 'p4GLMlcPxJ',
+          'hash': this.userHash,
+          'format': 'json',
+          'partlist_id': partListId
         };
 
-        theAjaxDeletePartLists.addEventListener('response',callback);
+        this.theAjaxDeletePartLists.addEventListener('response',callback);
       },
 
       _addUserPartList: function(descr, type, callback) {
-        theAjaxAddPartLists.contentType = 'application/x-www-form-urlencoded';
+        this.theAjaxAddPartLists.contentType = 'application/x-www-form-urlencoded';
         var parms = {
-          "key": 'p4GLMlcPxJ',
-          "hash": this.userHash,
-          "format": 'json',
-          "descr": descr,
-          "type": type,
+          'key': 'p4GLMlcPxJ',
+          'hash': this.userHash,
+          'format': 'json',
+          'descr': descr,
+          'type': type,
         };
 
 
-        theAjaxAddPartLists.body = parms;//= JSON.stringify(parms);
+        this.theAjaxAddPartLists.body = parms;//= JSON.stringify(parms);
 
-        theAjaxAddPartLists.addEventListener('response',function(e){
+        this.theAjaxAddPartLists.addEventListener('response',function(e){
           if(XP.startsWith(e.detail.response,'SUCCESS')){
             var vals = XP.split(e.detail.response,' ');
-            callback(vals.length == 2,vals.length == 2 ? vals[1] : -1 );
+            callback(vals.length === 2,vals.length === 2 ? vals[1] : -1 );
           }else{
             callback(false,-1);
           }
         });
-        theAjaxAddPartLists.generateRequest();
+        this.theAjaxAddPartLists.generateRequest();
       },
 
       _setUserPartList: function(partListId, parts, callback){
@@ -556,20 +556,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           partsList.push(part.part_id + ' ' + part.rb_color_id + ' ' + part.qty);
         });
 
-        theAjaxSetUserParts.contentType = 'application/x-www-form-urlencoded';
-        theAjaxSetUserParts.body = {
-          "key": 'p4GLMlcPxJ',
-          "hash": this.userHash,
-          "format": 'json',
-          "partlist_id": partListId,
-          "parts": XP.join(partsList,',')
+        this.theAjaxSetUserParts.contentType = 'application/x-www-form-urlencoded';
+        this.theAjaxSetUserParts.body = {
+          'key': 'p4GLMlcPxJ',
+          'hash': this.userHash,
+          'format': 'json',
+          'partlist_id': partListId,
+          'parts': XP.join(partsList,',')
         };
 
-        theAjaxSetUserParts.addEventListener('response',function(e){
+        this.theAjaxSetUserParts.addEventListener('response',function(e){
           callback(XP.startsWith(e.detail.response,'SUCCESS'));
         });
 
-        theAjaxSetUserParts.generateRequest();
+        this.theAjaxSetUserParts.generateRequest();
       },
 
       _onCollapseHaveParts: function() {

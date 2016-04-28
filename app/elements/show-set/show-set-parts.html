@@ -51,8 +51,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </data-table-column>
         <data-table-column name="Colour">
           <template>
-            <div class="box" style="background-color: {{getColour(item.rb_color_id)}}"></div>
-          <!-- <paper-tooltip elevation="10">[[item.color_name]]</paper-tooltip> -->
+            <div class="box" style="background-color: {{_getColour(item.rb_color_id)}}"></div>
           </template>
         </data-table-column>
       </iron-data-table>
@@ -69,13 +68,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         properties: {
           setId: {
             type: String,
-            value: '',
             observer: '_onHashChanged',
           },
 
           parts: {
             type: Array,
-            value: {},
             notify: true,
           },
 
@@ -83,19 +80,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: Boolean,
             value: false,
           },
+
           _params:{
-            value: {},
+            type: Object,
           }
         },
 
         _onHashChanged: function() {
           if (this.setId) {
-            this.parts = {};
-            this._params = {
+            this.set('parts',{});
+            this.set('_params',{
               key: 'p4GLMlcPxJ',
               set: this.setId,
               format: 'json'
-            };
+            });
             this.$.theAjaxParts.generateRequest();
           }
         },
@@ -107,7 +105,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.fire('selected-item-changed',e.detail);
         },
 
-        getColour: function(rb_color_id) {
+        _getColour: function(rb_color_id) {
           return this.$.colours.getColour(rb_color_id);
         },
 

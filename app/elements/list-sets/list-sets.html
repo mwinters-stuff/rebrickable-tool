@@ -45,46 +45,44 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         properties: {
           userHash: {
             type: String,
-            value: '',
             observer: '_onHashChanged',
-
           },
 
           _params: {
             type: String,
-            value: ''
           },
 
           showing: {
             type: Boolean,
-            value: false,
-            observer: '_onShowingChanged'
           },
 
           tabsToShow: {
             type: Object,
-            value: {},
             notify: true,
           },
 
           setListId: {
             type: Number,
-            value: -1,
             notify: true,
           },
 
+          route: {
+            type: String,
+          },
 
-          _data: [],
+          _data:{
+            type: Array,
+          },
         },
 
         _onHashChanged: function() {
           this._data = [];
           if (this.userHash) {
-            this._params = {
+            this.set('_params', {
               key: 'p4GLMlcPxJ',
               hash: this.userHash,
               format: 'json'
-            };
+            });
           }
         },
 
@@ -92,19 +90,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if (response.detail.response) {
             this._data = response.detail.response.sets;
             if (this._data.length > 0 && !this.setListId) {
-              this.set('route.path',"/sets/" + this._data[0].setlist_id);
+              this.set('route.path',"/app/sets/" + this._data[0].setlist_id);
             }
 
             if (this.showing) {
               var tabsToShow = {
                 selected: this.setListId,
-                route: 'sets',
+                route: '/app/sets',
                 tabs: []
               };
 
               this._data.forEach(function(element) {
                 tabsToShow.tabs.push({
-                  route: "/sets/" + element.setlist_id,
+                  route: "/app/sets/" + element.setlist_id,
                   title: element.name,
                 });
               }.bind(this));
@@ -113,11 +111,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
           }
         },
-
-        _onShowingChanged: function() {
-        //  this.$.theAjax.auto = this.showing;
-        },
-
       });
     })();
   </script>

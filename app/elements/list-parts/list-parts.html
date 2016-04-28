@@ -41,45 +41,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         properties: {
           userHash: {
             type: String,
-            value: '',
             observer: '_onHashChanged',
 
           },
+
           _params: {
             type: Object,
-            value: {}
           },
 
           showing: {
             type: Boolean,
-            value: false,
-            // observer: '_onShowingChanged'
           },
 
           tabsToShow: {
             type: Object,
-            value: {},
             notify: true,
           },
 
           partListId: {
             type: Number,
-            value: -1,
             notify: true,
           }
         },
-
-        // _onShowingChanged: function() {
-        //   this.$.theAjax.auto = this.showing;
-        //   this.$.theAjax.generateRequest();
-        // },
-
 
         _handleResponse: function(response) {
           if (response.detail.response) {
             this._data = response.detail.response.partlists;
             if (this._data.length > 0 && !this.partListId) {
-              this.set('route.path',"/parts/" + this._data[0].partlist_id);
+              this.set('route.path',"/app/parts/" + this._data[0].partlist_id);
             }
 
             if (this.showing) {
@@ -91,7 +80,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
               this._data.forEach(function(element) {
                 tabsToShow.tabs.push({
-                  route: "/parts/" + element.partlist_id,
+                  route: "/app/parts/" + element.partlist_id,
                   title: element.descr,
                 });
               }.bind(this));
@@ -102,11 +91,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _onHashChanged: function() {
-          this._params = {
+          this.set('_params',{
             key: 'p4GLMlcPxJ',
             hash: this.userHash,
             format: 'json'
-          };
+          });
         },
 
 
