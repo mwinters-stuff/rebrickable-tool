@@ -516,18 +516,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       _deleteUserPartList: function(partListId, callback) {
-        this.theAjaxDeletePartLists.body = {
+        this.$.theAjaxDeletePartLists.body = {
           'key': 'p4GLMlcPxJ',
           'hash': this.userHash,
           'format': 'json',
           'partlist_id': partListId
         };
 
-        this.theAjaxDeletePartLists.addEventListener('response',callback);
+        this.$.theAjaxDeletePartLists.addEventListener('response',callback);
       },
 
       _addUserPartList: function(descr, type, callback) {
-        this.theAjaxAddPartLists.contentType = 'application/x-www-form-urlencoded';
+        this.$.theAjaxAddPartLists.contentType = 'application/x-www-form-urlencoded';
         var parms = {
           'key': 'p4GLMlcPxJ',
           'hash': this.userHash,
@@ -537,9 +537,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         };
 
 
-        this.theAjaxAddPartLists.body = parms;//= JSON.stringify(parms);
+        this.$.theAjaxAddPartLists.body = parms;//= JSON.stringify(parms);
 
-        this.theAjaxAddPartLists.addEventListener('response',function(e){
+        this.$.theAjaxAddPartLists.addEventListener('response',function(e){
           if(XP.startsWith(e.detail.response,'SUCCESS')){
             var vals = XP.split(e.detail.response,' ');
             callback(vals.length === 2,vals.length === 2 ? vals[1] : -1 );
@@ -547,7 +547,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             callback(false,-1);
           }
         });
-        this.theAjaxAddPartLists.generateRequest();
+        this.$.theAjaxAddPartLists.generateRequest();
       },
 
       _setUserPartList: function(partListId, parts, callback){
@@ -556,8 +556,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           partsList.push(part.part_id + ' ' + part.rb_color_id + ' ' + part.qty);
         });
 
-        this.theAjaxSetUserParts.contentType = 'application/x-www-form-urlencoded';
-        this.theAjaxSetUserParts.body = {
+        this.$.theAjaxSetUserParts.contentType = 'application/x-www-form-urlencoded';
+        this.$.theAjaxSetUserParts.body = {
           'key': 'p4GLMlcPxJ',
           'hash': this.userHash,
           'format': 'json',
@@ -565,11 +565,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           'parts': XP.join(partsList,',')
         };
 
-        this.theAjaxSetUserParts.addEventListener('response',function(e){
+        this.$.theAjaxSetUserParts.addEventListener('response',function(e){
           callback(XP.startsWith(e.detail.response,'SUCCESS'));
         });
 
-        this.theAjaxSetUserParts.generateRequest();
+        this.$.theAjaxSetUserParts.generateRequest();
       },
 
       _onCollapseHaveParts: function() {
