@@ -17,8 +17,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <!-- Paper elements -->
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 
 <link rel="import" href="list-of-sets.html">
+<link rel="import" href="../set-search-dialog/set-search-dialog.html">
 
 <dom-module id="list-sets">
   <template>
@@ -29,10 +32,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
     <iron-ajax id="theAjax" auto="{{showing}}" url="https://rebrickable.com/api/get_user_setlists" params="{{_params}}" handle-as="json" on-response="_handleResponse">
     </iron-ajax>
+    <set-search-dialog id="_setSearchDialog" result="{{_selectedSearchSet}}" on-accepted="_searchSetDialogAccepted"></set-search-dialog>
+    <iron-ajax id="theAjaxSetUserSet" method="POST" url="https://rebrickable.com/api/set_user_set"
+      content-type = "application/x-www-form-urlencoded";
+      handle-as="text" on-response="_onSetUserSetResponse"></iron-ajax>
 
+      <paper-toast id="toast">
+      </paper-toast>
 
     <paper-material elevation="1">
-      <list-of-sets set-list-id="{{setListId}}" user-hash="{{userHash}}" route="{{route}}"></list-of-sets>
+      <list-of-sets id="_listOfSets" set-list-id="{{setListId}}"
+        set-list-name="{{_getSetListName(setListId)}}"
+        user-hash="{{userHash}}" route="{{route}}"
+        showing="{{showing}}"></list-of-sets>
+      <paper-fab  style='position:absolute; bottom: 30px; right:24px' icon="icons:add" on-click="_onAddClick"></paper-fab>
     </paper-material>
   </template>
   <script>
@@ -64,7 +77,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           setListId: {
             type: Number,
             notify: true,
+            observer: '_setListIdChanged',
           },
+
+          _lastSetListId: {
+            type: Number,
+          },
+
 
           route: {
             type: String,
@@ -86,11 +105,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
 
+        _getSetListName: function(id) {
+          var set = XP.find(this._data, function(alist) {
+            return alist.setlist_id === id;
+          });
+
+          if(set){
+            return set.name;
+          }
+          return '';
+
+        },
+
+        _setListIdChanged: function(){
+          if(this.setListId){
+            this._lastSetListId = this.setListId;
+          // } else if(this._lastSetListId){
+          //   this.setListId = this._lastSetListId;
+          }
+        },
+
         _handleResponse: function(response) {
           if (response.detail.response) {
             this._data = response.detail.response.sets;
             if (this._data.length > 0 && !this.setListId) {
-              this.set('route.path',"/app/sets/" + this._data[0].setlist_id);
+              this.setListId = !this._lastSetListId ? this._data[0].setlist_id : this._lastSetListId;
+              this.set('route.path','/app/sets/' + this.setListId);
             }
 
             if (this.showing) {
@@ -102,7 +142,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
               this._data.forEach(function(element) {
                 tabsToShow.tabs.push({
-                  route: "/app/sets/" + element.setlist_id,
+                  route: '/app/sets/' + element.setlist_id,
                   title: element.name,
                 });
               }.bind(this));
@@ -111,6 +151,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
           }
         },
+
+        _onAddClick: function() {
+          this.$._setSearchDialog.open();
+        },
+
+        _searchSetDialogAccepted: function() {
+          //console.log('searched ', this._selectedSearchSet);
+          //
+          this.$.theAjaxSetUserSet.body = {
+            'key': 'p4GLMlcPxJ',
+            'hash': this.userHash,
+            'format': 'json',
+            'set': this._selectedSearchSet.set_id,
+            'qty': 1,
+            'setlist_id': this.setListId
+          };
+          this.$.theAjaxSetUserSet.generateRequest();
+        },
+
+        _onSetUserSetResponse: function(e) {
+            if(XP.startsWith(e.detail.response,'SUCCESS')){
+              this.$.toast.text = 'Set added!';
+              this.$.toast.open();
+            }else{
+              this.$.toast.text = 'Failed to add set!';
+              this.$.toast.open();
+            }
+            this.$._listOfSets.refresh();
+        },
+
       });
     })();
   </script>

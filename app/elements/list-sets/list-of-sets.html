@@ -8,7 +8,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 <!-- Iron elements -->
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
@@ -74,7 +74,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         setListId: {
           type: Number,
           observer: '_onHashChanged',
+        },
 
+        setListName: {
+          type: String,
+        },
+
+        showing: {
+          type: Boolean,
+          observer: '_onShowingChanged',
         },
 
         _data:{
@@ -87,21 +95,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _onHashChanged: function() {
         this.set('_data',[]);
-        if(this.userHash && this.setListId)
-        this.set('_params',{
-          key: 'p4GLMlcPxJ',
-          hash: this.userHash,
-          format: 'json',
-          setlist_id: this.setListId,
-        });
-        this.$.theAjax.generateRequest();
+        if(this.userHash && this.setListId)  {
+          this.set('_params',{
+            key: 'p4GLMlcPxJ',
+            hash: this.userHash,
+            format: 'json',
+            setlist_id: this.setListId,
+          });
+          this.$.theAjax.generateRequest();
+        }
+      },
 
+      _onShowingChanged: function(){
+        if(this.showing){
+          this._onHashChanged();
+        }
       },
 
       _onSelectedChanged: function(e) {
         if(e.detail && e.detail.value){
-          this.set('route.path','/app/set/' + e.detail.value.set_id);
+          this.set('route.path','/app/set/' + e.detail.value.set_id + '/' + this.setListId + '/' + this.setListName);
         }
+      },
+
+      refresh: function(){
+        this.$.theAjax.generateRequest();
       },
 
     });

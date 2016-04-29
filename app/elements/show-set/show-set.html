@@ -16,8 +16,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <!-- Paper elements -->
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 
 <link rel="import" href="show-set-parts.html">
+<link rel="import" href="../input-dialog/question-dialog.html">
 
 <dom-module id="show-set">
   <template>
@@ -29,15 +32,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       iron-data-table {
         height: 800px;
       }
+
+      iron-image.top {
+        height: 300px;
+        width: 400px;
+      }
     </style>
-    <iron-ajax id="theAjax" auto="{{showing}}"
-      url="https://rebrickable.com/api/get_set"
-      params="{{_params}}"
-      handle-as="json"
-      last-response="{{_data}}"></iron-ajax>
+    <iron-ajax id="theAjax" auto="{{showing}}" url="https://rebrickable.com/api/get_set" params="{{_params}}" handle-as="json" last-response="{{_data}}"></iron-ajax>
+    <iron-ajax id="theAjaxSetUserSet" method="POST" url="https://rebrickable.com/api/set_user_set" content-type="application/x-www-form-urlencoded" ; handle-as="text" on-response="_onSetUserSetResponse"></iron-ajax>
+
+    <paper-toast id="toast">
+    </paper-toast>
+    <question-dialog id="_questionRemove" on-dialog-closed="_onRemoveDialogClosed">
+      Do you want to remove set <b>{{_data.0.set_id}} {{_data.0.descr}}</b> from list <b>{{setListName}}</b>?
+    </question-dialog>
 
     <paper-material elevation="1">
-      <div class="horiz">
+      <div class="horiztop">
         <div class="aleft">
           <div class="title">{{_data.0.set_id}} {{_data.0.descr}}</div>
           <div>&nbsp; </div>
@@ -54,10 +65,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <td>Year:</td>
               <td>{{_data.0.year}}</td>
             </tr>
+            <tr>
+              <td>List:</td>
+              <td>{{setListName}}</td>
+            </tr>
           </table>
         </div>
         <div class="aright">
-          <iron-image src="{{_data.0.img_big}}"></iron-image>
+          <iron-image class="top" sizing="contain" src="{{_data.0.img_big}}"></iron-image>
+          <paper-fab style='position:absolute; top: 30px; right:24px' icon="icons:delete" on-click="_onRemoveClick"></paper-fab>
+
         </div>
       </div>
       <show-set-parts user-hash="{{userHash}}" set-id="{{_showSetId}}"></show-set-parts>
@@ -82,6 +99,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             observer: '_onHashChanged',
           },
 
+          route: {
+            type: String,
+          },
+
           tabsToShow: {
             type: Object,
             notify: true,
@@ -91,6 +112,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: Boolean,
             value: false,
             observer: '_onShowingChanged'
+          },
+
+          setListId:{
+            type: Number,
+          },
+
+          setListName: {
+            type: String,
           },
 
           _data: {
@@ -110,21 +139,47 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         _onShowingChanged: function() {
           if (this.showing) {
             this.set('tabsToShow.tabs', []);
-          };
+          }
         },
 
         _onHashChanged: function() {
           if (this.userHash && this.setId) {
-            this.set('_data',{});
-            this.set('_params',{
+            this.set('_data', {});
+            this.set('_params', {
               key: 'p4GLMlcPxJ',
               set_id: this.setId,
               format: 'json'
             });
-            this.set('_showSetId',this.setId);
+            this.set('_showSetId', this.setId);
           }
         },
 
+        _onRemoveClick: function(){
+          this.$._questionRemove.open();
+        },
+
+        _onRemoveDialogClosed: function(e) {
+          if(e.detail.confirmed) {
+            this.$.theAjaxSetUserSet.body = {
+              'key': 'p4GLMlcPxJ',
+              'hash': this.userHash,
+              'format': 'json',
+              'set': this.setId,
+              'qty': 0,
+              'setlist_id': this.setListId
+            };
+            this.$.theAjaxSetUserSet.generateRequest();
+          }
+        },
+
+        _onSetUserSetResponse: function(e) {
+          if(XP.startsWith(e.detail.response,'SUCCESS')){
+            this.set('route.path','/app/sets/' + this.setListId);
+          }else{
+            this.$.toast.text = 'Failed to remove set!';
+            this.$.toast.open();
+          }
+        },
       });
     })();
   </script>

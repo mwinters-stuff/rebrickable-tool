@@ -48,6 +48,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <carbon-route route="{{route}}" pattern="/app/:page" data="{{_pageData}}" tail="{{_pageTail}}" active="{{_pageActive}}">
     </carbon-route>
 
+    <carbon-route route="{{route}}"
+      pattern="/app/sets/:setListId"
+      data="{{_setsData}}">
+    </carbon-route>
+
+    <carbon-route route="{{route}}"
+      pattern="/app/parts/:partListId"
+      data="{{_partsData}}">
+
+    </carbon-route>
+
     <logon-thing id="logonThing" hidden$="{{!_loginActive}}" on-authorized="_onAuthorized" on-un-authorized="_onUnAuthorized" user-hash="{{userHash}}"></logon-thing>
     <div hidden$="{{_loginActive}}">
       <paper-drawer-panel id="paperDrawerPanel">
@@ -61,12 +72,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           <!-- Drawer Content -->
           <paper-menu class="app-menu" attr-for-selected="data-route" selected="{{_pageData.page}}">
-            <a data-route="sets" href="#/app/sets/">
+            <a data-route="sets" href="#/app/sets/{{_setsData.setListId}}">
               <iron-icon icon="home"></iron-icon>
               <span>Sets</span>
             </a>
 
-            <a data-route="parts" href="#/app/parts/">
+            <a data-route="parts" href="#/app/parts/{{_partsData.partListId}}">
               <iron-icon icon="info"></iron-icon>
               <span>Parts</span>
             </a>

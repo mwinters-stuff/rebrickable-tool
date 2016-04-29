@@ -58,8 +58,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </style>
   <iron-ajax id="theAjaxPartLists" method="GET" url="https://rebrickable.com/api/get_user_part_lists" params="{{_paramsPartLists}}" handle-as="json" last-response="{{_dataPartLists}}"></iron-ajax>
   <iron-ajax id="theAjaxDeletePartLists" method="POST" url="https://rebrickable.com/api/del_user_partlist" handle-as="text"></iron-ajax>
-  <iron-ajax id="theAjaxAddPartLists" verbose method="POST" url="https://rebrickable.com/api/add_user_partlist" handle-as="text"></iron-ajax>
-  <iron-ajax id="theAjaxSetUserParts" verbose method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text"></iron-ajax>
+  <iron-ajax id="theAjaxAddPartLists" method="POST" url="https://rebrickable.com/api/add_user_partlist" handle-as="text"></iron-ajax>
+  <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text"></iron-ajax>
 
   <colour-list id="colours"></colour-list>
 
