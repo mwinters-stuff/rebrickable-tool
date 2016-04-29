@@ -8,7 +8,7 @@
     "paper-elements": "PolymerElements/paper-elements#^1.0.1",
     "platinum-elements": "PolymerElements/platinum-elements#^1.1.0",
     "polymer": "Polymer/polymer#^1.2.0",
-    "iron-data-table": "^1.0.0-alpha6",
+    "iron-data-table": "https://github.com/Saulis/iron-data-table.git#fix/filter-debounce",
     "expandjs": "^0.10.0",
     "polymer-cookie": "^1.0.3",
     "cookie-consent-polymer": "^0.2.2",
@@ -22,6 +22,7 @@
   "ignore": [],
   "resolutions": {
     "neon-animation": "^1.2.0",
-    "web-animations-js": "^2.2.0"
+    "web-animations-js": "^2.2.0",
+    "iron-data-table": "fix/filter-debounce"
   }
 }
