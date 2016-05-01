@@ -53,20 +53,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="horiz">
           <div class="aleft">
             <table>
-              <tr>
+              <tr id="rowName">
                 <td colspan="2">
                   <div class="">{{_data.name}}</div>
                 </td>
               </tr>
-              <tr>
+              <tr id="rowCategory">
                 <td>Category:</td>
                 <td>{{_data.category}}</td>
               </tr>
-              <tr>
+              <tr id="rowYears">
                 <td>Years:</td>
                 <td>{{_data.year1}} to {{_data.year2}}</td>
               </tr>
-              <tr>
+              <tr id="rowURL">
                 <td>URL:</td>
                 <td>{{_data.part_url}}</td>
               </tr>
@@ -95,6 +95,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </paper-dialog>
   </template>
   <script>
+
+
     (function() {
       'use strict';
 

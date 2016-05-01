@@ -33,7 +33,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </test-fixture>
 
   <script>
-
+/*jshint -W030 */
   function runAfterOpen(dialog, callback) {
     dialog.$$('paper-dialog').addEventListener('iron-overlay-opened', callback);
     dialog.open();
@@ -49,24 +49,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
       test('test the dialog', function(done) {
-        element.title = "Title Text";
-        element.label = "Label Text";
-        element.value = "Initial Value";
+        element.title = 'Title Text';
+        element.label = 'Label Text';
+        element.value = 'Initial Value';
 
 
         runAfterOpen(element, function() {
           flush(function(){
             var heading = element.$$('h2');
             expect(heading).to.be.ok;
-            expect(heading.innerText).to.equal("Title Text");
+            expect(heading.innerText).to.equal('Title Text');
 
             var input = element.$$('paper-input');
             expect(input).to.be.ok;
-            expect(input.label).to.equal("Label Text");
-            expect(input.value).to.equal("Initial Value");
+            expect(input.label).to.equal('Label Text');
+            expect(input.value).to.equal('Initial Value');
 
-            input.value = "New Value";
-            expect(element.value).to.equal("New Value");
+            input.value = 'New Value';
+            expect(element.value).to.equal('New Value');
 
             element.addEventListener('dialog-closed', function(e) {
               expect(e.detail.confirmed).to.be.true;

@@ -36,27 +36,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       ready: function() {
-        if(!this.partTypes) {
+        if(!this.partTypes || this.partTypes.length === 0) {
           this.set('_params',{
             key: 'p4GLMlcPxJ',
             format: 'json'
           });
           this.$.theAjax.generateRequest();
         }else{
-          this.partTypes = window._partTypes;
+          this.set('partTypes',window._partTypes);
         }
       },
 
       _handleResponse: function(response) {
         if (response.detail.response) {
-          this.partTypes = response.detail.response.part_types;
+          this.set('partTypes',response.detail.response.part_types);
           window._partTypes = this.partTypes;
         }
       },
 
       getPartType: function(id){
         return XP.find(this.partTypes, function(element) {
-          return element.part_type_id == id;
+          return element.part_type_id === id;
         });
       },
     });

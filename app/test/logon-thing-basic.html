@@ -8,7 +8,6 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
-
 <html>
 <head>
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
@@ -16,6 +15,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../bower_components/web-component-tester/browser.js"></script>
+  <script src="../bower_components/iron-test-helpers/mock-interactions.js"></script>
+  <link rel="import" href="../bower_components/iron-test-helpers/iron-test-helpers.html">
 
   <!-- Step 1: import the element to test -->
   <link rel="import" href="../elements/logon-thing/logon-thing.html">
@@ -30,16 +31,149 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </test-fixture>
 
 <script>
+/*jshint -W030 */
   suite('logon-thing tests', function() {
     var element;
+    var server;
+
 
     setup(function() {
+      console.log('setup');
       element = fixture('basic');
+      server = sinon.fakeServer.create();
+
+      server.respondWith('https://rebrickable.com/api/get_user_hash?key=p4GLMlcPxJ&email=joe%40bob.com&pass=secret&format=json',
+        [200,{'Content-Type': 'application/text'},'12345678901234567890']);
+
+      server.respondWith('https://rebrickable.com/api/get_user_hash?key=p4GLMlcPxJ&email=jack%40bob.com&pass=sec&format=json',
+        [200,{'Content-Type': 'application/text'},'INVALIDUSERPASS']);
+
+      var cookie = element.$$('#cookie');
+      expect(cookie).to.be.ok;
+      cookie.eraseCookie();
+
     });
 
-    test('', function() {
+    teardown(function() {
+      console.log('teardown');
+     server.restore();
+   });
 
+   test('use saved login', function(done) {
+     var cookie = element.$$('#cookie');
+     expect(cookie).to.be.ok;
+     cookie.value = '12345678901234567890';
+     cookie.createCookie();
+
+     flush(function() {
+       element.addEventListener('authorized', function() {
+         console.log('listener - cookie');
+         flush(function() {
+           expect(element.userHash).to.be.ok;
+           expect(element.userHash).to.equal('12345678901234567890');
+           expect(element.$.cookie.readCookie()).to.equal('12345678901234567890');
+           done();
+         });
+       });
+     });
+   });
+
+    test('logon success', function(done) {
+  //    element.$.cookie.eraseCookie();
+
+      element.userHash = '';
+
+      var usernameElement = element.$$('#username');
+      expect(usernameElement).to.be.ok;
+      var passwordElement =  element.$$('#password');
+      expect(passwordElement).to.be.ok;
+
+      var loginButton = element.$$('#doit');
+      expect(loginButton).to.be.ok;
+
+      usernameElement.value = 'joe@bob.com';
+      passwordElement.value = 'secret';
+      flush(function() {
+
+        element.addEventListener('authorized', function() {
+          console.log('listener - success');
+          expect(element.userHash).to.be.ok;
+          expect(element.userHash).to.equal('12345678901234567890');
+          done();
+        });
+
+
+        MockInteractions.tap(loginButton);
+        server.respond();
+      });
     });
+
+
+    test('invalid username pass', function(done) {
+    //  element.$.cookie.eraseCookie();
+
+      element.userHash = '';
+
+      var usernameElement = element.$$('#username');
+      expect(usernameElement).to.be.ok;
+      var passwordElement =  element.$$('#password');
+      expect(passwordElement).to.be.ok;
+
+      var loginButton = element.$$('#doit');
+      expect(loginButton).to.be.ok;
+
+      usernameElement.value = 'jack@bob.com';
+      passwordElement.value = 'sec';
+      flush(function() {
+        console.log('listener - invalid');
+        element.addEventListener('auth-failed', function() {
+          done();
+        });
+
+        MockInteractions.tap(loginButton);
+        server.respond();
+      });
+    });
+
+
+    test('save login', function(done) {
+    //  element.$.cookie.eraseCookie();
+
+      element.userHash = '';
+
+      var usernameElement = element.$$('#username');
+      expect(usernameElement).to.be.ok;
+      var passwordElement =  element.$$('#password');
+      expect(passwordElement).to.be.ok;
+
+      var saveloginElement =  element.$$('#savelogin');
+      expect(saveloginElement).to.be.ok;
+      expect(saveloginElement.checked).to.be.false;
+
+      var loginButton = element.$$('#doit');
+      expect(loginButton).to.be.ok;
+
+      usernameElement.value = 'joe@bob.com';
+      passwordElement.value = 'secret';
+      saveloginElement.checked = true;
+      flush(function() {
+        element.addEventListener('authorized', function() {
+          console.log('listener - save');
+          expect(element.userHash).to.be.ok;
+          expect(element.userHash).to.equal('12345678901234567890');
+          expect(element.$.cookie.readCookie()).to.equal('12345678901234567890');
+          done();
+        });
+
+
+        MockInteractions.tap(loginButton);
+        server.respond();
+      });
+    });
+
+
+
+
 
   });
 </script>

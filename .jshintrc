@@ -21,5 +21,6 @@
     "page": true,
     "app": true
   },
-  "predef": ["XP"]
+  "predef": ["XP","WCT","suite","setup","fixture","test",
+    "expect","wct","teardown","flush","MockInteractions","sinon"]
 }

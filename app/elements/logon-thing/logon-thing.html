@@ -133,6 +133,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if (response.detail.response) {
             if (response.detail.response === 'INVALIDUSERPASS') {
               this.$.failedToast.open();
+              this.fire('auth-failed');
             } else {
               this.userHash = response.detail.response;
               if (this._inputSaveLogin) {
