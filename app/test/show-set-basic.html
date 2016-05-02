@@ -132,7 +132,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           expect(dialog).to.be.ok;
           var pdialog = dialog.$$('paper-dialog');
           expect(pdialog.opened).to.be.true;
-          expect(dialog.$$('div#content').innerText).to.equal('Do you want to remove set 71011-1 Farmer from list Bobs?');
+          expect(dialog.$$('div#content').innerText.trim()).to.equal('Do you want to remove set 71011-1 Farmer from list Bobs?');
 
           MockInteractions.tap(Polymer.dom(dialog.root).querySelector('[dialog-confirm]'));
           server.respond();
