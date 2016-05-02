@@ -30,15 +30,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </test-fixture>
 
 <script>
+/*jshint -W030 */
   suite('part-types tests', function() {
     var element;
+    var server;
 
     setup(function() {
       element = fixture('basic');
+
+      server = sinon.fakeServer.create();
+
+      server.respondWith('https://rebrickable.com/api/get_part_types?key=p4GLMlcPxJ&format=json',
+        [200,{'Content-Type': 'application/json'},
+        '{ "part_types": [{ "part_type_id": "3", "desc": "Bricks" }, {' +
+                '"part_type_id": "20", "desc": "Bricks Curved" }, {' +
+                '"part_type_id": "18", "desc": "Bricks Printed" }, {' +
+                '"part_type_id": "38", "desc": "Bricks Round and Cones" }, {' +
+                '"part_type_id": "19", "desc": "Bricks Sloped" }, {' +
+                '"part_type_id": "21", "desc": "Bricks Special" }, {' +
+                '"part_type_id": "22", "desc": "Bricks Wedged"  }]}'
+      ]);
+
+
     });
 
-    test('', function() {
+    teardown(function() {
+     server.restore();
+    });
 
+    test('', function(done) {
+      element.ready();
+      server.respond();
+      flush(function(){
+        expect(element.partTypes).to.be.ok;
+        expect(element.partTypes).to.have.length(7);
+
+        var partType = element.getPartType(18);
+        expect(partType).to.be.ok;
+        expect(partType.desc).to.equal('Bricks Printed');
+
+        partType = element.getPartType(99);
+        expect(partType).to.not.be.ok;
+
+        done();
+      });
     });
 
   });

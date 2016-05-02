@@ -52,6 +52,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     });
 
+    teardown(function() {
+     server.restore();
+    });
+
+
     test('show part', function(done) {
       runAfterOpen(element, function(){
         expect(element.$$('#rowName').innerText.trim()).to.equal('Technic Pin 3\/4');

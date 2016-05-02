@@ -55,9 +55,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     });
 
     teardown(function() {
-      console.log('teardown');
      server.restore();
-   });
+    });
 
    test('use saved login', function(done) {
      var cookie = element.$$('#cookie');

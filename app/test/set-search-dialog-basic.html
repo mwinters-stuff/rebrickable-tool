@@ -17,7 +17,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../bower_components/web-component-tester/browser.js"></script>
 
+  <script src="../bower_components/iron-test-helpers/mock-interactions.js"></script>
   <!-- Step 1: import the element to test -->
+  <link rel="import" href="../bower_components/iron-test-helpers/iron-test-helpers.html">
   <link rel="import" href="../elements/set-search-dialog/set-search-dialog.html">
 
 </head>
@@ -30,11 +32,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </test-fixture>
 
 <script>
+/*jshint -W030 */
   suite('set-search-dialog tests', function() {
     var element;
+    var server;
+
+
+    teardown(function() {
+    //  server.restore();
+    });
+
 
     setup(function() {
       element = fixture('basic');
+
+      // server.respondWith('https://rebrickable.com/api/get_set?key=p4GLMlcPxJ&set_id=71011-1&format=json',
+      //   [200,{'Content-Type': 'application/json'},
+      //    '[{"set_id":"71011-1","type":"set","pieces":"4","descr":"Farmer","theme":"Collectible Minifigures","year":"2016","img_tn":"http:\/\/rebrickable.com\/img\/sets-t\/71011-1.jpg","img_sm":"http:\/\/rebrickable.com\/img\/sets-s\/71011-1.jpg","img_big":"http:\/\/rebrickable.com\/img\/sets-b\/71011-1.jpg"}]'
+      // ]);
+      //
+      // server.respondWith('https://rebrickable.com/api/set_user_set',
+      //   [200,{'Content-Type': 'application/text'},
+      //    'SUCCESS'
+      // ]);
+
     });
 
     test('', function() {

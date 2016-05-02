@@ -21,7 +21,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
     <paper-dialog id="_dialog" on-iron-overlay-closed="_onDialogClosed">
       <h2>{{title}}</h2>
-      <div><content></content></div>
+      <div id="content"><content></content></div>
 
       <div class="buttons">
         <paper-button dialog-dismiss>Cancel</paper-button>
@@ -41,7 +41,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         title: {
           type: String,
         },
-    
+
       },
 
       _onDialogClosed: function(e) {
