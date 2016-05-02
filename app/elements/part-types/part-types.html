@@ -41,7 +41,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       },
 
-      ready: function() {
+      attached: function() {
         if(!window._partTypes || window._partTypes.length === 0) {
           this.set('_params',{
             key: 'p4GLMlcPxJ',
@@ -49,14 +49,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           });
           this.$.theAjax.auto = true;
         }else{
-          this.set('partTypes',window._partTypes);
+          this.set('partTypes',XP.clone(window._partTypes));
         }
       },
 
       _handleResponse: function(response) {
         if (response.detail.response) {
           this.set('partTypes',response.detail.response.part_types);
-          window._partTypes = this.partTypes;
+          window._partTypes = XP.clone(this.partTypes);
         }
       },
 
@@ -70,7 +70,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var partType = this.getPartType(partTypeId);
         if(partType){
           var index = XP.indexOf(this.partTypes,partType);
-          this.set('partTypes',XP.moveFirst(this.partTypes,index,1));
+          this.set('partTypes',XP.moveFirst(XP.clone(this.partTypes),index,1));
+          window._partTypes = XP.clone(this.partTypes);
         }
       },
     });
