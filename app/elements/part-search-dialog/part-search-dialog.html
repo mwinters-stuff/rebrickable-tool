@@ -81,7 +81,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <template>[[item.descr]]</template>
         </data-table-column>
       </iron-data-table>
-      <paper-input autofocus hidden?="{{!showQuantityInput}}" id="_quantityInput" label="Quantity" min="1" value="{{quantity}}" type="number">
+      <paper-input autofocus hidden$="{{!showQuantityInput}}" id="_quantityInput" label="Quantity" min="1" value="{{quantity}}" type="number">
       </paper-input>
 
       <div class="buttons">
@@ -127,6 +127,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           _paramsSearch: {
             type: Object,
+          },
+
+          _partTypes: {
+            type: Array,
           },
 
           _searchSetType: {

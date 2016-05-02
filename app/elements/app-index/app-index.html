@@ -72,16 +72,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           <!-- Drawer Content -->
           <paper-menu class="app-menu" attr-for-selected="data-route" selected="{{_pageData.page}}">
-            <a data-route="sets" href="#/app/sets/{{_setsData.setListId}}">
+            <a data-route="sets" href$="#/app/sets/{{_setsData.setListId}}">
               <iron-icon icon="home"></iron-icon>
               <span>Sets</span>
             </a>
 
-            <a data-route="parts" href="#/app/parts/{{_partsData.partListId}}">
+            <a data-route="parts" href$="#/app/parts/{{_partsData.partListId}}">
               <iron-icon icon="info"></iron-icon>
               <span>Parts</span>
             </a>
-            <a data-route="manage-moc-parts" href="#/app/manage-moc-parts">
+            <a data-route="manage-moc-parts" href$="#/app/manage-moc-parts">
               <iron-icon icon="build"></iron-icon>
               <span>Manage Moc Parts</span>
             </a>
@@ -137,6 +137,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: Boolean,
             value: true,
           },
+
+          _setsData:{
+            type: Object,
+          },
+          _partsData:{
+            type: Object,
+          },
+
           userHash: {
             type: String,
             value: '',

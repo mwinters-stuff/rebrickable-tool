@@ -1,5 +1,5 @@
 {
-  "name": "polymer-starter-kit",
+  "name": "rebrickable-tool",
   "private": true,
   "dependencies": {
     "iron-elements": "PolymerElements/iron-elements#^1.0.0",
@@ -19,6 +19,7 @@
   "devDependencies": {
     "web-component-tester": "^4.0.0"
   },
+  "main": "app/index.html",
   "ignore": [],
   "resolutions": {
     "neon-animation": "^1.2.0",

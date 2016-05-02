@@ -33,11 +33,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Array,
           value: [],
           notify: true
-        }
+        },
+
+        _params: {
+          type: Object,
+        },
+
       },
 
       ready: function() {
-        if(!this.partTypes || this.partTypes.length === 0) {
+        if(!window._partTypes || window._partTypes.length === 0) {
           this.set('_params',{
             key: 'p4GLMlcPxJ',
             format: 'json'
@@ -59,6 +64,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return XP.find(this.partTypes, function(element) {
           return XP.toNumber(element.part_type_id) === XP.toNumber(id);
         });
+      },
+
+      recentUsed: function(partTypeId){
+        var partType = this.getPartType(partTypeId);
+        if(partType){
+          var index = XP.indexOf(this.partTypes,partType);
+          this.set('partTypes',XP.moveFirst(this.partTypes,index,1));
+        }
       },
     });
   })();

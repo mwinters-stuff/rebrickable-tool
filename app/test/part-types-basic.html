@@ -50,17 +50,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 '"part_type_id": "21", "desc": "Bricks Special" }, {' +
                 '"part_type_id": "22", "desc": "Bricks Wedged"  }]}'
       ]);
-
-
+      server.respond();
     });
 
     teardown(function() {
      server.restore();
     });
 
-    test('', function(done) {
-      element.ready();
-      server.respond();
+    test('part types', function(done) {
+//      element.ready();
       flush(function(){
         expect(element.partTypes).to.be.ok;
         expect(element.partTypes).to.have.length(7);
@@ -72,7 +70,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         partType = element.getPartType(99);
         expect(partType).to.not.be.ok;
 
-        done();
+        element.recentUsed(22);
+        flush(function(){
+          expect(element.partTypes[0].part_type_id).to.equal(22);
+          done();
+        });
       });
     });
 
