@@ -29,7 +29,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <iron-ajax id="theAjax" auto="{{showing}}" url="https://rebrickable.com/api/get_user_part_lists" params="{{_params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
     <part-search-dialog id="partSearch" on-accepted="_onAddSearchAccepted" quantity="{{_addQuantity}}" colour="{{_addColour}}" show-quantity-input></part-search-dialog>
     <paper-material elevation="1">
-      <list-of-parts id="listOfParts" user-hash="{{userHash}}" part-list-id="{{partListId}}" ></list-of-parts>
+      <list-of-parts id="listOfParts" user-hash="{{userHash}}" part-list-id="{{partListId}}" parts-changed="{{_partsChanged}}" ></list-of-parts>
+      <paper-fab  style='position:absolute; bottom: 30px; right:64px' icon="icons:save" on-click="_onSaveClick" hidden$="{{!_partsChanged}}"></paper-fab>
       <paper-fab  style='position:absolute; bottom: 30px; right:24px' icon="icons:add" on-click="_onAddClick"></paper-fab>
     </paper-material>
   </template>
@@ -113,25 +114,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _onAddSearchAccepted: function(e) {
-          console.log('_onAddSearchAccepted',e.detail,this._addColour, this._addQuantity);
           this.$.listOfParts.addPart(e.detail.part_id, e.detail.part_type_id,e.detail.descr, this._addQuantity, this._addColour);
-          /*
-          3 x 5 L-Shape Thick"
-img_url : "https://img.rebrickable.com/img/pieces/elements/4142823.jpg"
-max_year : "2016"
-min_year : "2000"
-num_colors : 18
-num_parts : "323"
-num_sets : "2384"
-part_id : "32526"
-part_type : "Technic Beams"
-part_type_id : "2"
-url : "https://r
-          */
         },
 
 
+        _onSaveClick: function(){
 
+        },
       });
     })();
   </script>

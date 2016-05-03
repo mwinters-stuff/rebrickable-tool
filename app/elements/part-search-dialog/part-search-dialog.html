@@ -50,14 +50,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <paper-dialog id="_dialog" on-iron-overlay-closed="_onDialogClosed">
       <h2>Search MOC or Set</h2>
       <paper-dropdown-menu  id="_dropdownPartType" label="Part Type" selected-item="{{_selectedPartType}}" style="width:90%">
-        <paper-listbox class="dropdown-content">
+        <paper-listbox id="_dropdownPartTypeList" class="dropdown-content">
           <template is="dom-repeat" items="{{_partTypes}}">
             <paper-item part_type_id="{{item.part_type_id}}">{{item.desc}}</paper-item>
           </template>
         </paper-listbox>
       </paper-dropdown-menu>
       <paper-dropdown-menu id="_dropdownColour" label="Part Colour" selected-item="{{_selectedPartColour}}" style="width:90%">
-        <paper-listbox class="dropdown-content">
+        <paper-listbox id="_dropdownColourList" class="dropdown-content">
           <template is="dom-repeat" items="{{_colours}}">
             <paper-item rb_color_id="{{item.rb_color_id}}">
               <div class="box" style="background-color: {{item.rgb}}"></div>{{item.name}}</paper-item>
@@ -68,7 +68,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <paper-input autofocus id="_searchDialogInput" label="Search" value="{{_searchInput::input}}">
         <paper-icon-button suffix icon="search" raised on-click="_onSearchDialogSearch" disabled="{{_searchTermsBad}}"></paper-icon-button>
       </paper-input>
-      <iron-data-table id="dataTable" items="[[_dataSearch.results]]" selected-item="{{_selectedSearchSet}}" selection-enabled>
+      <iron-data-table id="dataTable" items="[[_dataSearch.results]]" selected-item="{{_selectedSearchPart}}" selection-enabled loading="{{_loading}}">
         <data-table-column width="40px">
           <template>
             <iron-image src="[[item.img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
@@ -89,7 +89,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-button dialog-confirm disabled="{{!_searchDialogOk}}">Accept</paper-button>
       </div>
     </paper-dialog>
-    <iron-ajax id="theAjaxSearch" url="https://rebrickable.com/api/search" params="{{_paramsSearch}}" handle-as="json" last-response="{{_dataSearch}}" loading="{{_loading}}">
+    <iron-ajax id="theAjaxSearch" url="https://rebrickable.com/api/search" params="{{_paramsSearch}}" handle-as="json" last-response="{{_dataSearch}}">
     </iron-ajax>
 
 
@@ -169,8 +169,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: Array,
           },
 
-          _selectedSearchSet: {
+          _selectedSearchPart: {
             type: Object,
+            value: null,
             observer: '_onSelectedSearchChanged'
           },
 
@@ -202,7 +203,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               part_color: this._selectedPartColour.rb_color_id,
               query: this._searchInput
             });
-            console.log(this._paramsSearch);
             this.$.theAjaxSearch.generateRequest();
           }
         },
@@ -212,20 +212,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _onSelectedSearchChanged: function() {
-          this.set('_searchDialogOk', this._selectedSearchSet !== null);
+          this.set('_searchDialogOk', this._selectedSearchPart !== null);
         },
 
         _onDialogClosed: function(closingReason) {
           if (closingReason.detail.confirmed) {
+            this.set('colour',this._selectedPartColour.rb_color_id);
+            this.set('result', this._selectedSearchPart);
+
             this.$._partTypesElement.recentUsed(this._selectedPartType.part_type_id);
             this.$._colourListElement.recentUsed(this._selectedPartColour.rb_color_id);
-            this.set('colour',this._selectedPartColour.rb_color_id);
-            this.set('result', this._selectedSearchSet);
+
             this.fire('accepted',this.result);
           }
         },
 
         open: function() {
+          this.$._dropdownPartTypeList.selected = 0;
+          this.$._dropdownColourList.selected = 0;
           this.$._dialog.open();
         },
 

@@ -10,6 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <html>
+
 <head>
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
   <title>set-search-dialog</title>
@@ -23,205 +24,243 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../elements/part-search-dialog/part-search-dialog.html">
 
 </head>
+
 <body>
 
-<test-fixture id="basic">
-  <template>
-    <part-search-dialog></part-search-dialog>
-  </template>
-</test-fixture>
+  <test-fixture id="basic">
+    <template>
+      <part-search-dialog></part-search-dialog>
+    </template>
+  </test-fixture>
 
-<script>
-/*jshint -W030 */
-  function runAfterOpen(dialog, callback) {
-    var func = function() {
-      dialog.$$('paper-dialog').removeEventListener('iron-overlay-opened',func);
-      Polymer.Base.async(callback, 1);
-    };
-    dialog.$$('paper-dialog').addEventListener('iron-overlay-opened',func);
-    dialog.open();
-  }
+  <script>
+    /*jshint -W030 */
+    function runAfterOpen(dialog, callback) {
+      var func = function() {
+        dialog.$$('paper-dialog').removeEventListener('iron-overlay-opened', func);
+        Polymer.Base.async(callback, 1);
+      };
+      dialog.$$('paper-dialog').addEventListener('iron-overlay-opened', func);
+      dialog.open();
+    }
 
-  function runAfterOpenDropDown(menu, callback) {
-    var func = function() {
-      menu.$.menuButton.$.dropdown.removeEventListener('iron-overlay-opened',func);
-      Polymer.Base.async(callback, 1);
-    };
-    menu.$.menuButton.$.dropdown.addEventListener('iron-overlay-opened',func);
-    MockInteractions.tap(menu);
-  }
+    function runAfterOpenDropDown(menu, callback) {
+      var func = function() {
+        menu.$.menuButton.$.dropdown.removeEventListener('iron-overlay-opened', func);
+        Polymer.Base.async(callback, 1);
+      };
+      menu.$.menuButton.$.dropdown.addEventListener('iron-overlay-opened', func);
+      MockInteractions.tap(menu);
+    }
 
-  suite('set-search-dialog tests', function() {
-    var element;
-    var server;
-    var dropDownPartType;
-    var dropDownColour;
-    var inputSearch;
-    var buttonOk;
-    var grid;
-    var listener1;
-    var listener2;
-
-
-    teardown(function() {
-     server.restore();
-     element.removeEventListener('loading-finished',listener1);
-     element.removeEventListener('accepted',listener2);
-
-    });
-
-    setup(function() {
-      element = fixture('basic');
-      server = sinon.fakeServer.create();
-
-      dropDownPartType = element.$$('#_dropdownPartType');
-      dropDownColour = element.$$('#_dropdownColour');
-      inputSearch = element.$$('#_searchDialogInput');
-      buttonOk = element.$$('[dialog-confirm]');
-      grid = element.$$('#dataTable');
-
-      server.respondWith('https://rebrickable.com/api/search?key=p4GLMlcPxJ&format=json&type=P&query=nothing',
-        [200,{'Content-Type': 'application/json'},
-        '{"results":[]}'
-      ]);
-
-      server.respondWith('https://rebrickable.com/api/get_part_types?key=p4GLMlcPxJ&format=json',
-        [200,{'Content-Type': 'application/json'},
-        '{ "part_types": [{ "part_type_id": "3", "desc": "Bricks" }, {' +
-                '"part_type_id": "20", "desc": "Bricks Curved" }, {' +
-                '"part_type_id": "18", "desc": "Bricks Printed" }, {' +
-                '"part_type_id": "38", "desc": "Bricks Round and Cones" }, {' +
-                '"part_type_id": "19", "desc": "Bricks Sloped" }, {' +
-                '"part_type_id": "21", "desc": "Bricks Special" }, {' +
-                '"part_type_id": "22", "desc": "Bricks Wedged"  }]}'
-      ]);
+    suite('set-search-dialog tests', function() {
+      var element;
+      var server;
+      var dropDownPartType;
+      var dropDownColour;
+      var inputSearch;
+      var buttonOk;
+      var grid;
+      var listener1;
+      var listener2;
+      var inputQuantity;
 
 
-      server.respondWith('https://rebrickable.com/api/search?key=p4GLMlcPxJ&format=json&type=P&part_type_id=20&part_color=10&query=Arch',
-        [200,{'Content-Type': 'application/json'},
-         '{"results":[{"part_id":"6182","descr":"Brick Arch 1 x 4 x 2","part_type":"Bricks Curved","part_type_id"' +
-         ':"20","num_parts":"139","num_sets":"468","num_colors":21,"min_year":"1994","max_year":"2016","url":"https' +
-         ':\/\/rebrickable.com\/parts\/6182\/brick-arch-1-x-4-x-2","img_url":"https:\/\/img.rebrickable.com\/img\/pi' +
-         'eces\/elements\/618201.jpg"},{"part_id":"3659","descr":"Brick Arch 1 x 4","part_type":"Bricks Curved","par' +
-         't_type_id":"20","num_parts":"480","num_sets":"1698","num_colors":24,"min_year":"1976","max_year":"2016","ur' +
-         'l":"https:\/\/rebrickable.com\/parts\/3659\/brick-arch-1-x-4","img_url":"'
-      ]);
+      teardown(function() {
+        server.restore();
+        element.removeEventListener('loading-finished', listener1);
+        element.removeEventListener('accepted', listener2);
 
-      element.$._partTypesElement.$.theAjax.generateRequest();
-      server.respond();
-      Polymer.dom.flush();
-
-    });
-
-    test('initial state checks', function(done) {
-      runAfterOpen(element, function(){
-
-        expect(dropDownPartType).to.be.ok;
-        expect(dropDownColour).to.be.ok;
-        expect(inputSearch).to.be.ok;
-        expect(buttonOk).to.be.ok;
-        expect(grid).to.be.ok;
-
-        dropDownPartType.noAnimations = true;
-        dropDownColour.noAnimations = true;
-
-        expect(dropDownPartType).to.have.property('selectedItem',undefined);
-        expect(dropDownColour).to.have.property('selectedItem',undefined);
-
-        expect(element).to.have.property('_partTypes').with.lengthOf(7);
-        expect(element).to.have.property('_colours').with.lengthOf(133);
-
-        expect(inputSearch).to.have.property('value','');
-        expect(buttonOk).to.have.property('disabled',true);
-
-        expect(grid).to.have.property('selectionEnabled',true);
-        expect(grid).to.have.property('selectedItem',null);
-
-        done();
       });
-    });
 
-    test('search for a Arch', function(done) {
-      runAfterOpen(element, function(){
-        runAfterOpenDropDown(dropDownPartType,function(){
-          var partTypeItem = Polymer.dom(dropDownPartType).querySelectorAll('paper-item')[1];
-          expect(partTypeItem).to.have.property('part_type_id','20');
+      setup(function() {
+        element = fixture('basic');
+        server = sinon.fakeServer.create();
 
-          MockInteractions.tap(partTypeItem);
+        dropDownPartType = element.$$('#_dropdownPartType');
+        dropDownColour = element.$$('#_dropdownColour');
+        inputSearch = element.$$('#_searchDialogInput');
+        buttonOk = element.$$('[dialog-confirm]');
+        grid = element.$$('#dataTable');
+        inputQuantity = element.$$('#_quantityInput');
 
-          Polymer.dom.flush();
-          expect(element).to.have.deep.property('_selectedPartType.part_type_id','20');
+        server.respondWith('https://rebrickable.com/api/search?key=p4GLMlcPxJ&format=json&type=P&part_type_id=3&part_color=11&query=nothing', [200, {
+            'Content-Type': 'application/json'
+          },
+          '{"results":[]}'
+        ]);
 
-          runAfterOpenDropDown(dropDownColour, function(){
-            var colourItem = Polymer.dom(dropDownColour).querySelectorAll('paper-item')[10];
-            expect(colourItem).to.have.property('rb_color_id',10);
+        server.respondWith('https://rebrickable.com/api/get_part_types?key=p4GLMlcPxJ&format=json', [200, {
+            'Content-Type': 'application/json'
+          },
+          '{ "part_types": [{ "part_type_id": "3", "desc": "Bricks" }, {' +
+          '"part_type_id": "20", "desc": "Bricks Curved" }, {' +
+          '"part_type_id": "18", "desc": "Bricks Printed" }, {' +
+          '"part_type_id": "38", "desc": "Bricks Round and Cones" }, {' +
+          '"part_type_id": "19", "desc": "Bricks Sloped" }, {' +
+          '"part_type_id": "21", "desc": "Bricks Special" }, {' +
+          '"part_type_id": "22", "desc": "Bricks Wedged"  }]}'
+        ]);
 
-            MockInteractions.tap(colourItem);
+        server.respondWith('https://rebrickable.com/api/search?key=p4GLMlcPxJ&format=json&type=P&part_type_id=20&part_color=10&query=Arch', [200, {
+            'Content-Type': 'application/json'
+          },
+          '{"results":[{"part_id":"6182","descr":"Brick Arch 1 x 4 x 2","part_type":"Bricks Curved","part_type_id"' +
+          ':"20","num_parts":"139","num_sets":"468","num_colors":21,"min_year":"1994","max_year":"2016","url":"http' +
+          's:\/\/rebrickable.com\/parts\/6182\/brick-arch-1-x-4-x-2","img_url":"https:\/\/img.rebrickable.com\/img\/pi' +
+          'eces\/elements\/618201.jpg"},{"part_id":"3659","descr":"Brick Arch 1 x 4","part_type":"Bricks Curved","part' +
+          '_type_id":"20","num_parts":"480","num_sets":"1698","num_colors":24,"min_year":"1976","max_year":"2016","ur' +
+          'l":"https:\/\/rebrickable.com\/parts\/3659\/brick-arch-1-x-4","img_url":"https:\/\/img.rebrickable.com\/img\/pieces\/elements\/4211435.jpg"}]}'
+        ]);
+
+        element.$._partTypesElement.$.theAjax.generateRequest();
+        server.respond();
+        Polymer.dom.flush();
+      });
+
+      test('initial state checks', function(done) {
+        runAfterOpen(element, function() {
+
+          expect(dropDownPartType).to.be.ok;
+          expect(dropDownColour).to.be.ok;
+          expect(inputSearch).to.be.ok;
+          expect(buttonOk).to.be.ok;
+          expect(grid).to.be.ok;
+          expect(inputQuantity).to.be.ok;
+
+          dropDownPartType.noAnimations = true;
+          dropDownColour.noAnimations = true;
+
+          expect(dropDownPartType).to.have.property('selectedItem', undefined);
+          expect(dropDownColour).to.have.property('selectedItem', undefined);
+          expect(inputQuantity).to.have.property('hidden', true);
+
+          expect(element).to.have.property('_partTypes').with.lengthOf(7);
+          expect(element).to.have.property('_colours').with.lengthOf(133);
+
+          expect(inputSearch).to.have.property('value', '');
+          expect(buttonOk).to.have.property('disabled', true);
+
+          expect(grid).to.have.property('selectionEnabled', true);
+          expect(grid).to.have.property('selectedItem', null);
+
+          done();
+        });
+      });
+
+      test('search for Arch Bricks', function(done) {
+        runAfterOpen(element, function() {
+          runAfterOpenDropDown(dropDownPartType, function() {
+            var partTypeItem = Polymer.dom(dropDownPartType).querySelectorAll('paper-item')[1];
+            expect(partTypeItem).to.have.property('part_type_id', '20');
+
+            MockInteractions.tap(partTypeItem);
 
             Polymer.dom.flush();
-            expect(element).to.have.deep.property('_selectedPartColour.rb_color_id',10);
+            expect(element).to.have.deep.property('_selectedPartType.part_type_id', '20');
 
-          element._searchInput = 'Arch';
-          expect(inputSearch).to.have.property('value','Arch');
-          Polymer.dom.flush();
+            runAfterOpenDropDown(dropDownColour, function() {
+              var colourItem = Polymer.dom(dropDownColour).querySelectorAll('paper-item')[10];
+              expect(colourItem).to.have.property('rb_color_id', 10);
 
-          listener1 = function(){
+              MockInteractions.tap(colourItem);
 
-            expect(element._dataSearch).to.be.ok;
-            expect(element._dataSearch.results).to.have.lengthOf(2);
-            expect(buttonOk).to.have.property('disabled',true);
-            expect(grid).to.have.property('size',2);
+              Polymer.dom.flush();
+              expect(element).to.have.deep.property('_selectedPartColour.rb_color_id', 10);
 
-            grid.selectItem(1);
-            expect(buttonOk).to.have.property('disabled',false);
-            expect(element).to.have.property('_selectedSearchSet',element._dataSearch.results[1]);
-            MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-confirm]'));
-          };
+              element._searchInput = 'Arch';
+              expect(inputSearch).to.have.property('value', 'Arch');
+              Polymer.dom.flush();
 
-          listener2 = function(){
-            element.removeEventListener('accepted',this);
-            expect(element).to.have.property('result',element._dataSearch.results[1]);
-            done();
-          };
+              listener1 = function() {
 
-          element.addEventListener('loading-finished',listener1);
-          element.addEventListener('accepted', listener2);
+                expect(element._dataSearch).to.be.ok;
+                expect(element._dataSearch.results).to.have.lengthOf(2);
+                expect(buttonOk).to.have.property('disabled', true);
+                expect(grid).to.have.property('size', 2);
 
-          MockInteractions.pressEnter(Polymer.dom(element.root).querySelector('#_searchDialogInput'));
-          server.respond();
+                grid.selectItem(1);
+                Polymer.dom.flush();
+                expect(buttonOk).to.have.property('disabled', false);
+                expect(element).to.have.property('_selectedSearchPart', element._dataSearch.results[1]);
+                MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-confirm]'));
+              };
 
+              listener2 = function() {
+                element.removeEventListener('accepted', this);
+                expect(element).to.have.property('result', element._dataSearch.results[1]);
+                done();
+              };
+
+              element.addEventListener('loading-finished', listener1);
+              element.addEventListener('accepted', listener2);
+
+              MockInteractions.pressEnter(Polymer.dom(element.root).querySelector('#_searchDialogInput'));
+              server.respond();
+
+            });
           });
         });
       });
-    });
 
+      test('search for nothing', function(done) {
+        runAfterOpen(element, function() {
+          runAfterOpenDropDown(dropDownPartType, function() {
+            var partTypeItem = Polymer.dom(dropDownPartType).querySelectorAll('paper-item')[1];
+            expect(partTypeItem).to.have.property('part_type_id', '3');
 
-        test('search for nothing', function(done) {
-          runAfterOpen(element, function(){
+            MockInteractions.tap(partTypeItem);
 
-            // element._searchInput = 'nothing';
-            // expect(inputSearch).to.have.property('value','nothing');
-            //
-            // listener1 = function(){
-            //
-            //   expect(element._dataSearch).to.be.ok;
-            //   expect(element._dataSearch).to.have.lengthOf(0);
-            //   expect(buttonOk).to.have.property('disabled',true);
-            //   expect(grid).to.have.property('size',0);
-            //
-            //   done();
-            // };
-            //
-            // element.addEventListener('loading-finished',listener1);
-            //
-            // MockInteractions.pressEnter(Polymer.dom(element.root).querySelector('#_searchDialogInput'));
-            // server.respond();
-            done();
+            Polymer.dom.flush();
+            expect(element).to.have.deep.property('_selectedPartType.part_type_id', '3');
+
+            runAfterOpenDropDown(dropDownColour, function() {
+              var colourItem = Polymer.dom(dropDownColour).querySelectorAll('paper-item')[11];
+              expect(colourItem).to.have.property('rb_color_id', 11);
+
+              MockInteractions.tap(colourItem);
+
+              Polymer.dom.flush();
+              expect(element).to.have.deep.property('_selectedPartColour.rb_color_id', 11);
+
+              element._searchInput = 'nothing';
+              expect(inputSearch).to.have.property('value', 'nothing');
+              Polymer.dom.flush();
+
+              listener1 = function() {
+                expect(grid).to.have.property('size', 0);
+                expect(buttonOk).to.have.property('disabled', true);
+                done();
+              };
+
+              listener2 = function(){
+              };
+
+              element.addEventListener('loading-finished', listener1);
+
+              MockInteractions.pressEnter(Polymer.dom(element.root).querySelector('#_searchDialogInput'));
+              server.respond();
+
+            });
           });
         });
+      });
 
-  });
-</script>
+      test('quantity input', function(done) {
+        runAfterOpen(element, function() {
+
+          expect(inputQuantity).to.have.property('hidden', true);
+
+          element.showQuantityInput = true;
+
+          expect(inputQuantity).to.have.property('hidden', false);
+          done();
+        });
+      });
+
+    });
+  </script>
 
 </body>
+
 </html>

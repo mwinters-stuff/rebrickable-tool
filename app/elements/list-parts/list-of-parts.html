@@ -80,9 +80,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Object,
         },
 
-        _partsChanged: {
+        partsChanged: {
           type: Boolean,
           value: false,
+          notify: true,
         },
 
         selectedPart: {
@@ -147,7 +148,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             qty: quantity,
           });
         }
-        this.set('_partsChanged',true);
+        this.set('partsChanged',true);
       },
 
     });
