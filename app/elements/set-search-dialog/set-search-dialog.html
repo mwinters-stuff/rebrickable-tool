@@ -31,7 +31,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       iron-data-table {
-        height: 200px;
+        height: 400px;
       }
 
       paper-dialog {
@@ -53,7 +53,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-icon-button suffix icon="search" raised on-click="_onSearchDialogSearch" disabled="{{_searchTermsBad}}"></paper-icon-button>
         </paper-input>
       </div>
-      <iron-data-table id="dataTable" items="[[_dataSearch]]" selected-item="{{_selectedSearchSet}}" selection-enabled>
+      <iron-data-table id="dataTable" items="[[_dataSearch]]" selected-item="{{_selectedSearchSet}}" selection-enabled loading="{{_loading}}">
         <data-table-column width="40px">
           <template>
             <iron-image src="[[item.img_tn]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
@@ -102,6 +102,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             value: 'M',
             observer: '_searchTermsChanged'
           },
+
           _searchInput: {
             type: String,
             observer: '_searchTermsChanged'
@@ -109,11 +110,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           _dataSearch: {
             type: Array,
+            value: [],
+          },
+
+          _loading:{
+            type: Boolean,
+            observer: '_onLoadingChanged',
           },
 
           _selectedSearchSet: {
             type: Object,
-            observer: '_onSelectedSearchChanged'
+            observer: '_onSelectedSearchChanged',
+            value: null,
           },
 
           _searchDialogOk: {
@@ -151,11 +159,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _searchTermsChanged: function() {
-          this.set('_searchTermsBad', this._searchSetType == '' || this._searchInput == '');
+          this.set('_searchTermsBad', this._searchSetType === '' || this._searchInput === '');
         },
 
         _onSelectedSearchChanged: function() {
-          this.set('_searchDialogOk', this._selectedSearchSet != null);
+          this.set('_searchDialogOk', this._selectedSearchSet);
         },
 
         _onDialogClosed: function(closingReason) {
@@ -169,6 +177,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.$._dialog.open();
         },
 
+        _onLoadingChanged: function(){
+          this.fire(this._loading ? 'loading-started' : 'loading-finished');
+        },
 
       });
     })();
