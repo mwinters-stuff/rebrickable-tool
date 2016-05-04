@@ -131,8 +131,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           dropDownPartType.noAnimations = true;
           dropDownColour.noAnimations = true;
 
-          expect(dropDownPartType).to.have.property('selectedItem', undefined);
-          expect(dropDownColour).to.have.property('selectedItem', undefined);
+          expect(dropDownPartType).to.have.property('selectedItem').that.is.ok;
+          expect(dropDownColour).to.have.property('selectedItem').that.is.ok;
           expect(inputQuantity).to.have.property('hidden', true);
 
           expect(element).to.have.property('_partTypes').with.lengthOf(7);

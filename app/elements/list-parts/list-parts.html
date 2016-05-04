@@ -29,8 +29,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <iron-ajax id="theAjax" auto="{{showing}}" url="https://rebrickable.com/api/get_user_part_lists" params="{{_params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
     <part-search-dialog id="partSearch" on-accepted="_onAddSearchAccepted" quantity="{{_addQuantity}}" colour="{{_addColour}}" show-quantity-input></part-search-dialog>
     <paper-material elevation="1">
-      <list-of-parts id="listOfParts" user-hash="{{userHash}}" part-list-id="{{partListId}}" parts-changed="{{_partsChanged}}" ></list-of-parts>
-      <paper-fab  style='position:absolute; bottom: 30px; right:64px' icon="icons:save" on-click="_onSaveClick" hidden$="{{!_partsChanged}}"></paper-fab>
+      <list-of-parts id="listOfParts" user-hash="{{userHash}}" part-list-id="{{partListId}}" parts-changed="{{_partsChanged}}" editable></list-of-parts>
+      <paper-fab  style='position:absolute; bottom: 30px; right:94px' icon="icons:save" on-click="_onSaveClick" hidden$="{{!_partsChanged}}"></paper-fab>
       <paper-fab  style='position:absolute; bottom: 30px; right:24px' icon="icons:add" on-click="_onAddClick"></paper-fab>
     </paper-material>
   </template>

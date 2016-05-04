@@ -18,6 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../colour-list/colour-list.html">
 <link rel="import" href="../show-part/show-part.html">
 
@@ -43,6 +44,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <iron-data-table id="dataTable" items="[[parts.parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled>
         <data-table-column align-right width="20px" name="Qty" >
           <template>[[item.qty]]</template>
+        </data-table-column>
+        <data-table-column align-left width="30px" >
+          <template><paper-icon-button icon="editor:mode-edit" part-item="[[item]]" on-tap="_onTapEditQuantity"></paper-icon-button></template>
         </data-table-column>
         <data-table-column name="Part ID" width="50px" filter-by="part_id">
           <template>[[item.part_id]]</template>
@@ -99,7 +103,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         disablePopup:{
           type: Boolean,
           value: false,
-        }
+        },
+
+        editable:{
+          type: Boolean,
+          value: false,
+        },
       },
 
       _onSelectedChanged: function(e) {
@@ -149,6 +158,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           });
         }
         this.set('partsChanged',true);
+      },
+
+      _onTapEditQuantity: function(e){
+        var partItem = null;
+        for(var i = 0; i < e.path.length; i++){
+          if(e.path[i].partItem){
+            partItem = e.path[i].partItem;
+            break;
+          }
+        }
+        if(!partItem) {
+          return;
+        }
+        console.log(partItem);
       },
 
     });
