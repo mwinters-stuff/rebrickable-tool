@@ -22,5 +22,6 @@
     "app": true
   },
   "predef": ["XP","WCT","suite","setup","fixture","test",
-    "expect","wct","teardown","flush","MockInteractions","sinon"]
+    "expect","wct","teardown","flush","MockInteractions","sinon",
+  "describe","before","it","after"]
 }

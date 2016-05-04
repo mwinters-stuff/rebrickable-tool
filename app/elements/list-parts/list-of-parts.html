@@ -21,6 +21,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../colour-list/colour-list.html">
 <link rel="import" href="../show-part/show-part.html">
+<link rel="import" href="../quantity-input-dialog/quantity-input-dialog.html">
 
 <dom-module id="list-of-parts">
   <template>
@@ -34,12 +35,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
     <colour-list id="colours"></colour-list>
+    <quantity-input-dialog id="_quantityInputDialog" title="Edit Part Quantity" on-dialog-closed="_onQuantityInputDialogClosed"></quantity-input-dialog>
 
     <iron-ajax id="theAjax"
       url="https://rebrickable.com/api/get_user_parts"
       params="{{_params}}"
       handle-as="json"
       last-response="{{parts}}"></iron-ajax>
+
+      <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text" content-type = 'application/x-www-form-urlencoded'></iron-ajax>
+
 
       <iron-data-table id="dataTable" items="[[parts.parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled>
         <data-table-column align-right width="20px" name="Qty" >
@@ -171,7 +176,54 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if(!partItem) {
           return;
         }
-        console.log(partItem);
+
+        this._tempPartItem = partItem;
+
+        this.$._quantityInputDialog.quantity = partItem.qty;
+        this.$._quantityInputDialog.label = 'Enter Quantity of part ' + partItem.part_id +
+          partItem.part_name + ' in colour ' + this.getColour(partItem.rb_color_id);
+
+        this.$._quantityInputDialog.open();
+      },
+
+      _onQuantityInputDialogClosed: function(e){
+        if(e.detail.confirmed) {
+          var index = XP.indexOf(this.parts.parts, this._tempPartItem);
+          this.set('parts.parts.' + index + '.qty',XP.toNumber(this.$._quantityInputDialog.quantity));
+          this.set('partsChanged',true);
+        }
+        this._tempPartItem = null;
+      },
+
+      _setUserPartList: function(partListId, parts, callback){
+        var partsList = [];
+        XP.forEach(parts,function(part){
+          partsList.push(part.part_id + ' ' + part.rb_color_id + ' ' + part.qty);
+        });
+
+        this.$.theAjaxSetUserParts.body = {
+          'key': 'p4GLMlcPxJ',
+          'hash': this.userHash,
+          'format': 'json',
+          'partlist_id': partListId,
+          'parts': XP.join(partsList,',')
+        };
+
+        this.$.theAjaxSetUserParts.addEventListener('response',function(e){
+          callback(XP.startsWith(e.detail.response,'SUCCESS'));
+        });
+
+        this.$.theAjaxSetUserParts.generateRequest();
+      },
+
+      savePartList: function(callback){
+        this._setUserPartList(this.partListId, this.parts.parts, function(ok){
+          if(ok) {
+            this.set('partsChanged',false);
+            this.$.theAjax.generateRequest();
+          }
+          callback(ok);
+        }.bind(this));
       },
 
     });

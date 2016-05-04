@@ -8,7 +8,10 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
 <dom-module id="quantity-input-dialog">
   <template>
@@ -17,23 +20,48 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
     </style>
-    <div>Hello from <span>{{foo}}</span></div>
+    <paper-dialog id="_dialog" on-iron-overlay-closed="_onDialogClosed" on-dialog-closed>
+      <h2>{{title}}</h2>
+      <paper-input label="{{label}}" value="{{quantity}}" type="number" min="0"></paper-input>
+
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button id="btnOk" dialog-confirm>Ok</paper-button>
+      </div>
+
+    </paper-dialog>
   </template>
   <script>
-  (function() {
-    'use strict';
+    (function() {
+      'use strict';
 
-    Polymer({
-      is: 'quantity-input-dialog',
+      Polymer({
+        is: 'quantity-input-dialog',
 
-      properties: {
-        foo: {
-          type: String,
-          value: 'quantity-input-dialog',
-          notify: true
-        }
-      }
-    });
-  })();
+        properties: {
+          title: {
+            type: String,
+          },
+          label: {
+            type: String,
+          },
+
+          quantity: {
+            type: Number,
+            value: 1,
+            notify: true,
+          },
+
+        },
+
+        _onDialogClosed: function(e) {
+          this.fire('dialog-closed', e.detail);
+        },
+
+        open: function() {
+          this.$._dialog.open();
+        },
+      });
+    })();
   </script>
 </dom-module>

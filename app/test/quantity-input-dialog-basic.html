@@ -10,39 +10,75 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <html>
+
 <head>
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
   <title>quantity-input-dialog</title>
 
   <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../bower_components/web-component-tester/browser.js"></script>
-
+  <script src="../bower_components/iron-test-helpers/mock-interactions.js"></script>
   <!-- Step 1: import the element to test -->
+  <link rel="import" href="../bower_components/iron-test-helpers/iron-test-helpers.html">
   <link rel="import" href="../elements/quantity-input-dialog/quantity-input-dialog.html">
 
 </head>
+
 <body>
 
-<test-fixture id="basic">
-  <template>
-    <quantity-input-dialog></quantity-input-dialog>
-  </template>
-</test-fixture>
+  <test-fixture id="basic">
+    <template>
+      <quantity-input-dialog></quantity-input-dialog>
+    </template>
+  </test-fixture>
 
-<script>
-  describe('quantity-input-dialog tests', function() {
-    var element;
+  <script>
+    /*jshint -W030 */
+    function runAfterOpen(dialog, callback) {
+      dialog.$$('paper-dialog').addEventListener('iron-overlay-opened', callback);
+      dialog.open();
+    }
 
-    before(function() {
-      element = fixture('basic');
+    describe('quantity-input-dialog tests', function() {
+      var element;
+
+      before(function() {
+        element = fixture('basic');
+      });
+
+      it('tests the dialog', function(done) {
+        element.title = 'Title Text';
+        element.label = 'Label Text';
+        element.quantity = 2;
+
+
+        runAfterOpen(element, function() {
+          flush(function() {
+            var heading = element.$$('h2');
+            expect(heading).to.be.ok;
+            expect(heading.innerText).to.equal('Title Text');
+
+            var input = element.$$('paper-input');
+            expect(input).to.be.ok;
+            expect(input.label).to.equal('Label Text');
+            expect(input.value).to.equal(2);
+
+            input.value = 10;
+            expect(element.quantity).to.equal(10);
+
+            element.addEventListener('dialog-closed', function(e) {
+              expect(e.detail.confirmed).to.be.true;
+              done();
+            });
+
+            MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-confirm]'));
+          });
+        });
+      });
+
     });
-
-    it('', function() {
-
-    });
-
-  });
-</script>
+  </script>
 
 </body>
+
 </html>

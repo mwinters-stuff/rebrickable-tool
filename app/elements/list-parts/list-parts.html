@@ -26,6 +26,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
     </style>
+    <paper-toast id="toast">
+    </paper-toast>
+
     <iron-ajax id="theAjax" auto="{{showing}}" url="https://rebrickable.com/api/get_user_part_lists" params="{{_params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
     <part-search-dialog id="partSearch" on-accepted="_onAddSearchAccepted" quantity="{{_addQuantity}}" colour="{{_addColour}}" show-quantity-input></part-search-dialog>
     <paper-material elevation="1">
@@ -119,6 +122,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
         _onSaveClick: function(){
+          this.$.listOfParts.savePartList(function(ok){
+            this.$.toast.text = ok ? 'Part List Saved...' : 'ERROR Saving Part List';
+            this.$.toast.open();
+          }.bind(this));
 
         },
       });
