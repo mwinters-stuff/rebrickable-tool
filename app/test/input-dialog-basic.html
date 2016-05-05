@@ -33,36 +33,37 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </test-fixture>
 
   <script>
-/*jshint -W030 */
-  function runAfterOpen(dialog, callback) {
-    dialog.$$('paper-dialog').addEventListener('iron-overlay-opened', callback);
-    dialog.open();
-  }
+    /*jshint -W030 */
+    function runAfterOpen(dialog, callback) {
+      dialog.$$('paper-dialog').addEventListener('iron-overlay-opened', callback);
+      dialog.open();
+    }
 
-    suite('input-dialog tests', function() {
+    describe('input-dialog tests', function() {
       var element;
 
-      setup(function() {
+      beforeEach(function() {
         element = fixture('basic');
       });
 
-
-
-      test('test the dialog', function(done) {
+      it('test the dialog', function(done) {
         element.title = 'Title Text';
         element.label = 'Label Text';
         element.value = 'Initial Value';
 
 
         runAfterOpen(element, function() {
-          flush(function(){
+          flush(function() {
             var heading = element.$$('h2');
             expect(heading).to.be.ok;
             expect(heading.innerText).to.equal('Title Text');
 
+            var label = element.$$('div#label');
+            expect(label).to.be.ok;
+            expect(label.innerText.trim()).to.equal('Label Text');
+
             var input = element.$$('paper-input');
             expect(input).to.be.ok;
-            expect(input.label).to.equal('Label Text');
             expect(input.value).to.equal('Initial Value');
 
             input.value = 'New Value';
@@ -77,7 +78,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             //var el = dialog.root.querySelector('[dialog-confirm]');
             //console.log(el);
 
-             MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-confirm]'));
+            MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-confirm]'));
           });
         });
       });

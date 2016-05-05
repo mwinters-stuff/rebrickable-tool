@@ -31,18 +31,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <script>
 /*jshint -W030 */
-  suite('part-types tests', function() {
+  describe('part-types tests', function() {
     var element;
 
-    setup(function() {
+    beforeEach(function() {
       element = fixture('basic');
     });
 
-    teardown(function() {
-
-    });
-
-    test('colour list', function(done) {
+    it('colour list', function(done) {
       flush(function(){
         expect(element.list).to.be.ok;
         expect(element.list).to.have.length(133);

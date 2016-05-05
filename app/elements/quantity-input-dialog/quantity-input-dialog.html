@@ -22,7 +22,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
     <paper-dialog id="_dialog" on-iron-overlay-closed="_onDialogClosed" on-dialog-closed>
       <h2>{{title}}</h2>
-      <paper-input label="{{label}}" value="{{quantity}}" type="number" min="0"></paper-input>
+      <div id="label">{{label}}</div>
+      <paper-input label="Quantity:" value="{{quantity}}" type="number" min="0"></paper-input>
 
       <div class="buttons">
         <paper-button dialog-dismiss>Cancel</paper-button>

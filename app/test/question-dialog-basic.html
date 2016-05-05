@@ -41,16 +41,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     dialog.open();
   }
 
-    suite('question-dialog tests', function() {
+    describe('question-dialog tests', function() {
       var element;
 
-      setup(function() {
+      beforeEach(function() {
         element = fixture('basic');
       });
 
 
 
-      test('test the dialog ok response', function(done) {
+      it('test the dialog ok response', function(done) {
         runAfterOpen(element, function() {
           flush(function(){
             element.addEventListener('dialog-closed', function(e) {
@@ -63,7 +63,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
       });
 
-      test('test the dialog cancel response', function(done) {
+      it('test the dialog cancel response', function(done) {
 
         runAfterOpen(element, function() {
           flush(function(){

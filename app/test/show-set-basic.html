@@ -33,11 +33,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <script>
 /*jshint -W030 */
-  suite('show-set tests', function() {
+  describe('show-set tests', function() {
     var element;
     var server;
 
-    setup(function() {
+    beforeEach(function() {
       element = fixture('basic');
 
       server = sinon.fakeServer.create();
@@ -72,12 +72,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     });
 
-    teardown(function() {
+    afterEach(function() {
      server.restore();
     });
 
 
-    test('show set', function(done) {
+    it('show set', function(done) {
       expect(element).to.be.ok;
       element.userHash = '13213';
       element.setId = '71011-1';
@@ -110,7 +110,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     });
 
-    test('remove set', function(done) {
+    it('remove set', function(done) {
       expect(element).to.be.ok;
       element.userHash = '13213';
       element.setId = '71011-1';

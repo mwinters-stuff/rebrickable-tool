@@ -31,11 +31,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <script>
 /*jshint -W030 */
-  suite('part-types tests', function() {
+  describe('part-types tests', function() {
     var element;
     var server;
 
-    setup(function() {
+    beforeEach(function() {
       element = fixture('basic');
 
       server = sinon.fakeServer.create();
@@ -52,11 +52,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       ]);
     });
 
-    teardown(function() {
+    afterEach(function() {
      server.restore();
     });
 
-    test('part types', function(done) {
+    it('part types', function(done) {
 //      element.ready();
       element.$.theAjax.generateRequest(); // force Request.
       server.respond();

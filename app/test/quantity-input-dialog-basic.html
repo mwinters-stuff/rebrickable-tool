@@ -42,7 +42,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     describe('quantity-input-dialog tests', function() {
       var element;
 
-      before(function() {
+      beforeEach(function() {
         element = fixture('basic');
       });
 
@@ -58,9 +58,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             expect(heading).to.be.ok;
             expect(heading.innerText).to.equal('Title Text');
 
+            var label = element.$$('div#label');
+            expect(label).to.be.ok;
+            expect(label.innerText.trim()).to.equal('Label Text');
+
             var input = element.$$('paper-input');
             expect(input).to.be.ok;
-            expect(input.label).to.equal('Label Text');
+            expect(input.label).to.equal('Quantity:');
             expect(input.value).to.equal(2);
 
             input.value = 10;

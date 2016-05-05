@@ -53,7 +53,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       MockInteractions.tap(menu);
     }
 
-    suite('set-search-dialog tests', function() {
+    describe('set-search-dialog tests', function() {
       var element;
       var server;
       var dropDownPartType;
@@ -66,14 +66,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var inputQuantity;
 
 
-      teardown(function() {
+      afterEach(function() {
         server.restore();
         element.removeEventListener('loading-finished', listener1);
         element.removeEventListener('accepted', listener2);
 
       });
 
-      setup(function() {
+      beforeEach(function() {
         element = fixture('basic');
         server = sinon.fakeServer.create();
 
@@ -118,7 +118,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         Polymer.dom.flush();
       });
 
-      test('initial state checks', function(done) {
+      it('initial state checks', function(done) {
         runAfterOpen(element, function() {
 
           expect(dropDownPartType).to.be.ok;
@@ -148,7 +148,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
       });
 
-      test('search for Arch Bricks', function(done) {
+      it('search for Arch Bricks', function(done) {
         runAfterOpen(element, function() {
           runAfterOpenDropDown(dropDownPartType, function() {
             var partTypeItem = Polymer.dom(dropDownPartType).querySelectorAll('paper-item')[1];
@@ -203,7 +203,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
       });
 
-      test('search for nothing', function(done) {
+      it('search for nothing', function(done) {
         runAfterOpen(element, function() {
           runAfterOpenDropDown(dropDownPartType, function() {
             var partTypeItem = Polymer.dom(dropDownPartType).querySelectorAll('paper-item')[1];
@@ -246,7 +246,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
       });
 
-      test('quantity input', function(done) {
+      it('quantity input', function(done) {
         runAfterOpen(element, function() {
 
           expect(inputQuantity).to.have.property('hidden', true);

@@ -32,12 +32,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <script>
 /*jshint -W030 */
-  suite('logon-thing tests', function() {
+  describe('logon-thing tests', function() {
     var element;
     var server;
 
-
-    setup(function() {
+    beforeEach(function() {
       console.log('setup');
       element = fixture('basic');
       server = sinon.fakeServer.create();
@@ -54,11 +53,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     });
 
-    teardown(function() {
+    afterEach(function() {
      server.restore();
     });
 
-   test('use saved login', function(done) {
+   it('use saved login', function(done) {
      var cookie = element.$$('#cookie');
      expect(cookie).to.be.ok;
      cookie.value = '12345678901234567890';
@@ -77,7 +76,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      });
    });
 
-    test('logon success', function(done) {
+    it('logon success', function(done) {
   //    element.$.cookie.eraseCookie();
 
       element.userHash = '';
@@ -108,7 +107,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     });
 
 
-    test('invalid username pass', function(done) {
+    it('invalid username pass', function(done) {
     //  element.$.cookie.eraseCookie();
 
       element.userHash = '';
@@ -135,7 +134,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     });
 
 
-    test('save login', function(done) {
+    it('save login', function(done) {
     //  element.$.cookie.eraseCookie();
 
       element.userHash = '';
@@ -164,16 +163,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           done();
         });
 
-
         MockInteractions.tap(loginButton);
         server.respond();
       });
     });
-
-
-
-
-
   });
 </script>
 

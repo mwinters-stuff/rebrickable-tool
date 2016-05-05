@@ -23,5 +23,5 @@
   },
   "predef": ["XP","WCT","suite","setup","fixture","test",
     "expect","wct","teardown","flush","MockInteractions","sinon",
-  "describe","before","it","after"]
+  "describe","before","it","after", "beforeEach","afterEach"]
 }
