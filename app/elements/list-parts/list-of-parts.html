@@ -30,9 +30,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
 
-      #dataTable{
+      /*#dataTable{
         height: 720px
-      }
+      }*/
     </style>
     <colour-list id="colours"></colour-list>
     <quantity-input-dialog id="_quantityInputDialog" title="Edit Part Quantity" on-dialog-closed="_onQuantityInputDialogClosed"></quantity-input-dialog>
@@ -46,7 +46,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text" content-type = 'application/x-www-form-urlencoded'></iron-ajax>
 
 
-      <iron-data-table id="dataTable" items="[[parts.parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled>
+      <iron-data-table id="dataTable" items="[[parts.parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled style="height: [[_height]]px">
         <data-table-column align-right width="20px" name="Qty" >
           <template>[[item.qty]]</template>
         </data-table-column>
@@ -114,6 +114,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Boolean,
           value: false,
         },
+
+        _height: {
+          type: Number,
+          value: 400,
+        },
+      },
+
+      attached: function(){
+        this.async(this._resizeTable);
+
+        window.addEventListener('resize', function() {
+          this.debounce('parts-resize', this._resizeTable,1000);
+        }.bind(this));
+      },
+
+      _resizeTable: function() {
+        var drawerPanel = document.getElementById('paperDrawerPanel');
+        this.set('_height',drawerPanel.clientHeight - (128+32+16));
+        // console.log('_height',this._height);
       },
 
       _onSelectedChanged: function(e) {

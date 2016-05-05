@@ -61,7 +61,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <logon-thing id="logonThing" hidden$="{{!_loginActive}}" on-authorized="_onAuthorized" on-un-authorized="_onUnAuthorized" user-hash="{{userHash}}"></logon-thing>
     <div hidden$="{{_loginActive}}">
-      <paper-drawer-panel id="paperDrawerPanel">
+      <paper-drawer-panel id="paperDrawerPanel" responsive-width="900px">
         <!-- Drawer Scroll Header Panel -->
         <paper-scroll-header-panel id="headerPanelDrawer" drawer fixed>
 
@@ -95,13 +95,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-toolbar id="mainToolbar">
             <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
             <div class="app-name" style="padding-right: 48px;">Rebrickable Tool</div>
-            <paper-tabs selected="{{route.path}}" attr-for-selected="route">
+            <paper-tabs class="space" selected="{{route.path}}" attr-for-selected="route" scrollable>
               <template is="dom-repeat" items="{{_tabsToShow.tabs}}">
                 <paper-tab route="{{item.route}}">{{item.title}}</paper-tab>
               </template>
             </paper-tabs>
 
-            <span class="space"></span>
+            <!-- <span class="space"></span> -->
 
             <paper-icon-button id="logout" icon="exit-to-app" on-click="_onLogoutClick"></paper-icon-button>
           </paper-toolbar>

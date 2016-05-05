@@ -25,9 +25,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
 
-      #dataTable{
-        height: 720px
-      }
+
     </style>
     <iron-ajax
       id="theAjax"
@@ -37,7 +35,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       last-response="{{_data}}" >
     </iron-ajax>
 
-    <iron-data-table id="dataTable" items="[[_data.0.sets]]" selection-enabled on-selected-item-changed="_onSelectedChanged">
+    <iron-data-table id="dataTable" items="[[_data.0.sets]]" selection-enabled on-selected-item-changed="_onSelectedChanged" style="height: [[_height]]px">
       <data-table-column align-right width="20px">
         <template><iron-image  src="[[item.img_sm]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image></template>
       </data-table-column>
@@ -91,8 +89,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         _params: {
           type: Object,
         },
+
+        _height: {
+          type: Number,
+          value: 400,
+        },
       },
 
+      attached: function(){
+        this.async(this._resizeTable);
+
+        window.addEventListener('resize', function() {
+          this.debounce('parts-resize', this._resizeTable,1000);
+        }.bind(this));
+      },
+
+      _resizeTable: function() {
+        var drawerPanel = document.getElementById('paperDrawerPanel');
+        this.set('_height',drawerPanel.clientHeight - (128+32+16));
+        console.log('_height',this._height);
+      },
+
+      
       _onHashChanged: function() {
         this.set('_data',[]);
         if(this.userHash && this.setListId)  {
