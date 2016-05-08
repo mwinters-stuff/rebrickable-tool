@@ -12,18 +12,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
 
 <dom-module id="quantity-input-dialog">
   <template>
-    <style>
+    <style include="shared-styles">
       :host {
         display: block;
       }
     </style>
     <paper-dialog id="_dialog" on-iron-overlay-closed="_onDialogClosed" on-dialog-closed>
-      <h2>{{title}}</h2>
-      <div id="label">{{label}}</div>
-      <paper-input label="Quantity:" value="{{quantity}}" type="number" min="0"></paper-input>
+      <div class="horiz">
+        <div>
+          <h2>{{title}}</h2>
+          <div id="label">{{label}}</div>
+          <paper-input label="Quantity:" value="{{quantity}}" type="number" min="0"></paper-input>
+        </div>
+        <iron-image src="[[imgUrl]]" preload style="width:100px; height:100px;" sizing="contain"></iron-image>
+      </div>
 
       <div class="buttons">
         <paper-button dialog-dismiss>Cancel</paper-button>
@@ -52,6 +58,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             value: 1,
             notify: true,
           },
+
+          imgUrl:{
+            type: String,
+          }
 
         },
 

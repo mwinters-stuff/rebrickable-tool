@@ -30,6 +30,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
 
+      div.False{
+      }
+
+      div.True{
+        color: red;
+      }
       /*#dataTable{
         height: 720px
       }*/
@@ -41,25 +47,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       url="https://rebrickable.com/api/get_user_parts"
       params="{{_params}}"
       handle-as="json"
-      last-response="{{parts}}"></iron-ajax>
+      on-response="_handleResponse"
+      ></iron-ajax>
 
-      <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text" content-type = 'application/x-www-form-urlencoded'></iron-ajax>
+      <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text" content-type = 'application/x-www-form-urlencoded' on-response="_onSetUserPartsResponse"></iron-ajax>
 
-
-      <iron-data-table id="dataTable" items="[[parts.parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled style="height: [[_height]]px">
-        <data-table-column align-right width="20px" name="Qty" >
-          <template>[[item.qty]]</template>
+      <iron-data-table id="dataTable" items="[[parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled style="height: [[_height]]px">
+        <data-table-column width="40px">
+          <template>
+            <iron-image src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
+          </template>
+        </data-table-column>
+        <data-table-column align-right width="20px" name="Qty">
+          <template><div class$="[[item.edited]]">[[item.qty]]</div></template>
         </data-table-column>
         <data-table-column align-left width="30px" >
           <template><paper-icon-button icon="editor:mode-edit" part-item="[[item]]" on-tap="_onTapEditQuantity"></paper-icon-button></template>
         </data-table-column>
         <data-table-column name="Part ID" width="50px" filter-by="part_id">
-          <template>[[item.part_id]]</template>
+          <template><div class$="[[item.edited]]">[[item.part_id]]</div></template>
         </data-table-column>
         <data-table-column name="Part" flex="500" filter-by="part_name">
-          <template>[[item.part_name]]</template>
+          <template><div class$="[[item.edited]]">[[item.part_name]]</div></template>
         </data-table-column>
-        <data-table-column name="Colour">
+        <data-table-column name="Colour" width="40px">
           <template>
             <div class="box" style="background-color: {{getColour(item.rb_color_id)}}">
             </div>
@@ -119,6 +130,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Number,
           value: 400,
         },
+
+
       },
 
       attached: function(){
@@ -165,21 +178,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       addPart: function(part_id, part_type_id,part_name, quantity, colour) {
 
-        var havePart = XP.find(this.parts.parts, function(item){
+        var havePart = XP.find(this.parts, function(item){
           return item.part_id === part_id && item.rb_color_id === colour;
         });
 
         if(havePart){
-          var index = XP.indexOf(this.parts.parts, havePart);
-          this.set('parts.parts.' + index + '.qty',XP.toNumber(havePart.qty) + XP.toNumber(quantity));
+          var index = XP.indexOf(this.parts, havePart);
+          this.set('parts.' + index + '.qty',XP.toNumber(havePart.qty) + XP.toNumber(quantity));
+          this.set('parts.' + index + '.edited','True');
         }else{
-          this.push('parts.parts',{
+          this.push('parts',{
             part_id: part_id,
             part_name: part_name,
             part_type_id: part_type_id,
             rb_color_id: colour,
             qty: quantity,
+            edited: 'True'
           });
+          this.set('parts',XP.sortBy(this.parts, 'part_name'));
         }
         this.set('partsChanged',true);
       },
@@ -199,22 +215,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this._tempPartItem = partItem;
 
         this.$._quantityInputDialog.quantity = partItem.qty;
-        this.$._quantityInputDialog.label = 'Enter Quantity of part ' + partItem.part_id +
-          partItem.part_name + ' in colour ' + this.getColour(partItem.rb_color_id);
+        this.$._quantityInputDialog.imgUrl = partItem.part_img_url;
+        this.$._quantityInputDialog.label = 'Quantity of Part: ' + partItem.part_id +
+          partItem.part_name + ' in Colour ' + this.getColourName(partItem.rb_color_id);
 
         this.$._quantityInputDialog.open();
       },
 
       _onQuantityInputDialogClosed: function(e){
         if(e.detail.confirmed) {
-          var index = XP.indexOf(this.parts.parts, this._tempPartItem);
-          this.set('parts.parts.' + index + '.qty',XP.toNumber(this.$._quantityInputDialog.quantity));
+          var index = XP.indexOf(this.parts, this._tempPartItem);
+          this.set('parts.' + index + '.qty',XP.toNumber(this.$._quantityInputDialog.quantity));
+          this.set('parts.' + index + '.edited','True');
           this.set('partsChanged',true);
         }
         this._tempPartItem = null;
       },
 
-      _setUserPartList: function(partListId, parts, callback){
+      _setUserPartList: function(partListId, parts){
         var partsList = [];
         XP.forEach(parts,function(part){
           partsList.push(part.part_id + ' ' + part.rb_color_id + ' ' + part.qty);
@@ -228,21 +246,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           'parts': XP.join(partsList,',')
         };
 
-        this.$.theAjaxSetUserParts.addEventListener('response',function(e){
-          callback(XP.startsWith(e.detail.response,'SUCCESS'));
-        });
-
         this.$.theAjaxSetUserParts.generateRequest();
       },
 
+      _onSetUserPartsResponse: function(e){
+        var ok = XP.startsWith(e.detail.response,'SUCCESS');
+        if(ok) {
+          this.set('partsChanged',false);
+          this.$.theAjax.generateRequest();
+        }
+        this.async(this._saveCallback(ok));
+      },
+
       savePartList: function(callback){
-        this._setUserPartList(this.partListId, this.parts.parts, function(ok){
-          if(ok) {
-            this.set('partsChanged',false);
-            this.$.theAjax.generateRequest();
-          }
-          callback(ok);
-        }.bind(this));
+        this._saveCallback = callback;
+        this._setUserPartList(this.partListId, this.parts);
+      },
+
+      _handleResponse: function(response){
+        XP.forEach(response.detail.response.parts, function(part) {
+          part.edited = 'False';
+        });
+        this.set('parts',XP.sortBy(response.detail.response.parts, 'part_name'));
       },
 
     });

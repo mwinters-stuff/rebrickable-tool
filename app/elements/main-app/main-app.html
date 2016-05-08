@@ -33,6 +33,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../list-parts/list-parts.html">
 <link rel="import" href="../show-set/show-set.html">
 <link rel="import" href="../manage-moc-parts/manage-moc-parts.html">
+<link rel="import" href="../manage-part-lists/manage-part-lists.html">
+<link rel="import" href="../manage-set-lists/manage-set-lists.html">
 
 <dom-module id="main-app">
   <template>
@@ -61,6 +63,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       active="{{_manageMocPartsActive}}">
     </carbon-route>
 
+    <carbon-route route="{{route}}"
+      pattern="/app/manage-set-lists"
+      active="{{_manageSetListsActive}}">
+    </carbon-route>
+
+    <carbon-route route="{{route}}"
+      pattern="/app/manage-part-lists"
+      active="{{_managePartListsActive}}">
+    </carbon-route>
+
     <iron-pages attr-for-selected="data-route" selected="{{page}}">
       <section data-route="sets" tabindex="-1">
         <list-sets set-list-id="{{_setsData.setListId}}" tabs-to-show="{{tabsToShow}}" showing="{{_setsActive}}" user-hash="{{userHash}}" route="{{route}}"></list-sets>
@@ -78,6 +90,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <manage-moc-parts showing="{{_manageMocPartsActive}}" tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}"  route="{{route}}"> </manage-moc-parts>
       </section>
 
+      <section data-route="manage-set-lists" tabindex="-1">
+        <manage-set-lists showing="{{_manageSetListsActive}}" tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}"  route="{{route}}"> </manage-set-lists>
+      </section>
+      <section data-route="manage-part-lists" tabindex="-1">
+        <manage-part-lists showing="{{_managePartListsActive}}" tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}"  route="{{route}}"> </manage-part-lists>
+      </section>
     </iron-pages>
 
   </template>
