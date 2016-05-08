@@ -106,11 +106,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _resizeTable: function() {
         var drawerPanel = document.getElementById('paperDrawerPanel');
-        this.set('_height',drawerPanel.clientHeight - (128+32+16));
-        console.log('_height',this._height);
+        if(drawerPanel){
+          this.set('_height',drawerPanel.clientHeight - (128+32+16));
+        }
       },
 
-      
+
       _onHashChanged: function() {
         this.set('_data',[]);
         if(this.userHash && this.setListId)  {

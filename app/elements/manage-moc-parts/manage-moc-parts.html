@@ -353,12 +353,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       _onPartsListsChanged: function() {
-        if (this._partListParts && this._setParts && this._partListParts.parts && this._partListParts.parts.length && this._setParts.length) {
+        if (this._partListParts && this._setParts && this._partListParts && this._partListParts.length && this._setParts.length) {
           this.set('_buildHaveParts', []);
           this.set('_buildHavePartsDisabled', true);
           this.set('_buildDontHaveParts',[]);
           this.set('_buildDontHavePartsDisabled',true);
-          this.set('_partListPartsDisabled', this._partListParts.parts.length === 0);
+          this.set('_partListPartsDisabled', this._partListParts.length === 0);
 
           this._buildHaveParts = [];
           this._buildDontHaveParts = [];
@@ -368,7 +368,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           XP.forEach(this._setParts[0].parts, function(part) {
             //console.log('finding part', part.part_id, part.rb_color_id, part.qty);
-            var havePart = XP.find(this._partListParts.parts, function(sparePart) {
+            var havePart = XP.find(this._partListParts, function(sparePart) {
               return part.part_id === sparePart.part_id && part.rb_color_id === sparePart.rb_color_id;
             }, this);
 
@@ -400,13 +400,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _onRemoveHavePartsClick: function() {
         XP.forEach(this._buildHaveParts, function(part) {
-          var listPart = XP.find(this._partListParts.parts, function(sparePart) {
+          var listPart = XP.find(this._partListParts, function(sparePart) {
             return part.part_id === sparePart.part_id && part.rb_color_id === sparePart.rb_color_id;
           }, this);
           if (listPart) {
-            var idx = XP.indexOf(this._partListParts.parts,listPart);
+            var idx = XP.indexOf(this._partListParts,listPart);
 
-            this.set('_partListParts.parts.' + idx + '.qty',listPart.qty - part.qty);
+            this.set('_partListParts.' + idx + '.qty',listPart.qty - part.qty);
           }
 
         },this);
@@ -470,7 +470,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _onSavePartsListClick: function() {
         this._savePartsList('Name of Parts List',
           this._selectedPartList.innerText.trim(),
-          this._partListParts.parts
+          this._partListParts
         );
 
       },
