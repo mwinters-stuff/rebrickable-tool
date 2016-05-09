@@ -57,9 +57,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
   </style>
   <iron-ajax id="theAjaxPartLists" method="GET" url="https://rebrickable.com/api/get_user_part_lists" params="{{_paramsPartLists}}" handle-as="json" last-response="{{_dataPartLists}}"></iron-ajax>
-  <iron-ajax id="theAjaxDeletePartLists" method="POST" url="https://rebrickable.com/api/del_user_partlist" handle-as="text"></iron-ajax>
-  <iron-ajax id="theAjaxAddPartLists" method="POST" url="https://rebrickable.com/api/add_user_partlist" handle-as="text"></iron-ajax>
-  <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text"></iron-ajax>
+  <!-- <iron-ajax id="theAjaxDeletePartLists" method="POST" url="https://rebrickable.com/api/del_user_partlist" handle-as="text" on-response="_onDeletePartLists"></iron-ajax> -->
+  <iron-ajax id="theAjaxAddPartLists" method="POST" url="https://rebrickable.com/api/add_user_partlist" handle-as="text" on-response="_onAddPartListResponse"></iron-ajax>
+  <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text" on-response="_onSetUserPartsResponse"></iron-ajax>
 
   <colour-list id="colours"></colour-list>
 
@@ -374,21 +374,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             if (havePart) {
             //  console.log('found part', havePart.part_id, havePart.rb_color_id, havePart.qty);
-              var qtyNeed = part.qty;
-              var qtyHave = havePart.qty;
+              var workPart = XP.clone(part);
+              var qtyNeed = XP.toNumber(workPart.qty);
+              var qtyHave = XP.toNumber(havePart.qty);
               if (qtyHave >= qtyNeed) {
-                buildHaveParts.push(Object.assign(part));
+                buildHaveParts.push(XP.clone(workPart));
                 //havePart.qty = qtyHave - qtyNeed;
               } else {
                 var qtyDontHave = qtyNeed - qtyHave;
                 //havePart.qty = 0;
-                part.qty = qtyHave;
-                buildHaveParts.push(Object.assign(part));
-                part.qty = qtyDontHave;
-                buildDontHaveParts.push(Object.assign(part));
+                workPart.qty = qtyHave;
+                buildHaveParts.push(XP.clone(workPart));
+                workPart.qty = qtyDontHave;
+                buildDontHaveParts.push(XP.clone(workPart));
               }
             } else {
-              buildDontHaveParts.push(Object.assign(part));
+              buildDontHaveParts.push(XP.clone(part));
             }
           }, this);
           this.set('_buildHaveParts', buildHaveParts);
@@ -526,16 +527,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       },
 
-      _deleteUserPartList: function(partListId, callback) {
-        this.$.theAjaxDeletePartLists.body = {
-          'key': 'p4GLMlcPxJ',
-          'hash': this.userHash,
-          'format': 'json',
-          'partlist_id': partListId
-        };
-
-        this.$.theAjaxDeletePartLists.addEventListener('response',callback);
-      },
+      // _deleteUserPartList: function(partListId, callback) {
+      //   this.$.theAjaxDeletePartLists.body = {
+      //     'key': 'p4GLMlcPxJ',
+      //     'hash': this.userHash,
+      //     'format': 'json',
+      //     'partlist_id': partListId
+      //   };
+      //   //this.$.theAjaxDeletePartLists.addEventListener('response',callback);
+      // },
 
       _addUserPartList: function(descr, type, callback) {
         this.$.theAjaxAddPartLists.contentType = 'application/x-www-form-urlencoded';
@@ -547,18 +547,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           'type': type,
         };
 
-
+        this._addUserPartListCallback = callback;
         this.$.theAjaxAddPartLists.body = parms;//= JSON.stringify(parms);
+        this.$.theAjaxAddPartLists.generateRequest();
+      },
 
-        this.$.theAjaxAddPartLists.addEventListener('response',function(e){
+      _onAddPartListResponse: function(e){
           if(XP.startsWith(e.detail.response,'SUCCESS')){
             var vals = XP.split(e.detail.response,' ');
-            callback(vals.length === 2,vals.length === 2 ? vals[1] : -1 );
+            this._addUserPartListCallback(vals.length === 2,vals.length === 2 ? vals[1] : -1 );
           }else{
-            callback(false,-1);
+            this._addUserPartListCallback(false,-1);
           }
-        });
-        this.$.theAjaxAddPartLists.generateRequest();
+          this._addUserPartListCallback = undefined;
       },
 
       _setUserPartList: function(partListId, parts, callback){
@@ -566,6 +567,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         XP.forEach(parts,function(part){
           partsList.push(part.part_id + ' ' + part.rb_color_id + ' ' + part.qty);
         });
+        this._setUserPartListCallback = callback;
 
         this.$.theAjaxSetUserParts.contentType = 'application/x-www-form-urlencoded';
         this.$.theAjaxSetUserParts.body = {
@@ -575,12 +577,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           'partlist_id': partListId,
           'parts': XP.join(partsList,',')
         };
-
-        this.$.theAjaxSetUserParts.addEventListener('response',function(e){
-          callback(XP.startsWith(e.detail.response,'SUCCESS'));
-        });
-
         this.$.theAjaxSetUserParts.generateRequest();
+      },
+
+      _onSetUserPartsResponse: function(e){
+          this._setUserPartListCallback(XP.startsWith(e.detail.response,'SUCCESS'));
+          this._setUserPartListCallback = undefined;
       },
 
       _onCollapseHaveParts: function() {

@@ -51,7 +51,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </question-dialog>
 
     <paper-material elevation="1">
-      <iron-data-table id="dataTable" items="[[_data.sets]]" on-selected-item-changed="_onItemSelected" selection-enabled style="height: [[_height]]px">
+      <iron-data-table id="dataTable" items="[[_data.sets]]" on-selected-item-changed="_onItemSelected" selection-enabled style$="height: [[_height]]px">
         <data-table-column name="Name" flex="50">
           <template>[[item.name]]</template>
         </data-table-column>
@@ -106,7 +106,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           _setListItem: {
             type: Object,
             value: {},
+          },
 
+          _params: {
+            type: Object,
           },
 
         },
@@ -154,7 +157,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if(drawerPanel){
             this.set('_height', drawerPanel.clientHeight - (128 + 32 + 16));
           }
-          
+
         },
 
         _onItemSelected: function(e){

@@ -35,7 +35,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       last-response="{{_data}}" >
     </iron-ajax>
 
-    <iron-data-table id="dataTable" items="[[_data.0.sets]]" selection-enabled on-selected-item-changed="_onSelectedChanged" style="height: [[_height]]px">
+    <iron-data-table id="dataTable" items="[[_data.0.sets]]" selection-enabled on-selected-item-changed="_onSelectedChanged" style$="height: [[_height]]px">
       <data-table-column align-right width="20px">
         <template><iron-image  src="[[item.img_sm]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image></template>
       </data-table-column>

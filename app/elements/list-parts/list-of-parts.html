@@ -52,7 +52,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text" content-type = 'application/x-www-form-urlencoded' on-response="_onSetUserPartsResponse"></iron-ajax>
 
-      <iron-data-table id="dataTable" items="[[parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled style="height: [[_height]]px">
+      <iron-data-table id="dataTable" items="[[parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled style$="height: [[_height]]px">
         <data-table-column width="40px">
           <template>
             <iron-image src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
