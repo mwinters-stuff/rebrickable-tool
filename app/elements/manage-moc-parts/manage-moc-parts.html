@@ -94,7 +94,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
-        <list-of-parts user-hash="{{userHash}}" part-list-id="{{_selectedPartListId}}" parts="{{_partListParts}}" disable-popup on-selected-item-changed="_onPartListItemSelected"></list-of-parts>
+        <list-of-parts id="_partListOfParts" user-hash="{{userHash}}" part-list-id="{{_selectedPartListId}}" parts="{{_partListParts}}" disable-popup on-selected-item-changed="_onPartListItemSelected"></list-of-parts>
       </div>
 
 
@@ -103,7 +103,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-icon-button icon="{{_havePartsCollapseIcon}}" on-click="_onCollapseHaveParts"></paper-icon-button>
           <div>Have Parts</div>
           <span class="space"></span>
-          <paper-icon-button icon="icons:remove-circle" on-click="_onRemoveHavePartsClick" disabled="{{_partListPartsDisabled}}"></paper-icon-button>
+          <!-- <paper-icon-button icon="icons:remove-circle" on-click="_onRemoveHavePartsClick" disabled="{{_partListPartsDisabled}}"></paper-icon-button> -->
           <paper-icon-button icon="icons:save" on-click="_onSaveHavePartsListClick" disabled="{{_buildHavePartsDisabled}}"></paper-icon-button>
         </paper-toolbar>
         <iron-collapse id="collapseHaveParts" opened="{{_collapseHavePartsOpened}}">
@@ -240,7 +240,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         _partListParts: {
           type: Array,
           value: [],
-          observer: '_onPartsListsChanged'
+          observer: '_onPartsListsChanged',
+          notify: true,
         },
 
         _partListPartsDisabled: {
@@ -302,6 +303,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Boolean,
           observer: '_collapseDontHavePartsOpenedChanged'
         },
+
+        _dontCreateLists:{
+          type: Boolean,
+          value: false,
+        }
       },
 
       ready: function() {
@@ -353,65 +359,78 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       _onPartsListsChanged: function() {
-        if (this._partListParts && this._setParts && this._partListParts && this._partListParts.length && this._setParts.length) {
-          this.set('_buildHaveParts', []);
-          this.set('_buildHavePartsDisabled', true);
-          this.set('_buildDontHaveParts',[]);
-          this.set('_buildDontHavePartsDisabled',true);
-          this.set('_partListPartsDisabled', this._partListParts.length === 0);
+        if(!this._dontCreateLists){
+          if (this._partListParts && this._setParts && this._partListParts && this._partListParts.length && this._setParts.length) {
+            this.set('_buildHaveParts', []);
+            this.set('_buildHavePartsDisabled', true);
+            this.set('_buildDontHaveParts',[]);
+            this.set('_buildDontHavePartsDisabled',true);
+            this.set('_partListPartsDisabled', this._partListParts.length === 0);
 
-          this._buildHaveParts = [];
-          this._buildDontHaveParts = [];
+            this._buildHaveParts = [];
+            this._buildDontHaveParts = [];
 
-          var buildHaveParts = [];
-          var buildDontHaveParts = [];
+            var buildHaveParts = [];
+            var buildDontHaveParts = [];
 
-          XP.forEach(this._setParts[0].parts, function(part) {
-            //console.log('finding part', part.part_id, part.rb_color_id, part.qty);
-            var havePart = XP.find(this._partListParts, function(sparePart) {
-              return part.part_id === sparePart.part_id && part.rb_color_id === sparePart.rb_color_id;
-            }, this);
+            XP.forEach(this._setParts[0].parts, function(part) {
+              //console.log('finding part', part.part_id, part.rb_color_id, part.qty);
+              var havePart = XP.find(this._partListParts, function(sparePart) {
+                return part.part_id === sparePart.part_id && part.rb_color_id === sparePart.rb_color_id;
+              }, this);
 
-            if (havePart) {
-            //  console.log('found part', havePart.part_id, havePart.rb_color_id, havePart.qty);
-              var workPart = XP.clone(part);
-              var qtyNeed = XP.toNumber(workPart.qty);
-              var qtyHave = XP.toNumber(havePart.qty);
-              if (qtyHave >= qtyNeed) {
-                buildHaveParts.push(XP.clone(workPart));
-                //havePart.qty = qtyHave - qtyNeed;
+              if (havePart) {
+              //  console.log('found part', havePart.part_id, havePart.rb_color_id, havePart.qty);
+                var workPart = XP.clone(part);
+                var qtyNeed = XP.toNumber(workPart.qty);
+                var qtyHave = XP.toNumber(havePart.qty);
+                var qtyLeft = 0;
+                if (qtyHave >= qtyNeed) {
+                  buildHaveParts.push(XP.clone(workPart));
+                  //havePart.qty = qtyHave - qtyNeed;
+                  qtyLeft = qtyHave - qtyNeed;
+                } else {
+                  var qtyDontHave = qtyNeed - qtyHave;
+                  //havePart.qty = 0;
+                  workPart.qty = qtyHave;
+                  buildHaveParts.push(XP.clone(workPart));
+                  workPart.qty = qtyDontHave;
+                  buildDontHaveParts.push(XP.clone(workPart));
+                }
+
+                var idx2 = XP.indexOf(this._partListParts, havePart);
+                if(idx2 >= 0){
+                  havePart.qty =  qtyLeft;
+                  havePart.edited = true;
+                }
+
               } else {
-                var qtyDontHave = qtyNeed - qtyHave;
-                //havePart.qty = 0;
-                workPart.qty = qtyHave;
-                buildHaveParts.push(XP.clone(workPart));
-                workPart.qty = qtyDontHave;
-                buildDontHaveParts.push(XP.clone(workPart));
+                buildDontHaveParts.push(XP.clone(part));
               }
-            } else {
-              buildDontHaveParts.push(XP.clone(part));
-            }
-          }, this);
-          this.set('_buildHaveParts', buildHaveParts);
-          this.set('_buildHavePartsDisabled', buildHaveParts.length === 0);
-          this.set('_buildDontHaveParts',buildDontHaveParts);
-          this.set('_buildDontHavePartsDisabled',buildDontHaveParts.length === 0);
-        }
-      },
-
-      _onRemoveHavePartsClick: function() {
-        XP.forEach(this._buildHaveParts, function(part) {
-          var listPart = XP.find(this._partListParts, function(sparePart) {
-            return part.part_id === sparePart.part_id && part.rb_color_id === sparePart.rb_color_id;
-          }, this);
-          if (listPart) {
-            var idx = XP.indexOf(this._partListParts,listPart);
-
-            this.set('_partListParts.' + idx + '.qty',listPart.qty - part.qty);
+            }, this);
+            this.set('_buildHaveParts', buildHaveParts);
+            this.set('_buildHavePartsDisabled', buildHaveParts.length === 0);
+            this.set('_buildDontHaveParts',buildDontHaveParts);
+            this.set('_buildDontHavePartsDisabled',buildDontHaveParts.length === 0);
+            this.notifyPath('_partListPaths');
           }
-
-        },this);
+        }
+        this._dontCreateLists = false;
       },
+
+      // _onRemoveHavePartsClick: function() {
+      //   XP.forEach(this._buildHaveParts, function(part) {
+      //     var listPart = XP.find(this._partListParts, function(sparePart) {
+      //       return part.part_id === sparePart.part_id && part.rb_color_id === sparePart.rb_color_id;
+      //     }, this);
+      //     if (listPart) {
+      //       var idx = XP.indexOf(this._partListParts,listPart);
+      //
+      //       this.set('_partListParts.' + idx + '.qty',listPart.qty - part.qty);
+      //     }
+      //
+      //   },this);
+      // },
 
       getColour: function(rb_color_id) {
         return this.$.colours.getColour(rb_color_id);
@@ -425,18 +444,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         //console.log(e);
         this._partListSelectedPart = e.detail.value;
         this.set('_usePartDisabled', !this._partListSelectedPart || !this._dontHaveSelectedPart);
-
       },
 
       _onDontHaveItemSelected: function(e) {
         //console.log(e);
         this._dontHaveSelectedPart = e.detail.value;
         this.set('_usePartDisabled', !this._partListSelectedPart || !this._dontHaveSelectedPart);
+        if(this._dontHaveSelectedPart){
+          this.$._partListOfParts.filterPartId(this._dontHaveSelectedPart.part_id);
+        }
       },
 
       _onUsePartClick: function() {
         if (this._partListSelectedPart && this._dontHaveSelectedPart) {
-          this._usePartQty = this._dontHaveSelectedPart.qty >= this._partListSelectedPart.qty ? this._dontHaveSelectedPart.qty : this._partListSelectedPart.qty;
+          this._usePartQty = XP.toNumber(this._dontHaveSelectedPart.qty) >=
+            XP.toNumber(this._partListSelectedPart.qty) ?
+            XP.toNumber(this._partListSelectedPart.qty) : XP.toNumber(this._dontHaveSelectedPart.qty);
           this.$.partUseDialog.open();
         } else {
           this.$.toast.text = 'No Parts to use selected!';
@@ -444,27 +467,45 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       },
 
+      _changeHavePartQuantity: function(part, newQuantity){
+        var copyParts = XP.clone(this._buildHaveParts);
+        var element = XP.find(copyParts, function(p){
+          return p.part_id === part.part_id && p.rb_color_id === part.rb_color_id;
+        });
+        if(!element){
+          element = XP.clone(part);
+          copyParts.push(element);
+        }
+        element.qty = newQuantity;
+        element.edited = 'True';
+        this.set('_buildHaveParts',copyParts);
+      },
+
+      _changeDontHavePartQuantity: function(part, newQuantity){
+        var copyParts = XP.clone(this._buildDontHaveParts);
+        var element = XP.find(copyParts, function(p){
+          return p.part_id === part.part_id && p.rb_color_id === part.rb_color_id;
+        });
+        if(!element){
+          element = XP.clone(part);
+          copyParts.push(element);
+        }
+        element.qty = newQuantity;
+        element.edited = 'True';
+        this.set('_buildDontHaveParts',copyParts);
+      },
+
       _partUseDialogClosed: function(closingReason) {
         if (closingReason.detail.confirmed) {
-          var newPart = {
-            part_id: this._partListSelectedPart.part_id,
-            part_name: this._partListSelectedPart.part_name,
-            rb_color_id: this._partListSelectedPart.rb_color_id,
-            qty: this._usePartQty,
-            part_img_url: ''
-          };
-          this.push('_buildHaveParts', newPart);
-
-          if (this._usePartQty === this._dontHaveSelectedPart.qty) {
-            this.arrayDelete('_buildDontHaveParts', this._dontHaveSelectedPart);
-            this.set('_dontHaveSelectedPart', null);
-          } else {
-            var idx = XP.indexOf(this._buildDontHaveParts, this._dontHaveSelectedPart);
-            if (idx >= 0) {
-              this._dontHaveSelectedPart.qty = this._dontHaveSelectedPart.qty - this._usePartQty;
-              this.set('_buildDontHaveParts.' + idx + '.qty', this._dontHaveSelectedPart.qty);
-            }
+          this._dontCreateLists = true;
+          this._changeHavePartQuantity(this._partListSelectedPart, this._usePartQty);
+          var dontQty = 0;
+          if (XP.toNumber(this._usePartQty) !== XP.toNumber(this._dontHaveSelectedPart.qty)) {
+            dontQty = XP.toNumber(this._dontHaveSelectedPart.qty) - XP.toNumber(this._usePartQty);
           }
+          this._changeDontHavePartQuantity(this._dontHaveSelectedPart, dontQty);
+
+          this.$._partListOfParts.changeQuantityOfPart(this._partListSelectedPart, XP.toNumber(this._partListSelectedPart.qty) - XP.toNumber(this._usePartQty));
         }
       },
 
