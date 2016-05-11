@@ -258,6 +258,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         _buildHaveParts: {
           type: Array,
           value: [],
+          notify: true,
         },
 
         _buildHavePartsDisabled: {
@@ -268,6 +269,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         _buildDontHaveParts: {
           type: Array,
           value: [],
+          notify: true,
         },
 
         _buildDontHavePartsDisabled: {
@@ -469,6 +471,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _changeHavePartQuantity: function(part, newQuantity){
         var copyParts = XP.clone(this._buildHaveParts);
+        this.set('_buildHaveParts',[]);
         var element = XP.find(copyParts, function(p){
           return p.part_id === part.part_id && p.rb_color_id === part.rb_color_id;
         });
@@ -483,6 +486,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _changeDontHavePartQuantity: function(part, newQuantity){
         var copyParts = XP.clone(this._buildDontHaveParts);
+        this.set('_buildDontHaveParts',[]);
         var element = XP.find(copyParts, function(p){
           return p.part_id === part.part_id && p.rb_color_id === part.rb_color_id;
         });
