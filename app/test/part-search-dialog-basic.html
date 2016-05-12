@@ -53,7 +53,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       MockInteractions.tap(menu);
     }
 
-    describe('set-search-dialog tests', function() {
+    describe('part-search-dialog tests', function() {
       var element;
       var server;
       var dropDownPartType;
@@ -114,7 +114,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         ]);
 
         element.$._partTypesElement.$.theAjax.generateRequest();
-        server.respond();
+        server.respondImmediately = true;
         Polymer.dom.flush();
       });
 
@@ -149,7 +149,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       it('search for Arch Bricks', function(done) {
+        listener1 = function() {
+          element.removeEventListener('loading-finished', listener1);
+          flush(function(){
+            console.log('search');
+            expect(element._dataSearch).to.be.ok;
+            expect(element._dataSearch.results).to.have.lengthOf(2);
+            expect(buttonOk).to.have.property('disabled', true);
+            expect(grid).to.have.property('size', 2);
+
+            grid.selectItem(1);
+            Polymer.dom.flush();
+            expect(buttonOk).to.have.property('disabled', false);
+            expect(element).to.have.property('_selectedSearchPart', element._dataSearch.results[1]);
+            MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-confirm]'));
+          });
+        };
+
+        listener2 = function() {
+          flush(function(){
+            console.log('done');
+            expect(element).to.have.property('result', element._dataSearch.results[1]);
+            done();
+          });
+        };
+
+
         runAfterOpen(element, function() {
+          element.addEventListener('accepted', listener2);
+
           runAfterOpenDropDown(dropDownPartType, function() {
             var partTypeItem = Polymer.dom(dropDownPartType).querySelectorAll('paper-item')[1];
             expect(partTypeItem).to.have.property('part_type_id', '20');
@@ -171,32 +199,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               element._searchInput = 'Arch';
               expect(inputSearch).to.have.property('value', 'Arch');
               Polymer.dom.flush();
-
-              listener1 = function() {
-
-                expect(element._dataSearch).to.be.ok;
-                expect(element._dataSearch.results).to.have.lengthOf(2);
-                expect(buttonOk).to.have.property('disabled', true);
-                expect(grid).to.have.property('size', 2);
-
-                grid.selectItem(1);
-                Polymer.dom.flush();
-                expect(buttonOk).to.have.property('disabled', false);
-                expect(element).to.have.property('_selectedSearchPart', element._dataSearch.results[1]);
-                MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-confirm]'));
-              };
-
-              listener2 = function() {
-                element.removeEventListener('accepted', this);
-                expect(element).to.have.property('result', element._dataSearch.results[1]);
-                done();
-              };
-
               element.addEventListener('loading-finished', listener1);
-              element.addEventListener('accepted', listener2);
 
               MockInteractions.pressEnter(Polymer.dom(element.root).querySelector('#_searchDialogInput'));
-              server.respond();
 
             });
           });
@@ -204,6 +209,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       it('search for nothing', function(done) {
+        listener1 = function() {
+          expect(grid).to.have.property('size', 0);
+          expect(buttonOk).to.have.property('disabled', true);
+          done();
+        };
+
+        listener2 = function(){
+        };
+
+
         runAfterOpen(element, function() {
           runAfterOpenDropDown(dropDownPartType, function() {
             var partTypeItem = Polymer.dom(dropDownPartType).querySelectorAll('paper-item')[1];
@@ -227,19 +242,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               expect(inputSearch).to.have.property('value', 'nothing');
               Polymer.dom.flush();
 
-              listener1 = function() {
-                expect(grid).to.have.property('size', 0);
-                expect(buttonOk).to.have.property('disabled', true);
-                done();
-              };
-
-              listener2 = function(){
-              };
-
               element.addEventListener('loading-finished', listener1);
 
               MockInteractions.pressEnter(Polymer.dom(element.root).querySelector('#_searchDialogInput'));
-              server.respond();
+
 
             });
           });

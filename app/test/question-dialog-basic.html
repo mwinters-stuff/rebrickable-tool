@@ -37,7 +37,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
 /*jshint -W030 */
   function runAfterOpen(dialog, callback) {
-    dialog.$$('paper-dialog').addEventListener('iron-overlay-opened', callback);
+    var func = function() {
+      dialog.$$('paper-dialog').removeEventListener('iron-overlay-opened', func);
+      Polymer.Base.async(callback, 1);
+    };
+    dialog.$$('paper-dialog').addEventListener('iron-overlay-opened', func);
     dialog.open();
   }
 

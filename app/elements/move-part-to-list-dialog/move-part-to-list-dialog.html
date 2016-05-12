@@ -1,0 +1,125 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
+<link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<!-- Paper elements -->
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+
+<dom-module id="move-part-to-list-dialog">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+      /*paper-dialog {
+        width: 600px;
+      }*/
+    </style>
+    <iron-ajax id="theAjaxPartList" url="https://rebrickable.com/api/get_user_part_lists" params="{{_params}}" handle-as="json" last-response="{{_dataPartLists}}">
+    </iron-ajax>
+
+    <paper-dialog id="_dialog" on-iron-overlay-closed="_onDialogClosed">
+      <div class="horiz">
+        <div>
+        <h2>Move quantity of part to other list</h2>
+          <paper-dropdown-menu autofocus id="_dropdownPartList" label="Part List" selected-item="{{_selectedPartList}}">
+            <paper-listbox id="_dropdownPartList" class="dropdown-content">
+              <template is="dom-repeat" items="{{_dataPartLists.partlists}}">
+                <paper-item partlist_id="{{item.partlist_id}}">{{item.descr}}</paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+          <paper-input  id="_quantityInput" label="Quantity" min="1" value="{{quantity}}" max="{{part.qty}}" type="number">
+          </paper-input>
+        </div>
+        <iron-image src="[[part.part_img_url]]" preload style="width:100px; height:100px;" sizing="contain"></iron-image>
+      </div>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm disabled="{{!_dialogOk}}">Accept</paper-button>
+      </div>
+    </paper-dialog>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'move-part-to-list-dialog',
+
+      properties: {
+        userHash: {
+          type: String,
+          value: '',
+          observer: '_onHashChanged',
+        },
+
+        _params: {
+          type: Object,
+        },
+
+        _dataPartLists: {
+          type: Object,
+          value: {},
+        },
+
+        part: {
+          type: Object,
+          value: {},
+          observer: '_onPartChanged'
+        },
+
+        quantity: {
+          type: Number,
+          notify: true,
+          value: 1,
+        },
+
+      },
+
+      _onPartChanged: function(){
+        if(this.part){
+          this.set('quantity',this.part.qty);
+        }
+      },
+
+      _onHashChanged: function(){
+        if (this.userHash) {
+          this._dataPartLists = [];
+          this._params = {
+            key: 'p4GLMlcPxJ',
+            hash: this.userHash,
+            format: 'json'
+          };
+        }
+      },
+
+      open: function() {
+        this.$._dialog.open();
+
+        this.$.theAjaxPartList.generateRequest();
+      },
+    });
+  })();
+  </script>
+</dom-module>

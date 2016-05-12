@@ -22,6 +22,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../colour-list/colour-list.html">
 <link rel="import" href="../show-part/show-part.html">
 <link rel="import" href="../quantity-input-dialog/quantity-input-dialog.html">
+<link rel="import" href="../move-part-to-list-dialog/move-part-to-list-dialog.html">
 
 <dom-module id="list-of-parts">
   <template>
@@ -42,7 +43,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
     <colour-list id="colours"></colour-list>
     <quantity-input-dialog id="_quantityInputDialog" title="Edit Part Quantity" on-dialog-closed="_onQuantityInputDialogClosed"></quantity-input-dialog>
-
+    <move-part-to-list-dialog id="_movePartDialog" part="{{_tempPartItem}}" user-hash="{{userHash}}" on-dialog-closed="_onMovePartDialogClosed"></move-part-to-list-dialog>
     <iron-ajax id="theAjax"
       url="https://rebrickable.com/api/get_user_parts"
       params="{{_params}}"
@@ -61,8 +62,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <data-table-column align-right width="20px" name="Qty">
           <template><div class$="[[item.edited]]">[[item.qty]]</div></template>
         </data-table-column>
-        <data-table-column align-left width="30px" >
-          <template><paper-icon-button icon="editor:mode-edit" part-item="[[item]]" on-tap="_onTapEditQuantity"></paper-icon-button></template>
+        <data-table-column align-left width="60px" >
+          <template>
+            <paper-icon-button icon="editor:mode-edit" part-item="[[item]]" on-tap="_onTapEditQuantity"></paper-icon-button>
+            <paper-icon-button icon="icons:arrow-forward" part-item="[[item]]" on-tap="_onTapMovePart"></paper-icon-button>
+          </template>
         </data-table-column>
         <data-table-column name="Part ID" width="50px" filter-by="part_id">
           <template><div class$="[[item.edited]]">[[item.part_id]]</div></template>
@@ -94,6 +98,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         userHash: {
           type: String,
           observer: '_onHashChanged',
+          notify: true,
         },
 
         _params: {
@@ -286,6 +291,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           element.edited = 'True';
           this.set('parts',copyParts);
         }
+      },
+
+      _onTapMovePart: function(e){
+        var partItem = null;
+        for(var i = 0; i < e.path.length; i++){
+          if(e.path[i].partItem){
+            partItem = e.path[i].partItem;
+            break;
+          }
+        }
+        if(!partItem) {
+          return;
+        }
+
+        this._tempPartItem = partItem;
+        this.$._movePartDialog.open();
+      },
+
+      _onMovePartDialogClosed: function(){
+
       },
 
     });
