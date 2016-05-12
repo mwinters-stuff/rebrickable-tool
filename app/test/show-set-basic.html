@@ -36,6 +36,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   describe('show-set tests', function() {
     var element;
     var server;
+    var listener;
 
     beforeEach(function() {
       element = fixture('basic');
@@ -47,7 +48,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
          '[{"set_id":"71011-1","type":"set","pieces":"4","descr":"Farmer","theme":"Collectible Minifigures","year":"2016","img_tn":"http:\/\/rebrickable.com\/img\/sets-t\/71011-1.jpg","img_sm":"http:\/\/rebrickable.com\/img\/sets-s\/71011-1.jpg","img_big":"http:\/\/rebrickable.com\/img\/sets-b\/71011-1.jpg"}]'
       ]);
 
-      server.respondWith('https://rebrickable.com/api/set_user_set',
+      server.respondWith('POST','https://rebrickable.com/api/set_user_set',
         [200,{'Content-Type': 'application/text'},
          'SUCCESS'
       ]);
@@ -69,11 +70,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
          'eces\/elements\/4624905.jpg","rb_color_id":70,"part_type_id":26}]}]'
       ]);
 
-
+      server.respondImmediately = true;
     });
 
     afterEach(function() {
      server.restore();
+     element.removeEventListener('removed',listener);
     });
 
 
@@ -106,12 +108,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         done();
       });
-      server.respond();
+    //  server.respond();
 
     });
 
     it('remove set', function(done) {
       expect(element).to.be.ok;
+
+      listener = function() {
+        expect(element.route).to.be.ok;
+        expect(element.route.path).to.equal('/app/sets/12');
+        done();
+      };
+
+      element.addEventListener('removed',listener);
+
       element.userHash = '13213';
       element.setId = '71011-1';
       element.setListName = 'Bobs';
@@ -135,17 +146,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           expect(dialog.$$('div#content').innerText.trim()).to.equal('Do you want to remove set 71011-1 Farmer from list Bobs?');
 
           MockInteractions.tap(Polymer.dom(dialog.root).querySelector('[dialog-confirm]'));
-          server.respond();
 
-          flush(function(){
-            expect(element.route).to.be.ok;
-            expect(element.route.path).to.equal('/app/sets/12');
 
-            done();
-          });
+      //    server.respond();
         });
       });
-      server.respond();
+    //  server.respond();
 
     });
 

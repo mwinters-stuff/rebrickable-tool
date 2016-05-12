@@ -43,37 +43,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     describe('question-dialog tests', function() {
       var element;
+      var listener;
 
       beforeEach(function() {
         element = fixture('basic');
       });
 
+      afterEach(function() {
+        element.removeEventListener('dialog-closed',listener);
+      });
 
 
       it('test the dialog ok response', function(done) {
+        listener = function(e) {
+          expect(e.detail.confirmed).to.be.true;
+          done();
+        };
+        element.addEventListener('dialog-closed',listener);
+
         runAfterOpen(element, function() {
           flush(function(){
-            element.addEventListener('dialog-closed', function(e) {
-              expect(e.detail.confirmed).to.be.true;
-              done();
-            });
-
              MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-confirm]'));
           });
         });
       });
 
       it('test the dialog cancel response', function(done) {
+        listener = function(e) {
+          expect(e.detail.confirmed).to.be.false;
+          done();
+        };
+        element.addEventListener('dialog-closed',listener);
 
         runAfterOpen(element, function() {
           flush(function(){
-
-
-            element.addEventListener('dialog-closed', function(e) {
-              expect(e.detail.confirmed).to.be.false;
-              done();
-            });
-
              MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-dismiss]'));
           });
         });

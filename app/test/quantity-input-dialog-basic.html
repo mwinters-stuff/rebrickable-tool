@@ -35,18 +35,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
     /*jshint -W030 */
     function runAfterOpen(dialog, callback) {
-      dialog.$$('paper-dialog').addEventListener('iron-overlay-opened', callback);
+      var func = function() {
+        dialog.$$('paper-dialog').removeEventListener('iron-overlay-opened', func);
+        Polymer.Base.async(callback, 1);
+      };
+      dialog.$$('paper-dialog').addEventListener('iron-overlay-opened', func);
       dialog.open();
     }
 
     describe('quantity-input-dialog tests', function() {
       var element;
+      var listener;
 
       beforeEach(function() {
         element = fixture('basic');
       });
 
+      afterEach(function() {
+        element.addEventListener('dialog-closed',listener);
+      });
+
       it('tests the dialog', function(done) {
+        listener = function(e) {
+          expect(e.detail.confirmed).to.be.true;
+          done();
+        };
+        element.addEventListener('dialog-closed',listener);
+
         element.title = 'Title Text';
         element.label = 'Label Text';
         element.quantity = 2;
@@ -69,11 +84,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             input.value = 10;
             expect(element.quantity).to.equal(10);
-
-            element.addEventListener('dialog-closed', function(e) {
-              expect(e.detail.confirmed).to.be.true;
-              done();
-            });
 
             MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-confirm]'));
           });
