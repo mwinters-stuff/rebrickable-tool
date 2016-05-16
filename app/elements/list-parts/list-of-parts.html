@@ -31,10 +31,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
 
-      div.False{
-      }
+      div.False {}
 
-      div.True{
+      div.True {
         color: red;
       }
       /*#dataTable{
@@ -44,276 +43,283 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <colour-list id="colours"></colour-list>
     <quantity-input-dialog id="_quantityInputDialog" title="Edit Part Quantity" on-dialog-closed="_onQuantityInputDialogClosed"></quantity-input-dialog>
     <move-part-to-list-dialog id="_movePartDialog" part="{{_tempPartItem}}" user-hash="{{userHash}}" on-dialog-closed="_onMovePartDialogClosed"></move-part-to-list-dialog>
-    <iron-ajax id="theAjax"
-      url="https://rebrickable.com/api/get_user_parts"
-      params="{{_params}}"
-      handle-as="json"
-      on-response="_handleResponse"
-      ></iron-ajax>
+    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_user_parts" params="{{_params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
 
-      <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text" content-type = 'application/x-www-form-urlencoded' on-response="_onSetUserPartsResponse"></iron-ajax>
+    <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text" content-type='application/x-www-form-urlencoded' on-response="_onSetUserPartsResponse"></iron-ajax>
 
-      <iron-data-table id="dataTable" items="[[parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled style$="height: [[_height]]px">
-        <data-table-column width="40px">
-          <template>
-            <iron-image src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
-          </template>
-        </data-table-column>
-        <data-table-column align-right width="20px" name="Qty">
-          <template><div class$="[[item.edited]]">[[item.qty]]</div></template>
-        </data-table-column>
-        <data-table-column align-left width="60px" >
-          <template>
-            <paper-icon-button icon="editor:mode-edit" part-item="[[item]]" on-tap="_onTapEditQuantity"></paper-icon-button>
-            <paper-icon-button icon="icons:arrow-forward" part-item="[[item]]" on-tap="_onTapMovePart"></paper-icon-button>
-          </template>
-        </data-table-column>
-        <data-table-column name="Part ID" width="50px" filter-by="part_id">
-          <template><div class$="[[item.edited]]">[[item.part_id]]</div></template>
-        </data-table-column>
-        <data-table-column name="Part" flex="500" filter-by="part_name">
-          <template><div class$="[[item.edited]]">[[item.part_name]]</div></template>
-        </data-table-column>
-        <data-table-column name="Colour" width="40px">
-          <template>
-            <div class="box" style="background-color: {{getColour(item.rb_color_id)}}">
-            </div>
-          </template>
-        </data-table-column>
-      </iron-data-table>
-      <show-part id="showPart"></show-part>
+    <iron-data-table id="dataTable" items="[[parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled style$="height: [[_height]]px">
+      <data-table-column width="40px">
+        <template>
+          <iron-image src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
+        </template>
+      </data-table-column>
+      <data-table-column align-right width="20px" name="Qty">
+        <template>
+          <div class$="[[item.edited]]">[[item.qty]]</div>
+        </template>
+      </data-table-column>
+      <data-table-column align-left width="60px">
+        <template>
+          <paper-icon-button icon="editor:mode-edit" part-item="[[item]]" on-tap="_onTapEditQuantity"></paper-icon-button>
+          <paper-icon-button icon="icons:arrow-forward" part-item="[[item]]" on-tap="_onTapMovePart"></paper-icon-button>
+        </template>
+      </data-table-column>
+      <data-table-column name="Part ID" width="50px" filter-by="part_id">
+        <template>
+          <div class$="[[item.edited]]">[[item.part_id]]</div>
+        </template>
+      </data-table-column>
+      <data-table-column name="Part" flex="500" filter-by="part_name">
+        <template>
+          <div class$="[[item.edited]]">[[item.part_name]]</div>
+        </template>
+      </data-table-column>
+      <data-table-column name="Colour" width="40px">
+        <template>
+          <div class="box" style="background-color: {{getColour(item.rb_color_id)}}">
+          </div>
+        </template>
+      </data-table-column>
+    </iron-data-table>
+    <show-part id="showPart"></show-part>
   </template>
   <script>
-  (function() {
-    'use strict';
+    (function() {
+      'use strict';
 
-    Polymer({
-      is: 'list-of-parts',
+      Polymer({
+        is: 'list-of-parts',
 
-      properties: {
-        partListId: {
-          type: String,
-          observer: '_onHashChanged',
+        properties: {
+          partListId: {
+            type: String,
+            observer: '_onHashChanged',
+          },
+          userHash: {
+            type: String,
+            observer: '_onHashChanged',
+            notify: true,
+          },
+
+          _params: {
+            type: Object,
+          },
+
+          partsChanged: {
+            type: Boolean,
+            value: false,
+            notify: true,
+          },
+
+          selectedPart: {
+            type: Object,
+            notify: true,
+          },
+
+          parts: {
+            type: Object,
+            notify: true,
+          },
+
+          disablePopup: {
+            type: Boolean,
+            value: false,
+          },
+
+          editable: {
+            type: Boolean,
+            value: false,
+          },
+
+          _height: {
+            type: Number,
+            value: 400,
+          },
+
+
         },
-        userHash: {
-          type: String,
-          observer: '_onHashChanged',
-          notify: true,
+
+        attached: function() {
+          this.async(this._resizeTable);
+
+          window.addEventListener('resize', function() {
+            this.debounce('parts-resize', this._resizeTable, 1000);
+          }.bind(this));
         },
 
-        _params: {
-          type: Object,
-        },
-
-        partsChanged: {
-          type: Boolean,
-          value: false,
-          notify: true,
-        },
-
-        selectedPart: {
-          type: Object,
-          notify: true,
-        },
-
-        parts: {
-          type: Object,
-          notify: true,
-        },
-
-        disablePopup:{
-          type: Boolean,
-          value: false,
-        },
-
-        editable:{
-          type: Boolean,
-          value: false,
-        },
-
-        _height: {
-          type: Number,
-          value: 400,
-        },
-
-
-      },
-
-      attached: function(){
-        this.async(this._resizeTable);
-
-        window.addEventListener('resize', function() {
-          this.debounce('parts-resize', this._resizeTable,1000);
-        }.bind(this));
-      },
-
-      _resizeTable: function() {
-        var drawerPanel = document.getElementById('paperDrawerPanel');
-        if(drawerPanel){
-          this.set('_height',drawerPanel.clientHeight - (128+32+16));
-        }
-        // console.log('_height',this._height);
-      },
-
-      _onSelectedChanged: function(e) {
-        if(!this.disablePopup && e.detail && e.detail.value){
-          this.$.showPart.show(e.detail.value.part_id);
-        }
-        this.fire('selected-item-changed',e.detail);
-      },
-
-      getColour: function(colourid){
-        return this.$.colours.getColour(colourid);
-      },
-
-      getColourName: function(colourid){
-        return this.$.colours.getColourName(colourid);
-      },
-
-      _onHashChanged: function() {
-        if(this.userHash && this.partListId){
-          this.set('parts',{});
-          this.set('_params',{
-            key: 'p4GLMlcPxJ',
-            hash: this.userHash,
-            partlist_id: this.partListId,
-            format: 'json'
-          });
-          this.$.theAjax.generateRequest();
-        }
-      },
-
-      addPart: function(part_id, part_type_id,part_name, quantity, colour) {
-
-        var havePart = XP.find(this.parts, function(item){
-          return item.part_id === part_id && item.rb_color_id === colour;
-        });
-
-        if(havePart){
-          var index = XP.indexOf(this.parts, havePart);
-          this.set('parts.' + index + '.qty',XP.toNumber(havePart.qty) + XP.toNumber(quantity));
-          this.set('parts.' + index + '.edited','True');
-        }else{
-          this.push('parts',{
-            part_id: part_id,
-            part_name: part_name,
-            part_type_id: part_type_id,
-            rb_color_id: colour,
-            qty: quantity,
-            edited: 'True'
-          });
-          this.set('parts',XP.sortBy(this.parts, 'part_name'));
-        }
-        this.set('partsChanged',true);
-      },
-
-      _onTapEditQuantity: function(e){
-        var partItem = null;
-        for(var i = 0; i < e.path.length; i++){
-          if(e.path[i].partItem){
-            partItem = e.path[i].partItem;
-            break;
+        _resizeTable: function() {
+          var drawerPanel = document.getElementById('paperDrawerPanel');
+          if (drawerPanel) {
+            this.set('_height', drawerPanel.clientHeight - (128 + 32 + 16));
           }
-        }
-        if(!partItem) {
-          return;
-        }
+          // console.log('_height',this._height);
+        },
 
-        this._tempPartItem = partItem;
-
-        this.$._quantityInputDialog.quantity = partItem.qty;
-        this.$._quantityInputDialog.imgUrl = partItem.part_img_url;
-        this.$._quantityInputDialog.label = 'Quantity of Part: ' + partItem.part_id +
-          partItem.part_name + ' in Colour ' + this.getColourName(partItem.rb_color_id);
-
-        this.$._quantityInputDialog.open();
-      },
-
-      _onQuantityInputDialogClosed: function(e){
-        if(e.detail.confirmed) {
-          var index = XP.indexOf(this.parts, this._tempPartItem);
-          this.set('parts.' + index + '.qty',XP.toNumber(this.$._quantityInputDialog.quantity));
-          this.set('parts.' + index + '.edited','True');
-          this.set('partsChanged',true);
-        }
-        this._tempPartItem = null;
-      },
-
-      _setUserPartList: function(partListId, parts){
-        var partsList = [];
-        XP.forEach(parts,function(part){
-          partsList.push(part.part_id + ' ' + part.rb_color_id + ' ' + part.qty);
-        });
-
-        this.$.theAjaxSetUserParts.body = {
-          'key': 'p4GLMlcPxJ',
-          'hash': this.userHash,
-          'format': 'json',
-          'partlist_id': partListId,
-          'parts': XP.join(partsList,',')
-        };
-
-        this.$.theAjaxSetUserParts.generateRequest();
-      },
-
-      _onSetUserPartsResponse: function(e){
-        var ok = XP.startsWith(e.detail.response,'SUCCESS');
-        if(ok) {
-          this.set('partsChanged',false);
-          this.$.theAjax.generateRequest();
-        }
-        this.async(this._saveCallback(ok));
-      },
-
-      savePartList: function(callback){
-        this._saveCallback = callback;
-        this._setUserPartList(this.partListId, this.parts);
-      },
-
-      _handleResponse: function(response){
-        XP.forEach(response.detail.response.parts, function(part) {
-          part.edited = 'False';
-        });
-        this.set('parts',XP.sortBy(response.detail.response.parts, 'part_name'));
-      },
-
-      filterPartId: function(partId) {
-        this.set('dataTable.filter.0.filter',partId);
-      },
-
-      changeQuantityOfPart: function(part, newQuantity){
-        var copyParts = XP.clone(this.parts);
-        var element = XP.find(copyParts, function(p){
-          return p.part_id === part.part_id && p.rb_color_id === part.rb_color_id;
-        });
-        if(element){
-          element.qty = newQuantity;
-          element.edited = 'True';
-          this.set('parts',copyParts);
-        }
-      },
-
-      _onTapMovePart: function(e){
-        var partItem = null;
-        for(var i = 0; i < e.path.length; i++){
-          if(e.path[i].partItem){
-            partItem = e.path[i].partItem;
-            break;
+        _onSelectedChanged: function(e) {
+          if (!this.disablePopup && e.detail && e.detail.value) {
+            this.$.showPart.show(e.detail.value.part_id);
           }
-        }
-        if(!partItem) {
-          return;
-        }
+          this.fire('selected-item-changed', e.detail);
+        },
 
-        this._tempPartItem = partItem;
-        this.$._movePartDialog.open();
-      },
+        getColour: function(colourid) {
+          return this.$.colours.getColour(colourid);
+        },
 
-      _onMovePartDialogClosed: function(){
+        getColourName: function(colourid) {
+          return this.$.colours.getColourName(colourid);
+        },
 
-      },
+        _onHashChanged: function() {
+          if (this.userHash && this.partListId) {
+            this.set('parts', {});
+            this.set('_params', {
+              key: 'p4GLMlcPxJ',
+              hash: this.userHash,
+              partlist_id: this.partListId,
+              format: 'json'
+            });
+            this.$.theAjax.generateRequest();
+          }
+        },
 
-    });
-  })();
+        addPart: function(part_id, part_type_id, part_name, quantity, colour) {
+
+          var havePart = XP.find(this.parts, function(item) {
+            return item.part_id === part_id && item.rb_color_id === colour;
+          });
+
+          if (havePart) {
+            var index = XP.indexOf(this.parts, havePart);
+            this.set('parts.' + index + '.qty', XP.toNumber(havePart.qty) + XP.toNumber(quantity));
+            this.set('parts.' + index + '.edited', 'True');
+          } else {
+            this.push('parts', {
+              part_id: part_id,
+              part_name: part_name,
+              part_type_id: part_type_id,
+              rb_color_id: colour,
+              qty: quantity,
+              edited: 'True'
+            });
+            this.set('parts', XP.sortBy(this.parts, 'part_name'));
+          }
+          this.set('partsChanged', true);
+        },
+
+        _onTapEditQuantity: function(e) {
+          var partItem = null;
+          for (var i = 0; i < e.path.length; i++) {
+            if (e.path[i].partItem) {
+              partItem = e.path[i].partItem;
+              break;
+            }
+          }
+          if (!partItem) {
+            return;
+          }
+
+          this._tempPartItem = partItem;
+
+          this.$._quantityInputDialog.quantity = partItem.qty;
+          this.$._quantityInputDialog.imgUrl = partItem.part_img_url;
+          this.$._quantityInputDialog.label = 'Quantity of Part: ' + partItem.part_id +
+            partItem.part_name + ' in Colour ' + this.getColourName(partItem.rb_color_id);
+
+          this.$._quantityInputDialog.open();
+        },
+
+        _onQuantityInputDialogClosed: function(e) {
+          if (e.detail.confirmed) {
+            var index = XP.indexOf(this.parts, this._tempPartItem);
+            this.set('parts.' + index + '.qty', XP.toNumber(this.$._quantityInputDialog.quantity));
+            this.set('parts.' + index + '.edited', 'True');
+            this.set('partsChanged', true);
+          }
+          this._tempPartItem = null;
+        },
+
+        _setUserPartList: function(partListId, parts) {
+          var partsList = [];
+          XP.forEach(parts, function(part) {
+            partsList.push(part.part_id + ' ' + part.rb_color_id + ' ' + part.qty);
+          });
+
+          this.$.theAjaxSetUserParts.body = {
+            'key': 'p4GLMlcPxJ',
+            'hash': this.userHash,
+            'format': 'json',
+            'partlist_id': partListId,
+            'parts': XP.join(partsList, ',')
+          };
+
+          this.$.theAjaxSetUserParts.generateRequest();
+        },
+
+        _onSetUserPartsResponse: function(e) {
+          var ok = XP.startsWith(e.detail.response, 'SUCCESS');
+          if (ok) {
+            this.set('partsChanged', false);
+            this.$.theAjax.generateRequest();
+          }
+          this.async(this._saveCallback(ok));
+        },
+
+        savePartList: function(callback) {
+          this._saveCallback = callback;
+          this._setUserPartList(this.partListId, this.parts);
+        },
+
+        _handleResponse: function(response) {
+          XP.forEach(response.detail.response.parts, function(part) {
+            part.edited = 'False';
+          });
+          this.set('parts', XP.sortBy(response.detail.response.parts, 'part_name'));
+        },
+
+        filterPartId: function(partId) {
+          this.set('dataTable.filter.0.filter', partId);
+        },
+
+        changeQuantityOfPart: function(part, newQuantity) {
+          var copyParts = XP.clone(this.parts);
+          var element = XP.find(copyParts, function(p) {
+            return p.part_id === part.part_id && p.rb_color_id === part.rb_color_id;
+          });
+          if (element) {
+            element.qty = newQuantity;
+            element.edited = 'True';
+            this.set('parts', copyParts);
+          }
+        },
+
+        _onTapMovePart: function(e) {
+          var partItem = null;
+          for (var i = 0; i < e.path.length; i++) {
+            if (e.path[i].partItem) {
+              partItem = e.path[i].partItem;
+              break;
+            }
+          }
+          if (!partItem) {
+            return;
+          }
+
+          this._tempPartItem = partItem;
+          this.$._movePartDialog.open();
+        },
+
+        _onMovePartDialogClosed: function(e) {
+          if (!e.detail.canceled) {
+            var index = XP.indexOf(this.parts, this._tempPartItem);
+            this.set('parts.' + index + '.qty', this._tempPartItem.qty - XP.toNumber(this.$._movePartDialog.quantity));
+            this.set('parts.' + index + '.edited', 'True');
+            this.set('partsChanged', true);
+          }
+          this._tempPartItem = null;
+        },
+
+      });
+    })();
   </script>
 </dom-module>
