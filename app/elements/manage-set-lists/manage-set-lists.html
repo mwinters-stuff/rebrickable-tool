@@ -29,6 +29,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../input-dialog/input-dialog.html">
 <link rel="import" href="../input-dialog/question-dialog.html">
+<link rel="import" href="set-list-add-dialog.html">
 
 
 <dom-module id="manage-set-lists">
@@ -45,10 +46,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <paper-toast id="toast">
     </paper-toast>
 
-    <question-dialog id="_questionDelete" on-dialog-closed="_onDeleteDialogClosed">
+    <question-dialog id="_questionDelete" title="Delete Set List" on-dialog-closed="_onDeleteDialogClosed">
       Do you want to delete set list <b>{{_setListItem.name}}</b>?<br>
       All sets in this list will be deleted.
     </question-dialog>
+
+    <set-list-add-dialog id="_setListAddDialog" name="{{_setListAddName}}" use-as="{{_setListAddUseAs}}" on-accepted="_onSetListAddDialogAccepted"></set-list-add-dialog>
 
     <paper-material elevation="1">
       <iron-data-table id="dataTable" items="[[_data.sets]]" on-selected-item-changed="_onItemSelected" selection-enabled style$="height: [[_height]]px">
@@ -60,7 +63,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </data-table-column>
         <data-table-column width="40px">
           <template>
-            <paper-icon-button icon="icons:delete" set-item="[[item]]" on-tap="_onDeleteItemClick"></paper-icon-button>
+            <paper-icon-button icon="icons:delete" set-list="[[item]]" on-tap="_onDeleteItemClick"></paper-icon-button>
           </template>
         </data-table-column>
       </iron-data-table>
@@ -112,6 +115,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: Object,
           },
 
+          _setListAddName:{
+            type: String,
+          },
+          _setListAddUseAs:{
+            type: String,
+          },
+
         },
 
         _onHashChanged: function() {
@@ -160,12 +170,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         },
 
-        _onItemSelected: function(e){
+        _onItemSelected: function(){
 
         },
 
-        _onAddClick: function(e){
+        _onAddClick: function(){
+          this.$._setListAddDialog.open();
+        },
 
+        _onSetListAddDialogAccepted: function(){
+
+          this.$.theAjaxAddUserSet.body = {
+            'key': 'p4GLMlcPxJ',
+            'hash': this.userHash,
+            'format': 'json',
+            'descr': this._setListAddName,
+            'type': this._setListAddUseAs
+          };
+          this.$.theAjaxAddUserSet.generateRequest();
+        },
+
+        _onAddSetListResponse: function(e) {
+          if(XP.startsWith(e.detail.response,'SUCCESS')){
+            this.$.theAjaxtLists.generateRequest();
+          }else{
+            this.$.toast.text = 'Failed to add set list!';
+            this.$.toast.open();
+          }
         },
 
         _onDeleteItemClick: function(e) {
@@ -191,7 +222,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               'key': 'p4GLMlcPxJ',
               'hash': this.userHash,
               'format': 'json',
-              'partlist_id': this._setListItem.setlist_id,
+              'setlist_id': this._setListItem.setlist_id,
             };
             this.$.theAjaxDeleteUserSet.generateRequest();
           }

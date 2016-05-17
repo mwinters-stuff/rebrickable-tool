@@ -18,19 +18,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
 
-<dom-module id="set-list-add-dialog">
+<dom-module id="part-list-add-dialog">
   <template>
-    <style include="shared-styles">
-      :host {
-        display: block;
-      }
+  <style include="shared-styles">
+    :host {
+      display: block;
+    }
 
-      paper-dialog {
-        width: 400px;
-      }
+    paper-dialog {
+      width: 400px;
+    }
     </style>
     <paper-dialog id="_dialog" on-iron-overlay-closed="_onDialogClosed">
-      <h2>Add Set List</h2>
+      <h2>Add Part List</h2>
       <paper-input autofocus id="_inputName" label="Name" value="{{name}}">
       </paper-input>
       <div class="horiz">
@@ -45,39 +45,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-button dialog-confirm>OK</paper-button>
       </div>
     </paper-dialog>
+
   </template>
   <script>
-    (function() {
-      'use strict';
+  (function() {
+    'use strict';
 
-      Polymer({
-        is: 'set-list-add-dialog',
+    Polymer({
+      is: 'part-list-add-dialog',
 
-        properties: {
-          name: {
-            type: String,
-            value: '',
-            notify: true
-          },
-
-          useAs:{
-            type: String,
-            value: '2',
-            notify: true,
-          },
+      properties: {
+        name: {
+          type: String,
+          value: '',
+          notify: true
         },
 
-        _onDialogClosed: function(closingReason) {
-          if(closingReason.detail.confirmed) {
-            this.fire('accepted');
-          }
+        useAs:{
+          type: String,
+          value: '2',
+          notify: true,
         },
+      },
 
-        open: function() {
-          this.$._dialog.open();
-        },
+      _onDialogClosed: function(closingReason) {
+        if(closingReason.detail.confirmed) {
+          this.fire('accepted');
+        }
+      },
 
-      });
-    })();
+      open: function() {
+        this.$._dialog.open();
+      },
+
+    });
+  })();
   </script>
 </dom-module>

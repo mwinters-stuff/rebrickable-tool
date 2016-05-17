@@ -12,7 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <html>
 <head>
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-  <title>set-list-add-dialog</title>
+  <title>part-list-add-dialog</title>
 
   <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../bower_components/web-component-tester/browser.js"></script>
@@ -20,20 +20,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../bower_components/iron-test-helpers/mock-interactions.js"></script>
   <!-- Step 1: import the element to test -->
   <link rel="import" href="../bower_components/iron-test-helpers/iron-test-helpers.html">
-  <link rel="import" href="../elements/manage-set-lists/set-list-add-dialog.html">
+  <link rel="import" href="../elements/manage-part-lists/part-list-add-dialog.html">
 
 </head>
 <body>
 
 <test-fixture id="basic">
   <template>
-    <set-list-add-dialog></set-list-add-dialog>
+    <part-list-add-dialog></part-list-add-dialog>
   </template>
 </test-fixture>
 
 <script>
   /*jshint -W030 */
-  describe('set-list-add-dialog tests', function() {
+    describe('part-list-add-dialog tests', function() {
     var element;
 
     function runAfterOpen(dialog, callback) {
