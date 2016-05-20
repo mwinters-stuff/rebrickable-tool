@@ -35,6 +35,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../manage-moc-parts/manage-moc-parts.html">
 <link rel="import" href="../manage-part-lists/manage-part-lists.html">
 <link rel="import" href="../manage-set-lists/manage-set-lists.html">
+<link rel="import" href="../compare-set-parts/compare-set-parts.html">
 
 <dom-module id="main-app">
   <template>
@@ -64,6 +65,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </carbon-route>
 
     <carbon-route route="{{route}}"
+      pattern="/app/compare-set-parts"
+      active="{{_compareSetPartsActive}}">
+    </carbon-route>
+
+    <carbon-route route="{{route}}"
       pattern="/app/manage-set-lists"
       active="{{_manageSetListsActive}}">
     </carbon-route>
@@ -88,6 +94,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <section data-route="manage-moc-parts" tabindex="-1">
         <manage-moc-parts showing="{{_manageMocPartsActive}}" tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}"  route="{{route}}"> </manage-moc-parts>
+      </section>
+
+      <section data-route="compare-set-parts" tabindex="-1">
+        <compare-set-parts showing="{{_compareSetPartsActive}}" tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}"  route="{{route}}"> </compare-set-parts>
       </section>
 
       <section data-route="manage-set-lists" tabindex="-1">
