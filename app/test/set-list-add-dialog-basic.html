@@ -64,15 +64,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         input.value = 'Some Name';
         MockInteractions.tap(Polymer.dom(element.root).querySelector('paper-radio-button[name="1"]'));
         Polymer.dom.flush();
-        MockInteractions.tap(Polymer.dom(element.root).querySelector('paper-button[dialog-confirm]'));
 
 
         element.addEventListener('accepted', function(){
-          done();
           expect(element).to.have.property('name','Some Name');
           expect(element).to.have.property('useAs','1');
+          done();
         });
 
+        MockInteractions.tap(Polymer.dom(element.root).querySelector('paper-button[dialog-confirm]'));
       });
     });
 
