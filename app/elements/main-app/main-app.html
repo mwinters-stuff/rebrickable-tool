@@ -25,7 +25,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 
-<link rel="import" href="../../bower_components/carbon-route/carbon-route.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
 
 
 <link rel="import" href="../../styles/app-theme.html">
@@ -41,43 +41,43 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template>
     <style include="shared-styles">
     </style>
-    <carbon-route route="{{route}}"
+    <app-route route="{{route}}"
       pattern="/app/sets/:setListId"
       data="{{_setsData}}"
       active="{{_setsActive}}">
-    </carbon-route>
+    </app-route>
 
-    <carbon-route route="{{route}}"
+    <app-route route="{{route}}"
       pattern="/app/parts/:partListId"
       data="{{_partsData}}"
       active="{{_partsActive}}">
-    </carbon-route>
+    </app-route>
 
-    <carbon-route route="{{route}}"
+    <app-route route="{{route}}"
       pattern="/app/set/:setId/:setListId/:setListName"
       data="{{_setData}}"
       active="{{_setActive}}">
-    </carbon-route>
+    </app-route>
 
-    <carbon-route route="{{route}}"
+    <app-route route="{{route}}"
       pattern="/app/manage-moc-parts"
       active="{{_manageMocPartsActive}}">
-    </carbon-route>
+    </app-route>
 
-    <carbon-route route="{{route}}"
+    <app-route route="{{route}}"
       pattern="/app/compare-set-parts"
       active="{{_compareSetPartsActive}}">
-    </carbon-route>
+    </app-route>
 
-    <carbon-route route="{{route}}"
+    <app-route route="{{route}}"
       pattern="/app/manage-set-lists"
       active="{{_manageSetListsActive}}">
-    </carbon-route>
+    </app-route>
 
-    <carbon-route route="{{route}}"
+    <app-route route="{{route}}"
       pattern="/app/manage-part-lists"
       active="{{_managePartListsActive}}">
-    </carbon-route>
+    </app-route>
 
     <iron-pages attr-for-selected="data-route" selected="{{page}}">
       <section data-route="sets" tabindex="-1">

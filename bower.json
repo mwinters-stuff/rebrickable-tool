@@ -12,8 +12,8 @@
     "cookie-consent-polymer": "^0.2.2",
     "neon-animation": "^1.2.0",
     "gold-email-input": "PolymerElements/gold-email-input#^1.0.7",
-    "carbon-route": "PolymerElements/carbon-route#^0.8.4",
-    "iron-data-table": "^1.0.0-beta1"
+    "iron-data-table": "^1.0.0-beta1",
+    "app-route": "PolymerElements/app-route#^0.9.1"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"

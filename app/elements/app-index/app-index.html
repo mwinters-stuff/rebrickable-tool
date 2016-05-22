@@ -25,9 +25,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
 
-<link rel="import" href="../../bower_components/carbon-route/carbon-route.html">
-<link rel="import" href="../../bower_components/carbon-route/carbon-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
 
 <link rel="import" href="../logon-thing/logon-thing.html">
 <link rel="import" href="../main-app/main-app.html">
@@ -40,24 +43,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
     </style>
-    <carbon-location route="{{route}}" use-hash-as-path></carbon-location>
+    <app-location route="{{route}}" use-hash-as-path></app-location>
 
-    <carbon-route route="{{route}}" pattern="/login" active="{{_loginActive}}">
-    </carbon-route>
+    <app-route route="{{route}}" pattern="/login" active="{{_loginActive}}">
+    </app-route>
 
-    <carbon-route route="{{route}}" pattern="/app/:page" data="{{_pageData}}" tail="{{_pageTail}}" active="{{_pageActive}}">
-    </carbon-route>
+    <app-route route="{{route}}" pattern="/app/:page" data="{{_pageData}}" tail="{{_pageTail}}" active="{{_pageActive}}">
+    </app-route>
 
-    <carbon-route route="{{route}}"
+    <app-route route="{{route}}"
       pattern="/app/sets/:setListId"
       data="{{_setsData}}">
-    </carbon-route>
+    </app-route>
 
-    <carbon-route route="{{route}}"
+    <app-route route="{{route}}"
       pattern="/app/parts/:partListId"
       data="{{_partsData}}">
 
-    </carbon-route>
+    </app-route>
 
     <logon-thing id="logonThing" hidden$="{{!_loginActive}}" on-authorized="_onAuthorized" on-un-authorized="_onUnAuthorized" user-hash="{{userHash}}"></logon-thing>
     <div hidden$="{{_loginActive}}">
@@ -112,6 +115,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <paper-tab route="{{item.route}}">{{item.title}}</paper-tab>
               </template>
             </paper-tabs>
+            <!-- <paper-dropdown-menu class="space" selected-item="{{_selectedTab}}" style="z-order: 500">
+              <paper-listbox class="dropdown-content">
+                <template is="dom-repeat" items="{{_tabsToShow.tabs}}">
+                  <paper-item id="{{item.route}}">{{item.title}}</paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu> -->
 
             <!-- <span class="space"></span> -->
 
@@ -160,6 +170,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           userHash: {
             type: String,
             value: '',
+          },
+
+          _selectedTab:{
+            type: Object,
+            observer: '_onTabChanged'
           }
         },
 
@@ -168,6 +183,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this.$.headerPanelMain.measureHeaderHeight();
             this.$.headerPanelDrawer.measureHeaderHeight();
           }.bind(this));
+        },
+
+        _onTabChanged: function(){
+          if(this._selectedTab){
+            this.set('route.path',this._selectedTab.id);
+          }
         },
 
         _onUnAuthorized: function() {
