@@ -13,7 +13,8 @@
     "neon-animation": "^1.2.0",
     "gold-email-input": "PolymerElements/gold-email-input#^1.0.7",
     "iron-data-table": "^1.0.0-beta1",
-    "app-route": "PolymerElements/app-route#^0.9.1"
+    "app-route": "PolymerElements/app-route#^0.9.1",
+    "app-layout": "PolymerElements/app-layout#^0.9.0"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"

@@ -32,9 +32,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../bower_components/app-route/app-location.html">
 
+<link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
 <link rel="import" href="../logon-thing/logon-thing.html">
 <link rel="import" href="../main-app/main-app.html">
-
+<link rel="import" href="../../styles/app-theme.html">
+<link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../../bower_components/expandjs/expandjs.html">
 
 <dom-module id="app-index">
   <template>
@@ -42,6 +51,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host {
         display: block;
       }
+
+      /*app-header {
+        background-color: var(--app-primary-color);
+        color: #fff;
+      }*/
+
+      app-header app-toolbar {
+        color: var(--primary-text-color);
+        background-color: var(--primary-color);
+        border-bottom: var(--drawer-toolbar-border-color);
+      }
+
+      app-drawer app-toolbar {
+        color: var(--primary-text-color);
+        background-color: var(--drawer-menu-color);
+        border-bottom: var(--drawer-toolbar-border-color);
+      }
+
+      /*app-header paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }*/
     </style>
     <app-location route="{{route}}" use-hash-as-path></app-location>
 
@@ -51,29 +81,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <app-route route="{{route}}" pattern="/app/:page" data="{{_pageData}}" tail="{{_pageTail}}" active="{{_pageActive}}">
     </app-route>
 
-    <app-route route="{{route}}"
-      pattern="/app/sets/:setListId"
-      data="{{_setsData}}">
+    <app-route route="{{route}}" pattern="/app/sets/:setListId" data="{{_setsData}}">
     </app-route>
 
-    <app-route route="{{route}}"
-      pattern="/app/parts/:partListId"
-      data="{{_partsData}}">
+    <app-route route="{{route}}" pattern="/app/parts/:partListId" data="{{_partsData}}">
 
     </app-route>
 
     <logon-thing id="logonThing" hidden$="{{!_loginActive}}" on-authorized="_onAuthorized" on-un-authorized="_onUnAuthorized" user-hash="{{userHash}}"></logon-thing>
     <div hidden$="{{_loginActive}}">
-      <paper-drawer-panel id="paperDrawerPanel" responsive-width="900px">
-        <!-- Drawer Scroll Header Panel -->
-        <paper-scroll-header-panel id="headerPanelDrawer" drawer fixed>
-
-          <!-- Drawer Toolbar -->
-          <paper-toolbar id="drawerToolbar">
-            <span class="menu-name">Menu</span>
-          </paper-toolbar>
-
-          <!-- Drawer Content -->
+      <app-drawer-layout fullbleed="true">
+        <app-drawer>
+          <app-toolbar>Menu</app-toolbar>
           <paper-menu class="app-menu" attr-for-selected="data-route" selected="{{_pageData.page}}">
             <a data-route="sets" href$="#/app/sets/{{_setsData.setListId}}">
               <iron-icon icon="home"></iron-icon>
@@ -101,39 +120,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <span>Manage Part Lists</span>
             </a>
           </paper-menu>
-        </paper-scroll-header-panel>
+        </app-drawer>
 
-        <!-- Main Area -->
-        <paper-scroll-header-panel main id="headerPanelMain" fixed>
-          <!-- Main Toolbar -->
+        <app-header-layout id="paperDrawerPanel" has-scrolling-region>
 
-          <paper-toolbar id="mainToolbar">
-            <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
-            <div class="app-name" style="padding-right: 48px;">Rebrickable Tool</div>
-            <paper-tabs class="space" selected="{{route.path}}" attr-for-selected="route" scrollable>
-              <template is="dom-repeat" items="{{_tabsToShow.tabs}}">
-                <paper-tab route="{{item.route}}">{{item.title}}</paper-tab>
-              </template>
-            </paper-tabs>
-            <!-- <paper-dropdown-menu class="space" selected-item="{{_selectedTab}}" style="z-order: 500">
-              <paper-listbox class="dropdown-content">
+          <app-header>
+            <app-toolbar>
+              <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+              <div spacer>Rebrickable Tool</div>
+              <paper-tabs class="space" selected="{{route.path}}" attr-for-selected="route" scrollable>
                 <template is="dom-repeat" items="{{_tabsToShow.tabs}}">
-                  <paper-item id="{{item.route}}">{{item.title}}</paper-item>
+                  <paper-tab route="{{item.route}}">{{item.title}}</paper-tab>
                 </template>
-              </paper-listbox>
-            </paper-dropdown-menu> -->
+              </paper-tabs>
+              <paper-icon-button id="logout" icon="exit-to-app" on-click="_onLogoutClick"></paper-icon-button>
+            </app-toolbar>
+          </app-header>
 
-            <!-- <span class="space"></span> -->
-
-            <paper-icon-button id="logout" icon="exit-to-app" on-click="_onLogoutClick"></paper-icon-button>
-          </paper-toolbar>
-          <!-- Main Content -->
-          <div class="content">
-            <main-app tabs-to-show="{{_tabsToShow}}" user-hash="{{userHash}}" page="{{_pageData.page}}" route="{{route}}">
-            </main-app>
-          </div>
-        </paper-scroll-header-panel>
-      </paper-drawer-panel>
+          <main-app tabs-to-show="{{_tabsToShow}}" user-hash="{{userHash}}" page="{{_pageData.page}}" route="{{route}}">
+          </main-app>
+        </app-header-layout>
+      </app-drawer-layout>
     </div>
   </template>
   <script>
@@ -155,15 +162,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           _pageTail: {
             type: String,
           },
-          _loginActive:{
+          _loginActive: {
             type: Boolean,
             value: true,
           },
 
-          _setsData:{
+          _setsData: {
             type: Object,
           },
-          _partsData:{
+          _partsData: {
             type: Object,
           },
 
@@ -172,22 +179,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             value: '',
           },
 
-          _selectedTab:{
+          _selectedTab: {
             type: Object,
             observer: '_onTabChanged'
           }
         },
 
         _onPageActiveChanged: function() {
-          this.async(function() {
-            this.$.headerPanelMain.measureHeaderHeight();
-            this.$.headerPanelDrawer.measureHeaderHeight();
-          }.bind(this));
+          // this.async(function() {
+          //   this.$.headerPanelMain.measureHeaderHeight();
+          //   this.$.headerPanelDrawer.measureHeaderHeight();
+          // }.bind(this));
         },
 
-        _onTabChanged: function(){
-          if(this._selectedTab){
-            this.set('route.path',this._selectedTab.id);
+        _onTabChanged: function() {
+          if (this._selectedTab) {
+            this.set('route.path', this._selectedTab.id);
           }
         },
 
@@ -196,7 +203,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _onAuthorized: function() {
-          if(!this.route.path || this.route.path === '/login'){
+          if (!this.route.path || this.route.path === '/login') {
             this.set('route.path', '/app/sets/');
           }
         },
@@ -206,13 +213,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.set('route.path', '/login');
         },
 
-        scrollPageToTop: function() {
-          this.$.headerPanelMain.scrollToTop(true);
-        },
-
-        closeDrawer: function() {
-          this.$.paperDrawerPanel.closeDrawer();
-        },
+        // scrollPageToTop: function() {
+        //   this.$.headerPanelMain.scrollToTop(true);
+        // },
+        //
+        // closeDrawer: function() {
+        //   this.$.paperDrawerPanel.closeDrawer();
+        // },
 
       });
     })();
