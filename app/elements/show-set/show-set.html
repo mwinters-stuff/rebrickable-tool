@@ -56,8 +56,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-tab>Details</paper-tab>
         <paper-tab>Parts</paper-tab>
       </paper-tabs>
-      <div>
-      <neon-animated-pages  selected="{{_selectedTab}}" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+      <iron-pages  selected="{{_selectedTab}}" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
         <section>
           <div style$="min-height: {{_height}}px">
             <div class="horiztop">
@@ -83,7 +82,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   </tr>
                 </table>
               </div>
-              <paper-fab style='position:absolute; top: 30px; right:24px' icon="icons:delete" on-click="_onRemoveClick"></paper-fab>
+              <paper-fab style='position:absolute; bottom: 30px; right:24px' icon="icons:delete" on-click="_onRemoveClick"></paper-fab>
             </div>
             <div class="acenter">
               <iron-image class="top" sizing="contain" src="{{_data.0.img_big}}"></iron-image>
@@ -93,8 +92,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <section>
           <show-set-parts user-hash="{{userHash}}" set-id="{{_showSetId}}" table-height="{{_height}}"></show-set-parts>
         </section>
-      </neon-animated-pages>
-      </div>
+      </iron-pages>
     </paper-material>
 
   </template>
@@ -176,7 +174,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           var drawerPanel = document.getElementById('paperDrawerPanel');
           var appHeader = document.getElementById('appHeader');
           if (drawerPanel && appHeader) {
-            this.set('_height', drawerPanel.clientHeight - appHeader.clientHeight - 120 - this.$.tabs.clientHeight);
+            this.set('_height', drawerPanel.clientHeight - appHeader.clientHeight - 150 - this.$.tabs.clientHeight);
           }
         },
 
