@@ -40,7 +40,7 @@
           // polyfill web components
           var e = document.createElement('script');
           e.src = 'bower_components/webcomponentsjs/webcomponents-lite.min.js';
-          document.body.appendChild(e);
+          document.head.appendChild(e);
         }
       })();
 
@@ -65,15 +65,28 @@
         background-color: #eee;
       }
 
+      app-index[unresolved] {
+      display: block;
+      min-height: 101vh;
+      line-height: 68px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      color: #202020;
+      padding: 0 16px;
+      overflow: visible;
+    }
+
     </style>
 
   </head>
-  <body unresolved>
+  <body>
     <!-- build:remove -->
      <span id="browser-sync-binding"></span>
      <!-- endbuild -->
-     
-    <app-index></app-index>
+
+    <app-index unresolved>Rebrickable Tool</app-index>
 
   </body>
   </html>

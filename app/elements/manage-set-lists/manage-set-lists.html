@@ -53,7 +53,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <set-list-add-dialog id="_setListAddDialog" name="{{_setListAddName}}" use-as="{{_setListAddUseAs}}" on-accepted="_onSetListAddDialogAccepted"></set-list-add-dialog>
 
-    <paper-material elevation="1">
+    <paper-material id="paperMaterial" elevation="1">
       <iron-data-table id="dataTable" items="[[_data.sets]]" on-selected-item-changed="_onItemSelected" selection-enabled style$="height: [[_height]]px">
         <data-table-column name="Name" flex="50">
           <template>[[item.name]]</template>
@@ -141,6 +141,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this.set('tabsToShow.tabs', []);
           }
           this.$.theAjaxtLists.auto = this.showing;
+          this._resizeTable();
         },
 
         _typeToDescription: function(id) {
@@ -164,8 +165,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         _resizeTable: function() {
           var drawerPanel = document.getElementById('paperDrawerPanel');
-          if(drawerPanel){
-            this.set('_height', drawerPanel.clientHeight - (128 + 32 + 16));
+          var appHeader = document.getElementById('appHeader');
+          if(drawerPanel && appHeader){
+            this.set('_height', drawerPanel.clientHeight - appHeader.clientHeight - 120);
           }
 
         },

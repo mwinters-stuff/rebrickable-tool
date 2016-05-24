@@ -33,9 +33,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       paper-toolbar {
         margin-top: 0px;
       }
-      /*paper-dialog{
-        width: 400px;
-      }*/
+      paper-dialog{
+        min-width: 400px;
+      }
     </style>
     <colour-list id="colours"></colour-list>
     <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_part" params="{{_params}}" handle-as="json" last-response="{{_data}}"></iron-ajax>

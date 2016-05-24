@@ -18,6 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animated-pages.html">
 
 <link rel="import" href="show-set-parts.html">
 <link rel="import" href="../input-dialog/question-dialog.html">
@@ -29,13 +30,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
 
-      iron-data-table {
-        height: 800px;
-      }
+
 
       iron-image.top {
         height: 300px;
         width: 400px;
+      }
+
+      neon-animated-pages{
+        height:100%;
+
       }
     </style>
     <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_set" params="{{_params}}" handle-as="json" last-response="{{_data}}"></iron-ajax>
@@ -48,37 +52,49 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </question-dialog>
 
     <paper-material elevation="1">
-      <div class="horiztop">
-        <div class="aleft">
-          <div class="title">{{_data.0.set_id}} {{_data.0.descr}}</div>
-          <div>&nbsp; </div>
-          <table class="info">
-            <tr id="rowTheme">
-              <td>Theme:</td>
-              <td>{{_data.0.theme}}</td>
-            </tr>
-            <tr id="rowPieces">
-              <td>Pieces:</td>
-              <td>{{_data.0.pieces}}</td>
-            </tr>
-            <tr id="rowYear">
-              <td>Year:</td>
-              <td>{{_data.0.year}}</td>
-            </tr>
-            <tr id="rowListName">
-              <td>List:</td>
-              <td>{{setListName}}</td>
-            </tr>
-          </table>
-        </div>
-        <div class="aright">
-          <iron-image class="top" sizing="contain" src="{{_data.0.img_big}}"></iron-image>
-          <paper-fab style='position:absolute; top: 30px; right:24px' icon="icons:delete" on-click="_onRemoveClick"></paper-fab>
-
-        </div>
+      <paper-tabs id="tabs" selected="{{_selectedTab}}">
+        <paper-tab>Details</paper-tab>
+        <paper-tab>Parts</paper-tab>
+      </paper-tabs>
+      <div>
+      <neon-animated-pages  selected="{{_selectedTab}}" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+        <section>
+          <div style$="min-height: {{_height}}px">
+            <div class="horiztop">
+              <div class="aleft">
+                <div class="title">{{_data.0.set_id}} {{_data.0.descr}}</div>
+                <div>&nbsp; </div>
+                <table class="info">
+                  <tr id="rowTheme">
+                    <td>Theme:</td>
+                    <td>{{_data.0.theme}}</td>
+                  </tr>
+                  <tr id="rowPieces">
+                    <td>Pieces:</td>
+                    <td>{{_data.0.pieces}}</td>
+                  </tr>
+                  <tr id="rowYear">
+                    <td>Year:</td>
+                    <td>{{_data.0.year}}</td>
+                  </tr>
+                  <tr id="rowListName">
+                    <td>List:</td>
+                    <td>{{setListName}}</td>
+                  </tr>
+                </table>
+              </div>
+              <paper-fab style='position:absolute; top: 30px; right:24px' icon="icons:delete" on-click="_onRemoveClick"></paper-fab>
+            </div>
+            <div class="acenter">
+              <iron-image class="top" sizing="contain" src="{{_data.0.img_big}}"></iron-image>
+            </div>
+          </div>
+        </section>
+        <section>
+          <show-set-parts user-hash="{{userHash}}" set-id="{{_showSetId}}" table-height="{{_height}}"></show-set-parts>
+        </section>
+      </neon-animated-pages>
       </div>
-      <show-set-parts user-hash="{{userHash}}" set-id="{{_showSetId}}"></show-set-parts>
-
     </paper-material>
 
   </template>
@@ -116,7 +132,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             observer: '_onShowingChanged'
           },
 
-          setListId:{
+          setListId: {
             type: Number,
           },
 
@@ -136,13 +152,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: Object,
           },
 
+          _selectedTab: {
+            type: Number,
+            value: 0,
+          },
+
+          _height: {
+            type: Number,
+            value: 400,
+          },
+
+        },
+
+        attached: function() {
+          this.async(this._resizeTable);
+
+          window.addEventListener('resize', function() {
+            this.debounce('parts-resize', this._resizeTable, 1000);
+          }.bind(this));
+        },
+
+        _resizeTable: function() {
+          var drawerPanel = document.getElementById('paperDrawerPanel');
+          var appHeader = document.getElementById('appHeader');
+          if (drawerPanel && appHeader) {
+            this.set('_height', drawerPanel.clientHeight - appHeader.clientHeight - 120 - this.$.tabs.clientHeight);
+          }
         },
 
         _onShowingChanged: function() {
           if (this.showing) {
             this.set('tabsToShow.tabs', []);
-            this.$.theAjax.generateRequest();
+
           }
+          this.$.theAjax.auto = this.showing;
         },
 
         _onHashChanged: function() {
@@ -157,12 +200,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
 
-        _onRemoveClick: function(){
+        _onRemoveClick: function() {
           this.$._questionRemove.open();
         },
 
         _onRemoveDialogClosed: function(e) {
-          if(e.detail.confirmed) {
+          if (e.detail.confirmed) {
             this.$.theAjaxSetUserSet.body = {
               'key': 'p4GLMlcPxJ',
               'hash': this.userHash,
@@ -176,9 +219,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _onSetUserSetResponse: function(e) {
-          if(XP.startsWith(e.detail.response,'SUCCESS')){
-            this.set('route.path','/app/sets/' + this.setListId);
-          }else{
+          if (XP.startsWith(e.detail.response, 'SUCCESS')) {
+            this.set('route.path', '/app/sets/' + this.setListId);
+          } else {
             this.$.toast.text = 'Failed to remove set!';
             this.$.toast.open();
           }

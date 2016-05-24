@@ -212,9 +212,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         _resizeTable: function() {
           var drawerPanel = document.getElementById('paperDrawerPanel');
-          if(drawerPanel){
-            this.set('_height', drawerPanel.clientHeight - this.$._heightx.clientHeight - (128 + 48));
-            console.log(drawerPanel.clientHeight ,this.$._heightx.clientHeight);
+          var appHeader = document.getElementById('appHeader');
+          if(drawerPanel && appHeader){
+            this.set('_height', drawerPanel.clientHeight - appHeader.clientHeight - 120);
           }
 
         },
@@ -234,6 +234,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if (this.showing) {
             this.set('tabsToShow.tabs', []);
             this.$.theAjaxPartLists.generateRequest();
+            this._resizeTable();
           }
         },
 

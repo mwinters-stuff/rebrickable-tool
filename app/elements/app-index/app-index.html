@@ -28,6 +28,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
 
 <link rel="import" href="../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../bower_components/app-route/app-location.html">
@@ -72,6 +73,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       /*app-header paper-icon-button {
         --paper-icon-button-ink-color: white;
       }*/
+
+
     </style>
     <app-location route="{{route}}" use-hash-as-path></app-location>
 
@@ -90,41 +93,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <logon-thing id="logonThing" hidden$="{{!_loginActive}}" on-authorized="_onAuthorized" on-un-authorized="_onUnAuthorized" user-hash="{{userHash}}"></logon-thing>
     <div hidden$="{{_loginActive}}">
-      <app-drawer-layout fullbleed="true">
+      <app-drawer-layout fullbleed="true" responsive-width="1281px">
         <app-drawer>
           <app-toolbar>Menu</app-toolbar>
-          <paper-menu class="app-menu" attr-for-selected="data-route" selected="{{_pageData.page}}">
-            <a data-route="sets" href$="#/app/sets/{{_setsData.setListId}}">
-              <iron-icon icon="home"></iron-icon>
-              <span>Sets</span>
-            </a>
-
-            <a data-route="parts" href$="#/app/parts/{{_partsData.partListId}}">
-              <iron-icon icon="info"></iron-icon>
-              <span>Parts</span>
-            </a>
-            <a data-route="manage-moc-parts" href$="#/app/manage-moc-parts">
-              <iron-icon icon="build"></iron-icon>
-              <span>Manage Moc Parts</span>
-            </a>
-            <a data-route="compare-set-parts" href$="#/app/compare-set-parts">
-              <iron-icon icon="build"></iron-icon>
-              <span>Compare Set Parts</span>
-            </a>
-            <a data-route="manage-set-lists" href$="#/app/manage-set-lists">
-              <iron-icon icon="build"></iron-icon>
-              <span>Manage Set Lists</span>
-            </a>
-            <a data-route="manage-part-lists" href$="#/app/manage-part-lists">
-              <iron-icon icon="build"></iron-icon>
-              <span>Manage Part Lists</span>
-            </a>
+          <paper-menu class="app-menu" attr-for-selected="data-route" selected="{{_pageData.page}}" on-iron-select="_onMenuSelect">
+            <paper-icon-item role="menuitem" data-route="sets" route="/app/sets/{{_setsData.setListId}}">
+              <iron-icon item-icon icon="home"></iron-icon>
+              Sets
+            </paper-icon-item>
+            <paper-icon-item role="menuitem" data-route="parts" route="/app/parts/{{_partsData.partListId}}">
+              <iron-icon item-icon icon="info"></iron-icon>
+              Parts
+            </paper-icon-item>
+            <paper-icon-item role="menuitem"  data-route="manage-moc-parts" route="/app/manage-moc-parts">
+              <iron-icon item-icon icon="build"></iron-icon>
+              Manage Moc Parts
+            </paper-icon-item>
+            <paper-icon-item role="menuitem" data-route="compare-set-parts" route="/app/compare-set-parts">
+              <iron-icon item-icon icon="build"></iron-icon>
+              Compare Set Parts
+            </paper-icon-item>
+            <paper-icon-item role="menuitem"  data-route="manage-set-lists" route="/app/manage-set-lists">
+              <iron-icon item-icon icon="build"></iron-icon>
+              Manage Set Lists
+            </paper-icon-item>
+            <paper-icon-item role="menuitem" data-route="manage-part-lists" route="/app/manage-part-lists">
+              <iron-icon item-icon icon="build"></iron-icon>
+              Manage Part Lists
+            </paper-icon-item>
           </paper-menu>
         </app-drawer>
 
         <app-header-layout id="paperDrawerPanel" has-scrolling-region>
 
-          <app-header>
+          <app-header id="appHeader">
             <app-toolbar>
               <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
               <div spacer>Rebrickable Tool</div>
@@ -185,11 +187,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
 
+        created: function(){
+          this.removeAttribute('unresolved');
+        },
+
         _onPageActiveChanged: function() {
           // this.async(function() {
           //   this.$.headerPanelMain.measureHeaderHeight();
           //   this.$.headerPanelDrawer.measureHeaderHeight();
           // }.bind(this));
+        },
+
+        _onMenuSelect: function(e){
+          if(e.detail.item && e.detail.item.route){
+            console.log('select',e.detail);
+            this.set('route.path',e.detail.item.route);
+          }
         },
 
         _onTabChanged: function() {

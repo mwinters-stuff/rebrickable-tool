@@ -28,13 +28,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
 
-      iron-data-table {
+      /*iron-data-table {
         height: 800px;
-      }
+      }*/
     </style>
     <colour-list id="colours"></colour-list>
     <iron-ajax id="theAjaxParts" url="https://rebrickable.com/api/get_set_parts" params="{{_params}}" handle-as="json" last-response="{{parts}}"></iron-ajax>
-      <iron-data-table id="dataTable" items="[[parts.0.parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled>
+      <iron-data-table id="dataTable" items="[[parts.0.parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled style$="height: [[tableHeight]]px">
         <data-table-column align-right width="40px">
           <template>
             <iron-image src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
@@ -64,6 +64,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       Polymer({
         is: 'show-set-parts',
+        behaviors: [Polymer.NeonAnimatableBehavior],
 
         properties: {
           setId: {
@@ -84,7 +85,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           _params:{
             type: Object,
-          }
+          },
+          tableHeight: {
+            type: Number,
+            value: 400,
+          },
         },
 
         _onHashChanged: function() {

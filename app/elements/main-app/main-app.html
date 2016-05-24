@@ -40,6 +40,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <dom-module id="main-app">
   <template>
     <style include="shared-styles">
+    iron-pages{
+      height: 100%;
+      position: relative;
+    }
     </style>
     <app-route route="{{route}}"
       pattern="/app/sets/:setListId"
@@ -79,7 +83,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       active="{{_managePartListsActive}}">
     </app-route>
 
-    <iron-pages attr-for-selected="data-route" selected="{{page}}">
+    <iron-pages id="appPages" attr-for-selected="data-route" selected="{{page}}">
       <section data-route="sets" tabindex="-1">
         <list-sets set-list-id="{{_setsData.setListId}}" tabs-to-show="{{tabsToShow}}" showing="{{_setsActive}}" user-hash="{{userHash}}" route="{{route}}"></list-sets>
       </section>

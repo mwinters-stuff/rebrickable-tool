@@ -166,8 +166,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _resizeTable: function() {
         var drawerPanel = document.getElementById('paperDrawerPanel');
-        if(drawerPanel){
-          this.set('_height', drawerPanel.clientHeight - (128 + 32 + 16));
+        var appHeader = document.getElementById('appHeader');
+        if(drawerPanel && appHeader){
+          this.set('_height', drawerPanel.clientHeight - appHeader.clientHeight - 120);
         }
 
       },
