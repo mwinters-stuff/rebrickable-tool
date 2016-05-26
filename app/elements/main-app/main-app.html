@@ -36,6 +36,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../manage-part-lists/manage-part-lists.html">
 <link rel="import" href="../manage-set-lists/manage-set-lists.html">
 <link rel="import" href="../compare-set-parts/compare-set-parts.html">
+<link rel="import" href="../compare-part-lists/compare-part-lists.html">
 
 <dom-module id="main-app">
   <template>
@@ -74,6 +75,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </app-route>
 
     <app-route route="{{route}}"
+      pattern="/app/compare-part-lists"
+      active="{{_comparePartListsActive}}">
+    </app-route>
+
+    <app-route route="{{route}}"
       pattern="/app/manage-set-lists"
       active="{{_manageSetListsActive}}">
     </app-route>
@@ -102,6 +108,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <section data-route="compare-set-parts" tabindex="-1">
         <compare-set-parts showing="{{_compareSetPartsActive}}" tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}"  route="{{route}}"> </compare-set-parts>
+      </section>
+
+      <section data-route="compare-part-lists" tabindex="-1">
+        <compare-part-lists showing="{{_comparePartListsActive}}" tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}"  route="{{route}}"> </compare-part-lists>
       </section>
 
       <section data-route="manage-set-lists" tabindex="-1">
