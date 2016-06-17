@@ -1,6 +1,6 @@
 {
   "entrypoint": "index.html",
-  "shell": "src/main-app/main-app.html",
+  "shell": "src/app-index/app-index.html",
   "fragments": [
     "src/list-sets/list-sets.html",
     "src/list-parts/list-parts.html",
