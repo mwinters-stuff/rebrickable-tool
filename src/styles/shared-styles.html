@@ -1,0 +1,213 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<!-- shared styles for all elements and index.html -->
+<dom-module id="shared-styles" include="iron-flex iron-flex-alignment">
+  <template>
+    <style>
+    :root {
+       --dark-primary-color:       #388E3C;
+       --default-primary-color:    #4CAF50;
+       --light-primary-color:      #C8E6C9;
+       --text-primary-color:       #FFFFFF;
+       --accent-color:             #FF5722;
+       --primary-background-color: #C8E6C9;
+       --primary-text-color:       #212121;
+       --secondary-text-color:     #727272;
+       --disabled-text-color:      #BDBDBD;
+       --divider-color:            #B6B6B6;
+
+
+       /* Components */
+
+       /* paper-drawer-panel */
+       --drawer-menu-color:           #ffffff;
+       --drawer-border-color:         1px solid #ccc;
+       --drawer-toolbar-border-color: 1px solid rgba(0, 0, 0, 0.22);
+
+       /* paper-menu */
+       --paper-menu-background-color: #fff;
+       --menu-link-color:             #111111;
+
+       /* paper-input */
+      --paper-input-container-color:       rgba(255, 255, 255, 0.64);
+      --paper-input-container-focus-color: rgba(255, 255, 255, 1);
+      --paper-input-container-input-color: #fff;
+     }
+
+    .space {
+      @apply(--layout-flex);
+    }
+
+
+    /*paper-menu {
+      --paper-menu-selected-item: {
+        color: var(--primary-color);
+      }
+
+      --paper-menu-focused-item-after: {
+        background: var(--primary-color);
+      }
+    }*/
+
+    paper-icon-item{
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      cursor: pointer;
+    }
+
+    /* Height of the scroll area */
+    .content {
+      height: 900px;
+    }
+
+    paper-material {
+      border-radius: 2px;
+      height: 100%;
+      padding: 16px 0 16px 0;
+      width: calc(98.66% - 16px);
+      margin: 16px auto;
+      background: white;
+    }
+
+    #toast .toast-hide-button {
+      color: #eeff41;
+      margin: 10px;
+    }
+
+    section[tabindex="-1"]:focus { outline: none; }
+
+    /* Breakpoints */
+
+    /* Small */
+    @media (max-width: 900px) {
+
+      #drawer .paper-toolbar {
+        margin-left: 16px;
+      }
+
+      #mainToolbar.tall .app-name {
+        font-size: 24px;
+        font-weight: 400;
+      }
+
+      paper-material {
+        --menu-container-display: none;
+        width: calc(97.33% - 32px);
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+    }
+
+    /* Tablet+ */
+    @media (min-width: 901px) {
+
+      #drawer.paper-drawer-panel > [drawer] {
+        border-right: 1px solid rgba(0, 0, 0, 0.14);
+      }
+
+      iron-pages {
+        padding: 16px 16px;
+      }
+
+      paper-material {
+        width: calc(97.33% - 32px);
+        margin-bottom: 32px;
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+    }
+
+    div.horiz {
+      width: 100%;
+      @apply(--layout-horizontal);
+      @apply(--layout-center);
+    }
+    div.horiztop {
+      width: 100%;
+      @apply(--layout-horizontal);
+      @apply(--layout-start);
+    }
+    div.aright {
+      @apply(--layout-end);
+    }
+    div.aleft {
+      @apply(--layout-flex);
+    }
+    div.acenter{
+      @apply(--layout-horizontal);
+      @apply(--layout-center-justified);
+
+    }
+    div.title{
+      @apply(--paper-font-display2);
+    }
+    table.info{
+      @apply(--paper-font-display1);
+    }
+
+    div.box{
+      width: 48px;
+      height: 48px;
+      margin-right: 8px;
+    }
+
+    iron-data-table {
+      font: 400 100%/1.5 Roboto, sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      /*line-height: 1.1;*/
+      color: rgba(0, 0, 0, 0.87);
+      /*--iron-data-table-header: {
+        background-color: #fafafa;
+        color: rgba(0, 0, 0, 0.54);
+        font-size: 12px;
+        font-weight: 600;
+        height: 56px;
+      }*/
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      --iron-data-table-row: {
+        border-bottom: 1px solid #e3e3e3;
+      }
+      --iron-data-table-row-hover: {
+        background-color: #eee;
+      }
+      --iron-data-table-row-selected: {
+        color: var(--default-primary-color, #03A9FA);
+      }
+      --iron-data-table-row-after: {
+        background-color: var(--default-primary-color, #03A9F4);
+        bottom: 0;
+        content: "";
+        height: 2px;
+        left: 0;
+        pointer-events: none;
+        position: absolute;
+        right: 0;
+        transition: all 0.16s ease-in-out;
+        -webkit-transform: scaleX(0.0);
+        transform: scaleX(0.0);
+        z-index: 1;
+      }
+      --iron-data-table-row-focused: {
+        background-color: #eee;
+      }
+      --iron-data-table-row-focused-after: {
+        -webkit-transform: scaleX(1.0);
+        transform: scaleX(1.0);
+      }
+
+    }
+    /*data-table-cell {
+      padding-left: 12px;
+      padding-right: 12px;
+    }*/
+    </style>
+  </template>
+</dom-module>

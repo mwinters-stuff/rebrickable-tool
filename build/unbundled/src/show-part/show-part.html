@@ -1,0 +1,74 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+
+<link rel="import" href="../colour-list/colour-list.html">
+
+</head><body><dom-module id="show-part">
+  <template>
+    <style include="shared-styles">:host{display:block;}iron-data-table{height:400px;}paper-toolbar{margin-top:0px;}paper-dialog{min-width:400px;}</style>
+    <colour-list id="colours"></colour-list>
+    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_part" params="{{_params}}" handle-as="json" last-response="{{_data}}"></iron-ajax>
+
+    <paper-dialog id="dialog" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+      <paper-toolbar>
+        <span class="space"></span>
+        <paper-icon-button id="cancel" icon="close" on-click="_onCancelClicked"></paper-icon-button>
+
+        <div class="middle middle-container">
+          <div class="app-name">{{_partId}}</div>
+        </div>
+      </paper-toolbar>
+      <div>
+        <div class="horiz">
+          <div class="aleft">
+            <table>
+              <tbody><tr id="rowName">
+                <td colspan="2">
+                  <div class="">{{_data.name}}</div>
+                </td>
+              </tr>
+              <tr id="rowCategory">
+                <td>Category:</td>
+                <td>{{_data.category}}</td>
+              </tr>
+              <tr id="rowYears">
+                <td>Years:</td>
+                <td>{{_data.year1}} to {{_data.year2}}</td>
+              </tr>
+              <tr id="rowURL">
+                <td>URL:</td>
+                <td>{{_data.part_url}}</td>
+              </tr>
+            </tbody></table>
+          </div>
+          <div class="aright">
+            <iron-image src="{{_data.part_img_url}}"></iron-image>
+          </div>
+        </div>
+
+        <iron-data-table id="dataTable" items="[[_data.colors]]" selected-item="{{selectedPart}}" selection-enabled="">
+          <data-table-column name="Colour">
+            <template>
+              <div class="box" style="background-color: {{_getColour(item.rb_color_id)}}"></div>
+            </template>
+          </data-table-column>
+          <data-table-column name="">
+            <template>[[item.color_name]]</template>
+          </data-table-column>
+          <data-table-column align-right="" name="Num Sets" width="50px">
+            <template>[[item.num_sets]]</template>
+          </data-table-column>
+        </iron-data-table>
+      </div>
+
+    </paper-dialog>
+  </template>
+  <script>!function(){"use strict";Polymer({is:"show-part",properties:{_params:{type:Object},selectedPart:{type:Object},_partId:{type:String}},_getColour:function(t){return this.$.colours.getColour(t)},show:function(t){this._partId=t,this.set("_params",{key:"p4GLMlcPxJ",part_id:t,format:"json",inc_colors:1}),this.$.theAjax.generateRequest(),this.$.dialog.open()},_onCancelClicked:function(){this.$.dialog.close()}})}();</script>
+</dom-module>
+</body></html>

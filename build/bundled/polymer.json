@@ -1,0 +1,14 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/main-app/main-app.html",
+  "fragments": [
+    "src/list-sets/list-sets.html",
+    "src/list-parts/list-parts.html",
+    "src/show-set/show-set.html",
+    "src/manage-moc-parts/manage-moc-parts.html",
+    "src/manage-part-lists/manage-part-lists.html",
+    "src/manage-set-lists/manage-set-lists.html",
+    "src/compare-set-parts/compare-set-parts.html",
+    "src/compare-part-lists/compare-part-lists.html"
+  ]
+}

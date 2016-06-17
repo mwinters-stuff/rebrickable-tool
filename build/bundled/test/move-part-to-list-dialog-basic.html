@@ -1,0 +1,27 @@
+<!DOCTYPE html><html><head>
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1,user-scalable=yes">
+  <title>move-part-to-list-dialog</title>
+
+  <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../bower_components/web-component-tester/browser.js"></script>
+  <script src="../bower_components/iron-test-helpers/mock-interactions.js"></script>
+  
+  <link rel="import" href="../bower_components/iron-test-helpers/iron-test-helpers.html">
+  <link rel="import" href="../src/move-part-to-list-dialog/move-part-to-list-dialog.html">
+
+</head>
+
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <move-part-to-list-dialog></move-part-to-list-dialog>
+    </template>
+  </test-fixture>
+
+  <script>function runAfterOpen(e,t){var r=function(){e.$$("paper-dialog").removeEventListener("iron-overlay-opened",r),Polymer.Base.async(t,1)};e.$$("paper-dialog").addEventListener("iron-overlay-opened",r),e.open()}function runAfterOpenDropDown(e,t){var r=function(){e.$.menuButton.$.dropdown.removeEventListener("iron-overlay-opened",r),Polymer.Base.async(t,1)};e.$.menuButton.$.dropdown.addEventListener("iron-overlay-opened",r),MockInteractions.tap(e)}describe("move-part-to-list-dialog tests",function(){var e,t,r,o;before(function(){e=fixture("basic"),t=sinon.fakeServer.create(),t.respondWith("https://rebrickable.com/api/get_user_part_lists?key=p4GLMlcPxJ&hash=p4GLMlcPxJ&format=json",[200,{"Content-Type":"application/json"},'{"partlists":[{"partlist_id":1,"descr":"Main Parts","type":1,"qty":2615},{"partlist_id":3,"descr":"Parts for m1","type":2,"qty":709},{"partlist_id":4,"descr":"Extra Bits","type":2,"qty":33},{"partlist_id":5,"descr":"MOC-3247 8-Cylinder Radial Aircraft Engine","type":2,"qty":198}]}']),t.respondWith("https://rebrickable.com/api/get_user_parts?key=p4GLMlcPxJ&hash=p4GLMlcPxJ&partlist_id=3&format=json",[200,{"Content-Type":"application/json"},'{"parts":[{"part_id":"4459","rb_color_id":0,"ldraw_color_id":0,"qty":33,"part_name":"Technic Pin with Friction Ridges Lengthwise, without Center Slots","part_type_id":9,"part_url":"https://rebrickable.com/parts/4459","part_img_url":"https://img.rebrickable.com/img/pieces/0/4459.png"}]}']),t.respondWith("POST","https://rebrickable.com/api/set_user_parts",[200,{"Content-Type":"application/text"},"SUCCESS 34"]),t.respondImmediately=!0}),afterEach(function(){e.removeEventListener("loading-finished",r),e.removeEventListener("dialog-closed",o),t.restore()}),it("tests moving a part to another part list",function(t){e.userHash="p4GLMlcPxJ",e.part={part_id:"10928",rb_color_id:72,ldraw_color_id:72,qty:9,part_name:"Technic Gear 8 Tooth [Reinforced]",part_type_id:7,part_url:"https://rebrickable.com/parts/10928",part_img_url:"https://img.rebrickable.com/img/pieces/elements/6012451.jpg"},r=function(){var t=e.$$("#_dropdownPartList");expect(t).to.be.ok,runAfterOpenDropDown(t,function(){var r=Polymer.dom(t).querySelectorAll("paper-item")[1];expect(r).to.be.ok,expect(r).to.have.property("partlist_id",3),MockInteractions.tap(r),flush(function(){expect(e).to.have.deep.property("_selectedPartList.partlist_id",3);var t=e.$$("#_quantityInput");expect(t).to.be.ok,t.value=5,expect(e).to.have.property("quantity",5),MockInteractions.tap(Polymer.dom(e.root).querySelector("#_confirmButton")),Polymer.dom.flush()})})},o=function(){expect(e.$.theAjaxSetUserParts).to.have.property("lastResponse");var r=e.$.theAjaxSetUserParts.lastResponse;expect(r).to.be.ok,expect(r).to.equal("SUCCESS 34"),t()},e.addEventListener("loading-finished",r),e.addEventListener("dialog-closed",o),runAfterOpen(e,function(){})})});</script>
+
+
+
+
+</body></html>

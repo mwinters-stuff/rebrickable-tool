@@ -1,0 +1,46 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/polymer-cookie/polymer-cookie.html">
+<link rel="import" href="../../bower_components/cookie-consent-polymer/cookie-consent-polymer.html">
+<link rel="import" href="../../bower_components/gold-email-input/gold-email-input.html">
+<link rel="import" href="../styles/shared-styles.html">
+
+</head><body><dom-module id="logon-thing">
+  <template>
+    <style include="shared-styles">:host{display:block;height:100%;width:100%;}div.whole{height:100%;width:100%;@apply (--layout-flex);@apply (--layout-horizontal);@apply (--layout-center-justified);}div.wholeh{@apply (--layout-vertical);@apply (--layout-center-justified);}div.horiz{@apply (--layout-horizontal);@apply (--layout-center-justified);}</style>
+    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_user_hash" params="{{_params}}" handle-as="text" on-response="_handleResponse"></iron-ajax>
+
+    <div class="whole">
+      <div class="wholeh">
+        <div class="title">
+          <center>Rebrickable Tool</center>
+        </div>
+        <div class="horiz">Rebrickable Credentials
+        </div>
+        <div class="horiz">
+          <gold-email-input id="username" label="E-Mail Address" autofocus="" auto-validate="" required="" value="{{_inputUsername}}" size="30"></gold-email-input>
+        </div>
+        <div class="horiz">
+          <paper-input id="password" label="Password" required="" value="{{_inputPassword}}" size="30" type="password"></paper-input>
+        </div>
+        <div class="horiz">
+          <paper-checkbox id="savelogin" checked="{{_inputSaveLogin}}">Remember</paper-checkbox>
+        </div>
+
+        <div class="horiz">
+          <paper-button id="doit" raised="" on-tap="doLogin">Login</paper-button>
+        </div>
+      </div>
+    </div>
+    <paper-toast id="failedToast" text="Logon failed!">
+    </paper-toast>
+    <polymer-cookie id="cookie" time="30" format="d" value="{{_cookieValue}}" name="rebrickableHash"></polymer-cookie>
+    <cookie-consent-polymer dialog-text="This website uses cookies to save a login token if you choose to." button-text="Accept" expires-in-days="30"></cookie-consent-polymer>
+  </template>
+  <script>!function(){"use strict";Polymer({is:"logon-thing",properties:{userHash:{type:String,value:"",notify:!0},_params:{type:Object,value:{}},_inputUsername:{type:String},_inputPassword:{type:String},_inputSaveLogin:{type:String},_cookieValue:{type:String}},ready:function(){this.async(function(){var e=this.$.cookie.readCookie();e?(this.set("userHash",e),this.fire("authorized")):(this.set("userHash",""),this.fire("un-authorized"))}.bind(this),200)},doLogin:function(){this.set("_params",{key:"p4GLMlcPxJ",email:this._inputUsername,pass:this._inputPassword,format:"json"}),this.$.theAjax.generateRequest()},_handleResponse:function(e){e.detail.response&&("INVALIDUSERPASS"===e.detail.response?(this.$.failedToast.open(),this.fire("auth-failed")):(this.userHash=e.detail.response,this._inputSaveLogin&&(this.set("_cookieValue",this.userHash),this.$.cookie.createCookie()),this.fire("authorized")))},logout:function(){this.$.cookie.eraseCookie(),this.set("_inputPassword","")}})}();</script>
+</dom-module>
+</body></html>

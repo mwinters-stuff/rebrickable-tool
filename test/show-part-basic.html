@@ -1,0 +1,78 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>show-part</title>
+
+  <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../bower_components/web-component-tester/browser.js"></script>
+
+  <!-- Step 1: import the element to test -->
+  <link rel="import" href="../src/show-part/show-part.html">
+
+</head>
+<body>
+
+<test-fixture id="basic">
+  <template>
+    <show-part></show-part >
+  </template>
+</test-fixture>
+
+<script>
+/*jshint -W030 */
+  function runAfterOpen(dialog, callback) {
+    dialog.$$('paper-dialog').addEventListener('iron-overlay-opened', callback);
+  }
+
+  describe('show-part tests', function() {
+    var element;
+    var server;
+
+    beforeEach(function() {
+      element = fixture('basic');
+
+      server = sinon.fakeServer.create();
+
+      server.respondWith('https://rebrickable.com/api/get_part?key=p4GLMlcPxJ&part_id=32002&format=json&inc_colors=1',
+        [200,{'Content-Type': 'application/json'},
+         '{"part_id":"32002","name":"Technic Pin 3\/4","year1":"1995","year2":"2016","category":"Technic Pins","part_type_id":"9","part_url":"https:\/\/rebrickable.com\/parts\/32002","part_img_url":"https:\/\/img.rebrickable.com\/img\/pieces\/elements\/4211050.jpg","colors":[{"rb_color_id":"72","ldraw_color_id":"72","color_name":"Dark Bluish Gray","num_sets":"206","num_parts":"1098"},{"rb_color_id":"8","ldraw_color_id":"8","color_name":"Dark Gray","num_sets":"147","num_parts":"1311"},{"rb_color_id":"19","ldraw_color_id":"19","color_name":"Tan","num_sets":"80","num_parts":"386"}]}'
+      ]);
+
+
+    });
+
+    afterEach(function() {
+     server.restore();
+    });
+
+
+    it('show part', function(done) {
+      runAfterOpen(element, function(){
+        expect(element.$$('#rowName').innerText.trim()).to.equal('Technic Pin 3\/4');
+        expect(element.$$('#rowCategory').innerText).to.equal('Category:\tTechnic Pins');
+        expect(element.$$('#rowYears').innerText).to.equal('Years:\t1995 to 2016');
+        expect(element.$$('#rowURL').innerText).to.equal('URL:\thttps:\/\/rebrickable.com\/parts\/32002');
+        expect(element.$$('iron-image').src).to.equal('https:\/\/img.rebrickable.com\/img\/pieces\/elements\/4211050.jpg');
+        done();
+      });
+
+      element.show(32002);
+      server.respond();
+    });
+
+  });
+</script>
+
+</body>
+</html>

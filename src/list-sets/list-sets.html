@@ -1,0 +1,190 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<!-- Iron elements -->
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+
+<!-- Paper elements -->
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+
+<link rel="import" href="list-of-sets.html">
+<link rel="import" href="../set-search-dialog/set-search-dialog.html">
+
+<dom-module id="list-sets">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+    </style>
+    <iron-ajax id="theAjax" auto="{{showing}}" url="https://rebrickable.com/api/get_user_setlists" params="{{_params}}" handle-as="json" on-response="_handleResponse">
+    </iron-ajax>
+    <set-search-dialog id="_setSearchDialog" result="{{_selectedSearchSet}}" on-accepted="_searchSetDialogAccepted"></set-search-dialog>
+    <iron-ajax id="theAjaxSetUserSet" method="POST" url="https://rebrickable.com/api/set_user_set"
+      content-type = "application/x-www-form-urlencoded";
+      handle-as="text" on-response="_onSetUserSetResponse"></iron-ajax>
+
+      <paper-toast id="toast">
+      </paper-toast>
+
+    <paper-material elevation="1">
+      <list-of-sets id="_listOfSets" set-list-id="{{setListId}}"
+        set-list-name="{{_getSetListName(setListId)}}"
+        user-hash="{{userHash}}" route="{{route}}"
+        showing="{{showing}}"></list-of-sets>
+      <paper-fab  style='position:absolute; bottom: 30px; right:24px' icon="icons:add" on-click="_onAddClick"></paper-fab>
+    </paper-material>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'list-sets',
+
+        properties: {
+          userHash: {
+            type: String,
+            observer: '_onHashChanged',
+          },
+
+          _params: {
+            type: String,
+          },
+
+          showing: {
+            type: Boolean,
+          },
+
+          tabsToShow: {
+            type: Object,
+            notify: true,
+          },
+
+          setListId: {
+            type: Number,
+            notify: true,
+            observer: '_setListIdChanged',
+          },
+
+          _lastSetListId: {
+            type: Number,
+          },
+
+          _selectedSearchSet: {
+            type: Object,
+          },
+
+          route: {
+            type: String,
+          },
+
+          _data:{
+            type: Array,
+          },
+        },
+
+        _onHashChanged: function() {
+          this._data = [];
+          if (this.userHash) {
+            this.set('_params', {
+              key: 'p4GLMlcPxJ',
+              hash: this.userHash,
+              format: 'json'
+            });
+          }
+        },
+
+        _getSetListName: function(id) {
+          var set = XP.find(this._data, function(alist) {
+            return alist.setlist_id === id;
+          });
+
+          if(set){
+            return set.name;
+          }
+          return '';
+
+        },
+
+        _setListIdChanged: function(){
+          if(this.setListId){
+            this._lastSetListId = this.setListId;
+          // } else if(this._lastSetListId){
+          //   this.setListId = this._lastSetListId;
+          }
+        },
+
+        _handleResponse: function(response) {
+          if (response.detail.response) {
+            this._data = response.detail.response.sets;
+            if (this._data.length > 0 && !this.setListId) {
+              this.setListId = !this._lastSetListId ? this._data[0].setlist_id : this._lastSetListId;
+              this.set('route.path','/app/list-sets/' + this.setListId);
+            }
+
+            if (this.showing) {
+              var tabsToShow = {
+                selected: this.setListId,
+                route: '/app/list-sets',
+                tabs: []
+              };
+
+              this._data.forEach(function(element) {
+                tabsToShow.tabs.push({
+                  route: '/app/list-sets/' + element.setlist_id,
+                  title: element.name,
+                });
+              }.bind(this));
+              this.set('tabsToShow', tabsToShow);
+              this.saveTabsToShow = tabsToShow;
+            }
+          }
+        },
+
+        _onAddClick: function() {
+          this.$._setSearchDialog.open();
+        },
+
+        _searchSetDialogAccepted: function() {
+          //console.log('searched ', this._selectedSearchSet);
+          //
+          this.$.theAjaxSetUserSet.body = {
+            'key': 'p4GLMlcPxJ',
+            'hash': this.userHash,
+            'format': 'json',
+            'set': this._selectedSearchSet.set_id,
+            'qty': 1,
+            'setlist_id': this.setListId
+          };
+          this.$.theAjaxSetUserSet.generateRequest();
+        },
+
+        _onSetUserSetResponse: function(e) {
+            if(XP.startsWith(e.detail.response,'SUCCESS')){
+              this.$.toast.text = 'Set added!';
+              this.$.toast.open();
+            }else{
+              this.$.toast.text = 'Failed to add set!';
+              this.$.toast.open();
+            }
+            this.$._listOfSets.refresh();
+        },
+
+      });
+    })();
+  </script>
+</dom-module>

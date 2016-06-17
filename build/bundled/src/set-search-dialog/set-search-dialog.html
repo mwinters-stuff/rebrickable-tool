@@ -1,0 +1,63 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
+<link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+
+
+</head><body><dom-module id="set-search-dialog">
+  <template>
+    <style include="shared-styles">:host{display:block;}iron-data-table{height:400px;}paper-dialog{width:600px;}</style>
+    <paper-dialog id="_dialog" on-iron-overlay-closed="_onDialogClosed">
+      <h2>Search MOC or Set</h2>
+      <div class="horiz">
+        <div>Search Types</div>
+        <paper-radio-group selected="{{_searchSetType}}" attr-for-selected="name">
+          <paper-radio-button name="M">MOC's</paper-radio-button>
+          <paper-radio-button name="S">Sets</paper-radio-button>
+        </paper-radio-group>
+      </div>
+      <div class="horiz">
+        <iron-a11y-keys id="_a11y" target="[[_targetKeys]]" keys="enter" on-keys-pressed="_onSearchDialogSearch"></iron-a11y-keys>
+        <paper-input autofocus="" id="_searchDialogInput" label="Search" value="{{_searchInput::input}}">
+          <paper-icon-button suffix="" icon="search" raised="" on-click="_onSearchDialogSearch" disabled="{{_searchTermsBad}}"></paper-icon-button>
+        </paper-input>
+      </div>
+      <iron-data-table id="dataTable" items="[[_dataSearch]]" selected-item="{{_selectedSearchSet}}" selection-enabled="" loading="{{_loading}}">
+        <data-table-column width="40px">
+          <template>
+            <iron-image src="[[item.img_tn]]" preload="" style="width:40px; height:40px" sizing="contain"></iron-image>
+          </template>
+        </data-table-column>
+        <data-table-column name="ID" width="80px">
+          <template>[[item.set_id]]</template>
+        </data-table-column>
+        <data-table-column name="Theme" width="120px">
+          <template>[[item.theme1]]</template>
+        </data-table-column>
+        <data-table-column name="Description" flex="1">
+          <template>[[item.descr]]</template>
+        </data-table-column>
+      </iron-data-table>
+
+      <div class="buttons">
+        <paper-button dialog-dismiss="">Cancel</paper-button>
+        <paper-button dialog-confirm="" disabled="{{!_searchDialogOk}}">Accept</paper-button>
+      </div>
+    </paper-dialog>
+    <iron-ajax id="theAjaxSearch" url="https://rebrickable.com/api/search" params="{{_paramsSearch}}" handle-as="json" on-response="_handleResponseSearch">
+    </iron-ajax>
+
+
+  </template>
+  <script>!function(){"use strict";Polymer({is:"set-search-dialog",properties:{result:{type:Object,notify:!0},_paramsSearch:{type:Object},_searchSetType:{type:String,value:"M",observer:"_searchTermsChanged"},_searchInput:{type:String,observer:"_searchTermsChanged"},_dataSearch:{type:Array,value:[]},_loading:{type:Boolean,observer:"_onLoadingChanged"},_selectedSearchSet:{type:Object,observer:"_onSelectedSearchChanged",value:null},_searchDialogOk:{type:Boolean,value:!1},_searchTermsBad:{type:Boolean,value:!0},_targetKeys:{type:Object,value:function(){return this.$._searchDialogInput}}},_onSearchDialogSearch:function(){this.set("_paramsSearch",{key:"p4GLMlcPxJ",format:"json",type:this._searchSetType,query:this._searchInput}),this.$.theAjaxSearch.generateRequest()},_handleResponseSearch:function(e){e.detail.response&&e.detail.response.results&&(this._dataSearch=e.detail.response.results)},_searchTermsChanged:function(){this.set("_searchTermsBad",""===this._searchSetType||""===this._searchInput)},_onSelectedSearchChanged:function(){this.set("_searchDialogOk",this._selectedSearchSet)},_onDialogClosed:function(e){e.detail.confirmed&&(this.set("result",this._selectedSearchSet),this.fire("accepted"))},open:function(){this.$._dialog.open()},_onLoadingChanged:function(){this.fire(this._loading?"loading-started":"loading-finished")}})}();</script>
+</dom-module>
+</body></html>

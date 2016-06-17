@@ -1,0 +1,48 @@
+<html><head><meta charset="UTF-8"><link rel="import" href="../main-app/main-app.html"></head><body><div hidden="" by-vulcanize=""><dom-module id="list-of-sets" assetpath="/">
+  <template>
+    <style include="shared-styles">:host{display:block;}</style>
+    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_user_sets" params="{{_params}}" handle-as="json" last-response="{{_data}}">
+    </iron-ajax>
+
+    <iron-data-table id="dataTable" items="[[_data.0.sets]]" selection-enabled="" on-selected-item-changed="_onSelectedChanged" style$="height: [[_height]]px">
+      <data-table-column align-right="" width="20px">
+        <template><iron-image src="[[item.img_sm]]" preload="" style="width:40px; height:40px" sizing="contain"></iron-image></template>
+      </data-table-column>
+      <data-table-column align-right="" width="20px" name="Qty">
+        <template>[[item.qty]]</template>
+      </data-table-column>
+      <data-table-column width="80px" name="ID">
+        <template>[[item.set_id]]</template>
+      </data-table-column>
+      <data-table-column name="Description" flex="50">
+        <template>[[item.descr]]</template>
+      </data-table-column>
+      <data-table-column name="Pieces" align-right="" width="20px">
+        <template>[[item.pieces]]</template>
+      </data-table-column>
+      <data-table-column name="Year" align-right="" width="20px">
+        <template>[[item.year]]</template>
+      </data-table-column>
+    </iron-data-table>
+  </template>
+  <script>!function(){"use strict";Polymer({is:"list-of-sets",properties:{userHash:{type:String,observer:"_onHashChanged"},setListId:{type:Number,observer:"_onHashChanged"},setListName:{type:String},showing:{type:Boolean,observer:"_onShowingChanged"},_data:{type:Array},_params:{type:Object},_height:{type:Number,value:400}},attached:function(){this.async(this._resizeTable),window.addEventListener("resize",function(){this.debounce("parts-resize",this._resizeTable,1e3)}.bind(this))},_resizeTable:function(){var e=document.getElementById("paperDrawerPanel"),t=document.getElementById("appHeader");e&&t&&this.set("_height",e.clientHeight-t.clientHeight-120)},_onHashChanged:function(){this.set("_data",[]),this.userHash&&this.setListId&&(this.set("_params",{key:"p4GLMlcPxJ",hash:this.userHash,format:"json",setlist_id:this.setListId}),this.$.theAjax.generateRequest())},_onShowingChanged:function(){this.showing&&this._onHashChanged()},_onSelectedChanged:function(e){e.detail&&e.detail.value&&this.set("route.path","/app/show-set/"+e.detail.value.set_id+"/"+this.setListId+"/"+this.setListName)},refresh:function(){this.$.theAjax.generateRequest()}})}();</script>
+</dom-module>
+</div><dom-module id="list-sets">
+  <template>
+    <style include="shared-styles">:host{display:block;}</style>
+    <iron-ajax id="theAjax" auto="{{showing}}" url="https://rebrickable.com/api/get_user_setlists" params="{{_params}}" handle-as="json" on-response="_handleResponse">
+    </iron-ajax>
+    <set-search-dialog id="_setSearchDialog" result="{{_selectedSearchSet}}" on-accepted="_searchSetDialogAccepted"></set-search-dialog>
+    <iron-ajax id="theAjaxSetUserSet" method="POST" url="https://rebrickable.com/api/set_user_set" content-type="application/x-www-form-urlencoded" ;="" handle-as="text" on-response="_onSetUserSetResponse"></iron-ajax>
+
+      <paper-toast id="toast">
+      </paper-toast>
+
+    <paper-material elevation="1">
+      <list-of-sets id="_listOfSets" set-list-id="{{setListId}}" set-list-name="{{_getSetListName(setListId)}}" user-hash="{{userHash}}" route="{{route}}" showing="{{showing}}"></list-of-sets>
+      <paper-fab style="position:absolute; bottom: 30px; right:24px" icon="icons:add" on-click="_onAddClick"></paper-fab>
+    </paper-material>
+  </template>
+  <script>!function(){"use strict";Polymer({is:"list-sets",properties:{userHash:{type:String,observer:"_onHashChanged"},_params:{type:String},showing:{type:Boolean},tabsToShow:{type:Object,notify:!0},setListId:{type:Number,notify:!0,observer:"_setListIdChanged"},_lastSetListId:{type:Number},_selectedSearchSet:{type:Object},route:{type:String},_data:{type:Array}},_onHashChanged:function(){this._data=[],this.userHash&&this.set("_params",{key:"p4GLMlcPxJ",hash:this.userHash,format:"json"})},_getSetListName:function(t){var s=XP.find(this._data,function(s){return s.setlist_id===t});return s?s.name:""},_setListIdChanged:function(){this.setListId&&(this._lastSetListId=this.setListId)},_handleResponse:function(t){if(t.detail.response&&(this._data=t.detail.response.sets,this._data.length>0&&!this.setListId&&(this.setListId=this._lastSetListId?this._lastSetListId:this._data[0].setlist_id,this.set("route.path","/app/list-sets/"+this.setListId)),this.showing)){var s={selected:this.setListId,route:"/app/list-sets",tabs:[]};this._data.forEach(function(t){s.tabs.push({route:"/app/list-sets/"+t.setlist_id,title:t.name})}.bind(this)),this.set("tabsToShow",s),this.saveTabsToShow=s}},_onAddClick:function(){this.$._setSearchDialog.open()},_searchSetDialogAccepted:function(){this.$.theAjaxSetUserSet.body={key:"p4GLMlcPxJ",hash:this.userHash,format:"json",set:this._selectedSearchSet.set_id,qty:1,setlist_id:this.setListId},this.$.theAjaxSetUserSet.generateRequest()},_onSetUserSetResponse:function(t){XP.startsWith(t.detail.response,"SUCCESS")?(this.$.toast.text="Set added!",this.$.toast.open()):(this.$.toast.text="Failed to add set!",this.$.toast.open()),this.$._listOfSets.refresh()}})}();</script>
+</dom-module>
+</body></html>

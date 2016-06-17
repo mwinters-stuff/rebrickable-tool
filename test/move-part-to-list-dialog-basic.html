@@ -1,0 +1,152 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>move-part-to-list-dialog</title>
+
+  <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../bower_components/web-component-tester/browser.js"></script>
+  <script src='../bower_components/iron-test-helpers/mock-interactions.js'></script>
+  <!-- Step 1: import the element to test -->
+  <link rel='import' href='../bower_components/iron-test-helpers/iron-test-helpers.html'>
+  <link rel="import" href="../src/move-part-to-list-dialog/move-part-to-list-dialog.html">
+
+</head>
+
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <move-part-to-list-dialog></move-part-to-list-dialog>
+    </template>
+  </test-fixture>
+
+  <script>
+    /*jshint -W030 */
+    function runAfterOpen(dialog, callback) {
+      var func = function() {
+        dialog.$$('paper-dialog').removeEventListener('iron-overlay-opened', func);
+        Polymer.Base.async(callback, 1);
+      };
+      dialog.$$('paper-dialog').addEventListener('iron-overlay-opened', func);
+      dialog.open();
+    }
+
+    function runAfterOpenDropDown(menu, callback) {
+      var func = function() {
+        menu.$.menuButton.$.dropdown.removeEventListener('iron-overlay-opened', func);
+        Polymer.Base.async(callback, 1);
+      };
+      menu.$.menuButton.$.dropdown.addEventListener('iron-overlay-opened', func);
+      MockInteractions.tap(menu);
+    }
+
+
+    describe('move-part-to-list-dialog tests', function() {
+      var element;
+      var server;
+      var listener1;
+      var listener2;
+
+
+      before(function() {
+        element = fixture('basic');
+        server = sinon.fakeServer.create();
+
+        server.respondWith('https://rebrickable.com/api/get_user_part_lists?key=p4GLMlcPxJ&hash=p4GLMlcPxJ&format=json', [200, {
+            'Content-Type': 'application/json'
+          },
+          '{"partlists":[{"partlist_id":1,"descr":"Main Parts","type":1,"qty":2615},{"partlist_id":3,"descr":"Parts for m1","type":2,"qty":709},{"partlist_id":4,"descr":"Extra Bits","type":2,"qty":33},{"partlist_id":5,"descr":"MOC-3247 8-Cylinder Radial Aircraft Engine","type":2,"qty":198}]}'
+        ]);
+        server.respondWith('https://rebrickable.com/api/get_user_parts?key=p4GLMlcPxJ&hash=p4GLMlcPxJ&partlist_id=3&format=json', [200, {
+            'Content-Type': 'application/json'
+          },
+          '{"parts":[{"part_id":"4459","rb_color_id":0,"ldraw_color_id":0,"qty":33,"part_name":"Technic Pin with Friction Ridges Lengthwise, without Center Slots","part_type_id":9,"part_url":"https:\/\/rebrickable.com\/parts\/4459","part_img_url":"https:\/\/img.rebrickable.com\/img\/pieces\/0\/4459.png"}]}'
+        ]);
+
+        server.respondWith('POST','https://rebrickable.com/api/set_user_parts', [ 200, {
+            'Content-Type': 'application/text'
+          },
+          'SUCCESS 34'
+        ]);
+
+        server.respondImmediately = true;
+      });
+
+      afterEach(function() {
+        element.removeEventListener('loading-finished',listener1);
+        element.removeEventListener('dialog-closed',listener2);
+        server.restore();
+      });
+
+
+      it('tests moving a part to another part list', function(done) {
+        element.userHash = 'p4GLMlcPxJ';
+        element.part = {
+          'part_id': '10928',
+          'rb_color_id': 72,
+          'ldraw_color_id': 72,
+          'qty': 9,
+          'part_name': 'Technic Gear 8 Tooth [Reinforced]',
+          'part_type_id': 7,
+          'part_url': 'https:\/\/rebrickable.com\/parts\/10928',
+          'part_img_url': 'https:\/\/img.rebrickable.com\/img\/pieces\/elements\/6012451.jpg'
+        };
+
+        listener1 = function(){
+          var partListDropdown = element.$$('#_dropdownPartList');
+          expect(partListDropdown).to.be.ok;
+          runAfterOpenDropDown(partListDropdown, function(){
+            var partListItem = Polymer.dom(partListDropdown).querySelectorAll('paper-item')[1];
+            expect(partListItem).to.be.ok;
+            expect(partListItem).to.have.property('partlist_id', 3);
+            MockInteractions.tap(partListItem);
+
+            flush(function(){
+            expect(element).to.have.deep.property('_selectedPartList.partlist_id', 3);
+
+            var quantityInput = element.$$('#_quantityInput');
+            expect(quantityInput).to.be.ok;
+            quantityInput.value = 5;
+            expect(element).to.have.property('quantity',5);
+
+            MockInteractions.tap(Polymer.dom(element.root).querySelector('#_confirmButton'));
+            Polymer.dom.flush();
+            //done();
+            });
+          });
+        };
+
+        listener2 = function(){
+
+          expect(element.$.theAjaxSetUserParts).to.have.property('lastResponse');
+          var response = element.$.theAjaxSetUserParts.lastResponse;
+          expect(response).to.be.ok;
+          expect(response).to.equal('SUCCESS 34');
+          done();
+        };
+
+        element.addEventListener('loading-finished',listener1);
+        element.addEventListener('dialog-closed',listener2);
+        runAfterOpen(element, function() {
+        });
+
+      });
+
+    });
+  </script>
+
+</body>
+
+</html>

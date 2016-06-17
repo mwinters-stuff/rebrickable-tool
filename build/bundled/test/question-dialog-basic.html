@@ -1,0 +1,29 @@
+<!DOCTYPE html><html><head>
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1,user-scalable=yes">
+  <title>input-dialog</title>
+
+  <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../bower_components/web-component-tester/browser.js"></script>
+  <script src="../bower_components/iron-test-helpers/mock-interactions.js"></script>
+  
+  <link rel="import" href="../bower_components/iron-test-helpers/iron-test-helpers.html">
+  <link rel="import" href="../src/input-dialog/question-dialog.html">
+
+</head>
+
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <question-dialog>
+        <div id="cx">Some Content</div>
+      </question-dialog>
+    </template>
+  </test-fixture>
+
+  <script>function runAfterOpen(e,o){var n=function(){e.$$("paper-dialog").removeEventListener("iron-overlay-opened",n),Polymer.Base.async(o,1)};e.$$("paper-dialog").addEventListener("iron-overlay-opened",n),e.open()}describe("question-dialog tests",function(){var e,o;beforeEach(function(){e=fixture("basic")}),afterEach(function(){e.removeEventListener("dialog-closed",o)}),it("test the dialog ok response",function(n){o=function(e){expect(e.detail.confirmed).to.be["true"],n()},e.addEventListener("dialog-closed",o),runAfterOpen(e,function(){flush(function(){MockInteractions.tap(Polymer.dom(e.root).querySelector("[dialog-confirm]"))})})}),it("test the dialog cancel response",function(n){o=function(e){expect(e.detail.confirmed).to.be["false"],n()},e.addEventListener("dialog-closed",o),runAfterOpen(e,function(){flush(function(){MockInteractions.tap(Polymer.dom(e.root).querySelector("[dialog-dismiss]"))})})})});</script>
+
+
+
+
+</body></html>

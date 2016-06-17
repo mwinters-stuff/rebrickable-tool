@@ -1,0 +1,623 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
+<link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/iron-icons/editor-icons.html">
+<link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html">
+
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+
+<link rel="import" href="../set-search-dialog/set-search-dialog.html">
+<link rel="import" href="../show-set/show-set-parts.html">
+<link rel="import" href="../list-parts/list-of-parts.html">
+<link rel="import" href="../input-dialog/input-dialog.html">
+<link rel="import" href="../colour-list/colour-list.html">
+
+</head><body><dom-module id="manage-moc-parts">
+<template>
+  <style include="shared-styles">:host{display:block;}div.ch{@apply (--layout-flex);padding-right:12px;padding-left:12px;border-right:1px solid #e3e3e3;}div div.ch:last-of-type{border-right:none;}iron-data-table{height:800px;}</style>
+  <iron-ajax id="theAjaxPartLists" method="GET" url="https://rebrickable.com/api/get_user_part_lists" params="{{_paramsPartLists}}" handle-as="json" last-response="{{_dataPartLists}}"></iron-ajax>
+  
+  <iron-ajax id="theAjaxAddPartLists" method="POST" url="https://rebrickable.com/api/add_user_partlist" handle-as="text" on-response="_onAddPartListResponse"></iron-ajax>
+  <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text" on-response="_onSetUserPartsResponse"></iron-ajax>
+
+  <colour-list id="colours"></colour-list>
+
+  <paper-toast id="toast">
+  </paper-toast>
+
+  <paper-material elevation="1">
+
+    <div class="horiztop">
+
+      <div class="ch">
+        <paper-toolbar>
+          <div>Select MOC or Set</div>
+        </paper-toolbar>
+        <paper-input readonly="" value="{{_selectedSearchSet.set_id}} {{_selectedSearchSet.descr}}" on-click="_onSearchMOCClick">
+          <paper-icon-button suffix="" icon="search" on-click="_onSearchMOCClick"></paper-icon-button>
+        </paper-input>
+        <show-set-parts set-id="{{_selectedSearchSet.set_id}}" parts="{{_setParts}}" disable-popup=""></show-set-parts>
+      </div>
+
+      <div class="ch">
+        <paper-toolbar>
+          <div>Choose Part List</div>
+          <span class="space"></span>
+          <paper-icon-button icon="editor:merge-type" on-click="_onUsePartClick" disabled="{{_usePartDisabled}}"></paper-icon-button>
+          <paper-icon-button icon="icons:save" on-click="_onSavePartsListClick" disabled="{{_partListPartsDisabled}}"></paper-icon-button>
+        </paper-toolbar>
+        <paper-dropdown-menu label="Part List" on-iron-select="_onPartListSelected" selected-item="{{_selectedPartList}}" style="padding-top: 16px; width: 100%">
+          <paper-listbox class="dropdown-content">
+            <template is="dom-repeat" items="{{_dataPartLists.partlists}}">
+              <paper-item id="{{item.partlist_id}}">{{item.descr}}</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+        <list-of-parts id="_partListOfParts" user-hash="{{userHash}}" part-list-id="{{_selectedPartListId}}" parts="{{_partListParts}}" disable-popup="" on-selected-item-changed="_onPartListItemSelected"></list-of-parts>
+      </div>
+
+
+      <div class="ch">
+        <paper-toolbar>
+          <paper-icon-button icon="{{_havePartsCollapseIcon}}" on-click="_onCollapseHaveParts"></paper-icon-button>
+          <div>Have Parts</div>
+          <span class="space"></span>
+          
+          <paper-icon-button icon="icons:save" on-click="_onSaveHavePartsListClick" disabled="{{_buildHavePartsDisabled}}"></paper-icon-button>
+        </paper-toolbar>
+        <iron-collapse id="collapseHaveParts" opened="{{_collapseHavePartsOpened}}">
+          <iron-data-table id="dataTableHave" items="[[_buildHaveParts]]">
+            <data-table-column align-right="" width="40px">
+              <template>
+                <iron-image src="[[item.part_img_url]]" preload="" style="width:40px; height:40px" sizing="contain"></iron-image>
+              </template>
+            </data-table-column>
+            <data-table-column align-right="" width="20px" name="Qty">
+              <template>[[item.qty]]</template>
+            </data-table-column>
+            <data-table-column name="Part ID" width="50px">
+              <template>[[item.part_id]]</template>
+            </data-table-column>
+            <data-table-column name="Name" flex="2">
+              <template>[[item.part_name]]</template>
+            </data-table-column>
+            <data-table-column name="Colour">
+              <template>
+                <div class="box" style="background-color: {{getColour(item.rb_color_id)}}"></div>
+                
+              </template>
+            </data-table-column>
+          </iron-data-table>
+        </iron-collapse>
+
+        <paper-toolbar style="margin-top:12px">
+          <paper-icon-button icon="{{_dontHavePartsCollapseIcon}}" on-click="_onCollapseDontHaveParts"></paper-icon-button>
+          <div>Don't Have Parts</div>
+          <span class="space"></span>
+          <paper-icon-button icon="icons:save" on-click="_onSaveDontHavePartsListClick" disabled="{{_buildDontHavePartsDisabled}}"></paper-icon-button>
+        </paper-toolbar>
+        <iron-collapse id="collapseDontHaveParts" opened="{{_collapseDontHavePartsOpened}}">
+          <iron-data-table id="dataTableDont" items="[[_buildDontHaveParts]]" on-selected-item-changed="_onDontHaveItemSelected" selection-enabled="">
+            <data-table-column align-right="" width="40px">
+              <template>
+                <iron-image src="[[item.part_img_url]]" preload="" style="width:40px; height:40px" sizing="contain"></iron-image>
+              </template>
+            </data-table-column>
+            <data-table-column align-right="" width="20px" name="Qty">
+              <template>[[item.qty]]</template>
+            </data-table-column>
+            <data-table-column name="Part ID" width="50px">
+              <template>[[item.part_id]]</template>
+            </data-table-column>
+            <data-table-column name="Name" flex="2">
+              <template>[[item.part_name]]</template>
+            </data-table-column>
+            <data-table-column name="Colour">
+              <template>
+                <div class="box" style="background-color: {{getColour(item.rb_color_id)}}"></div>
+                
+              </template>
+            </data-table-column>
+          </iron-data-table>
+        </iron-collapse>
+      </div>
+    </div>
+
+
+  </paper-material>
+
+  <set-search-dialog id="_setSearchDialog" result="{{_selectedSearchSet}}" on-accepted="_searchSetDialogAccepted"></set-search-dialog>
+  <input-dialog id="_inputDialog"></input-dialog>
+
+  <paper-dialog id="partUseDialog" on-iron-overlay-closed="_partUseDialogClosed">
+    <h2>Use alternate part in Build</h2>
+    <div>
+      <iron-image src="[[_dontHaveSelectedPart.part_img_url]]" preload="" style="width:40px; height:40px" sizing="contain"></iron-image>
+      
+    </div>
+    <div>Do you want to use part</div>
+    <div>{{_partListSelectedPart.part_id}} {{_partListSelectedPart.part_name}} which you have {{_partListSelectedPart.qty}} in {{getColourName(_partListSelectedPart.rb_color_id)}}</div>
+    <div>In place of {{_dontHaveSelectedPart.part_id}} {{_dontHaveSelectedPart.part_name}} which you need {{_dontHaveSelectedPart.qty}} in {{getColourName(_dontHaveSelectedPart.rb_color_id)}}</div>
+    <div>
+      <paper-input value="{{_usePartQty}}" min="0" max="{{_dontHaveSelectedPart.qty}}" type="number" label="Use"></paper-input>
+
+      <div class="buttons">
+        <paper-button dialog-dismiss="">Cancel</paper-button>
+        <paper-button dialog-confirm="">Ok</paper-button>
+      </div>
+    </div>
+  </paper-dialog>
+
+</template>
+<script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'manage-moc-parts',
+
+      properties: {
+        userHash: {
+          type: String,
+          value: '',
+          observer: '_onHashChanged',
+        },
+
+        showing: {
+          type: Boolean,
+          value: false,
+          observer: '_onShowingChanged'
+        },
+
+        tabsToShow: {
+          type: Object,
+          value: {},
+          notify: true,
+        },
+
+        _selectedSearchSet: {
+          type: Object,
+          value: {}
+        },
+
+        _selectedPartList: {
+          type: Object,
+          value: {}
+        },
+
+        _paramsPartLists: {
+          type: Object,
+          value: {}
+        },
+
+        _dataPartLists: {
+          type: Array,
+          value: [],
+        },
+
+        _partListParts: {
+          type: Array,
+          value: [],
+          observer: '_onPartsListsChanged',
+          notify: true,
+        },
+
+        _partListPartsDisabled: {
+          type: Boolean,
+          value: true,
+        } ,
+
+        _setParts: {
+          type: Array,
+          value: [],
+          observer: '_onPartsListsChanged'
+        },
+
+        _buildHaveParts: {
+          type: Array,
+          value: [],
+          notify: true,
+        },
+
+        _buildHavePartsDisabled: {
+          type: Boolean,
+          value: true,
+        } ,
+
+        _buildDontHaveParts: {
+          type: Array,
+          value: [],
+          notify: true,
+        },
+
+        _buildDontHavePartsDisabled: {
+          type: Boolean,
+          value: true,
+        } ,
+
+        _selectedPartListId: -1,
+
+        _usePartDisabled: true,
+        _usePartQty: 0,
+        _partListSelectedPart: {
+          type: Object,
+          value: {}
+        },
+
+        _havePartsCollapseIcon: {
+          type: String,
+          value: 'icons:expand-less',
+        },
+
+        _dontHavePartsCollapseIcon: {
+          type: String,
+          value: 'icons:expand-less',
+        },
+
+        _collapseHavePartsOpened: {
+          type: Boolean,
+          observer: '_collapseHavePartsOpenedChanged'
+        },
+
+        _collapseDontHavePartsOpened: {
+          type: Boolean,
+          observer: '_collapseDontHavePartsOpenedChanged'
+        },
+
+        _dontCreateLists:{
+          type: Boolean,
+          value: false,
+        }
+      },
+
+      ready: function() {
+        if(!this.$.collapseHaveParts.opened){
+          this.$.collapseHaveParts.toggle();
+        }
+
+        if(!this.$.collapseDontHaveParts.opened){
+          this.$.collapseDontHaveParts.toggle();
+        }
+      },
+
+
+      _onShowingChanged: function() {
+        if (this.showing) {
+          this.set('tabsToShow.tabs', []);
+        }
+        this.$.theAjaxPartLists.auto = this.showing;
+      },
+
+      _onSearchMOCClick: function() {
+        this.$._setSearchDialog.open();
+      },
+
+      _searchSetDialogAccepted: function() {
+        //console.log('searched ', this._selectedSearchSet);
+      },
+
+
+      // _handleResponsePartLists: function(response) {
+      //   if (response.detail.response) {
+      //     this.set('_dataPartLists', response.detail.response.partlists);
+      //   }
+      // },
+
+      _onHashChanged: function() {
+        if (this.userHash) {
+          this._dataPartLists = [];
+          this._paramsPartLists = {
+            key: 'p4GLMlcPxJ',
+            hash: this.userHash,
+            format: 'json'
+          };
+        }
+      },
+
+      _onPartListSelected: function() {
+        this.set('_selectedPartListId', this._selectedPartList.id);
+      },
+
+      _onPartsListsChanged: function() {
+        if(!this._dontCreateLists){
+          if (this._partListParts && this._setParts && this._partListParts && this._partListParts.length && this._setParts.length) {
+            this.set('_buildHaveParts', []);
+            this.set('_buildHavePartsDisabled', true);
+            this.set('_buildDontHaveParts',[]);
+            this.set('_buildDontHavePartsDisabled',true);
+            this.set('_partListPartsDisabled', this._partListParts.length === 0);
+
+            this._buildHaveParts = [];
+            this._buildDontHaveParts = [];
+
+            var buildHaveParts = [];
+            var buildDontHaveParts = [];
+
+            XP.forEach(this._setParts[0].parts, function(part) {
+              //console.log('finding part', part.part_id, part.rb_color_id, part.qty);
+              var havePart = XP.find(this._partListParts, function(sparePart) {
+                return part.part_id === sparePart.part_id && part.rb_color_id === sparePart.rb_color_id;
+              }, this);
+
+              if (havePart) {
+              //  console.log('found part', havePart.part_id, havePart.rb_color_id, havePart.qty);
+                var workPart = XP.clone(part);
+                var qtyNeed = XP.toNumber(workPart.qty);
+                var qtyHave = XP.toNumber(havePart.qty);
+                var qtyLeft = 0;
+                if (qtyHave >= qtyNeed) {
+                  buildHaveParts.push(XP.clone(workPart));
+                  //havePart.qty = qtyHave - qtyNeed;
+                  qtyLeft = qtyHave - qtyNeed;
+                } else {
+                  var qtyDontHave = qtyNeed - qtyHave;
+                  //havePart.qty = 0;
+                  workPart.qty = qtyHave;
+                  buildHaveParts.push(XP.clone(workPart));
+                  workPart.qty = qtyDontHave;
+                  buildDontHaveParts.push(XP.clone(workPart));
+                }
+
+                var idx2 = XP.indexOf(this._partListParts, havePart);
+                if(idx2 >= 0){
+                  havePart.qty =  qtyLeft;
+                  havePart.edited = true;
+                }
+
+              } else {
+                buildDontHaveParts.push(XP.clone(part));
+              }
+            }, this);
+            this.set('_buildHaveParts', buildHaveParts);
+            this.set('_buildHavePartsDisabled', buildHaveParts.length === 0);
+            this.set('_buildDontHaveParts',buildDontHaveParts);
+            this.set('_buildDontHavePartsDisabled',buildDontHaveParts.length === 0);
+            this.notifyPath('_partListPaths');
+          }
+        }
+        this._dontCreateLists = false;
+      },
+
+      // _onRemoveHavePartsClick: function() {
+      //   XP.forEach(this._buildHaveParts, function(part) {
+      //     var listPart = XP.find(this._partListParts, function(sparePart) {
+      //       return part.part_id === sparePart.part_id && part.rb_color_id === sparePart.rb_color_id;
+      //     }, this);
+      //     if (listPart) {
+      //       var idx = XP.indexOf(this._partListParts,listPart);
+      //
+      //       this.set('_partListParts.' + idx + '.qty',listPart.qty - part.qty);
+      //     }
+      //
+      //   },this);
+      // },
+
+      getColour: function(rb_color_id) {
+        return this.$.colours.getColour(rb_color_id);
+      },
+
+      getColourName: function(rb_color_id) {
+        return this.$.colours.getColourName(rb_color_id);
+      },
+
+      _onPartListItemSelected: function(e) {
+        //console.log(e);
+        this._partListSelectedPart = e.detail.value;
+        this.set('_usePartDisabled', !this._partListSelectedPart || !this._dontHaveSelectedPart);
+      },
+
+      _onDontHaveItemSelected: function(e) {
+        //console.log(e);
+        this._dontHaveSelectedPart = e.detail.value;
+        this.set('_usePartDisabled', !this._partListSelectedPart || !this._dontHaveSelectedPart);
+        if(this._dontHaveSelectedPart){
+          this.$._partListOfParts.filterPartId(this._dontHaveSelectedPart.part_id);
+        }
+      },
+
+      _onUsePartClick: function() {
+        if (this._partListSelectedPart && this._dontHaveSelectedPart) {
+          this._usePartQty = XP.toNumber(this._dontHaveSelectedPart.qty) >=
+            XP.toNumber(this._partListSelectedPart.qty) ?
+            XP.toNumber(this._partListSelectedPart.qty) : XP.toNumber(this._dontHaveSelectedPart.qty);
+          this.$.partUseDialog.open();
+        } else {
+          this.$.toast.text = 'No Parts to use selected!';
+          this.$.toast.open();
+        }
+      },
+
+      _changeHavePartQuantity: function(part, newQuantity){
+        var copyParts = XP.clone(this._buildHaveParts);
+        this.set('_buildHaveParts',[]);
+        var element = XP.find(copyParts, function(p){
+          return p.part_id === part.part_id && p.rb_color_id === part.rb_color_id;
+        });
+        if(!element){
+          element = XP.clone(part);
+          copyParts.push(element);
+        }
+        element.qty = newQuantity;
+        element.edited = 'True';
+        this.set('_buildHaveParts',copyParts);
+      },
+
+      _changeDontHavePartQuantity: function(part, newQuantity){
+        var copyParts = XP.clone(this._buildDontHaveParts);
+        this.set('_buildDontHaveParts',[]);
+        var element = XP.find(copyParts, function(p){
+          return p.part_id === part.part_id && p.rb_color_id === part.rb_color_id;
+        });
+        if(!element){
+          element = XP.clone(part);
+          copyParts.push(element);
+        }
+        element.qty = newQuantity;
+        element.edited = 'True';
+        this.set('_buildDontHaveParts',copyParts);
+      },
+
+      _partUseDialogClosed: function(closingReason) {
+        if (closingReason.detail.confirmed) {
+          this._dontCreateLists = true;
+          this._changeHavePartQuantity(this._partListSelectedPart, this._usePartQty);
+          var dontQty = 0;
+          if (XP.toNumber(this._usePartQty) !== XP.toNumber(this._dontHaveSelectedPart.qty)) {
+            dontQty = XP.toNumber(this._dontHaveSelectedPart.qty) - XP.toNumber(this._usePartQty);
+          }
+          this._changeDontHavePartQuantity(this._dontHaveSelectedPart, dontQty);
+
+          this.$._partListOfParts.changeQuantityOfPart(this._partListSelectedPart, XP.toNumber(this._partListSelectedPart.qty) - XP.toNumber(this._usePartQty));
+        }
+      },
+
+      _onSavePartsListClick: function() {
+        this._savePartsList('Name of Parts List',
+          this._selectedPartList.innerText.trim(),
+          this._partListParts
+        );
+
+      },
+
+
+      _onSaveHavePartsListClick: function() {
+        this._savePartsList('Name of \"Have\" Parts List',
+          this._selectedSearchSet.set_id + ' ' + this._selectedSearchSet.descr + ' - Have Parts',
+          this._buildHaveParts
+        );
+      },
+
+      _onSaveDontHavePartsListClick: function() {
+        this._savePartsList('Name of \"Don\'t Have\" Parts List',
+          this._selectedSearchSet.set_id + ' ' + this._selectedSearchSet.descr + ' - Don\'t Have Parts',
+          this._buildDontHaveParts
+        );
+      },
+
+      _savePartsList(dialogLabel,partListNameDefault, parts){
+        this.$._inputDialog.title = 'Save Parts List';
+        this.$._inputDialog.label = dialogLabel;
+        this.$._inputDialog.value = partListNameDefault;
+        this.$._inputDialog.confirmCallback = function(inputValue) {
+
+          var existingPartList = XP.find(this._dataPartLists.partlists, function(partlist){
+            return partlist.descr === inputValue;
+          });
+
+          if(!existingPartList){
+            // create new part list.
+            this._addUserPartList(inputValue,0, function(isOk, partListId){
+              if(isOk){
+                this._setUserPartList(partListId, parts, function(ok){
+                  this.$.toast.text = ok ? 'Part List Saved...' : 'ERROR Saving Part List';
+                  this.$.toast.open();
+                }.bind(this));
+              }else{
+                this.$.toast.text = 'ERROR Creating Saving Part List';
+                this.$.toast.open();
+              }
+            }.bind(this));
+          }else{
+            this._setUserPartList(existingPartList.partlist_id, parts, function(ok){
+              this.$.toast.text = ok ? 'Part List Saved...' : 'ERROR Saving Part List';
+              this.$.toast.open();
+            }.bind(this));
+          }
+
+        }.bind(this);
+
+        this.$._inputDialog.open();
+
+      },
+
+      // _deleteUserPartList: function(partListId, callback) {
+      //   this.$.theAjaxDeletePartLists.body = {
+      //     'key': 'p4GLMlcPxJ',
+      //     'hash': this.userHash,
+      //     'format': 'json',
+      //     'partlist_id': partListId
+      //   };
+      //   //this.$.theAjaxDeletePartLists.addEventListener('response',callback);
+      // },
+
+      _addUserPartList: function(descr, type, callback) {
+        this.$.theAjaxAddPartLists.contentType = 'application/x-www-form-urlencoded';
+        var parms = {
+          'key': 'p4GLMlcPxJ',
+          'hash': this.userHash,
+          'format': 'json',
+          'descr': descr,
+          'type': type,
+        };
+
+        this._addUserPartListCallback = callback;
+        this.$.theAjaxAddPartLists.body = parms;//= JSON.stringify(parms);
+        this.$.theAjaxAddPartLists.generateRequest();
+      },
+
+      _onAddPartListResponse: function(e){
+          if(XP.startsWith(e.detail.response,'SUCCESS')){
+            var vals = XP.split(e.detail.response,' ');
+            this._addUserPartListCallback(vals.length === 2,vals.length === 2 ? vals[1] : -1 );
+          }else{
+            this._addUserPartListCallback(false,-1);
+          }
+          this._addUserPartListCallback = undefined;
+      },
+
+      _setUserPartList: function(partListId, parts, callback){
+        var partsList = [];
+        XP.forEach(parts,function(part){
+          partsList.push(part.part_id + ' ' + part.rb_color_id + ' ' + part.qty);
+        });
+        this._setUserPartListCallback = callback;
+
+        this.$.theAjaxSetUserParts.contentType = 'application/x-www-form-urlencoded';
+        this.$.theAjaxSetUserParts.body = {
+          'key': 'p4GLMlcPxJ',
+          'hash': this.userHash,
+          'format': 'json',
+          'partlist_id': partListId,
+          'parts': XP.join(partsList,',')
+        };
+        this.$.theAjaxSetUserParts.generateRequest();
+      },
+
+      _onSetUserPartsResponse: function(e){
+          this._setUserPartListCallback(XP.startsWith(e.detail.response,'SUCCESS'));
+          this._setUserPartListCallback = undefined;
+      },
+
+      _onCollapseHaveParts: function() {
+        this.$.collapseHaveParts.toggle();
+      },
+
+      _collapseHavePartsOpenedChanged: function(){
+        this.set('_havePartsCollapseIcon',this.$.collapseHaveParts.opened ? 'icons:expand-less' : 'icons:expand-more');
+      },
+
+      _onCollapseDontHaveParts: function() {
+        this.$.collapseDontHaveParts.toggle();
+      },
+
+      _collapseDontHavePartsOpenedChanged: function(){
+        this.set('_dontHavePartsCollapseIcon',this.$.collapseDontHaveParts.opened ? 'icons:expand-less' : 'icons:expand-more');
+      },
+    });
+  })();
+</script>
+</dom-module>
+</body></html>

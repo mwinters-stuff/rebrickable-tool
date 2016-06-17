@@ -1,0 +1,24 @@
+<!DOCTYPE html><html><head>
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1,user-scalable=yes">
+  <title>part-types</title>
+
+  <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../bower_components/web-component-tester/browser.js"></script>
+
+  
+  <link rel="import" href="../src/colour-list/colour-list.html">
+
+</head>
+<body>
+
+<test-fixture id="basic">
+  <template>
+    <colour-list></colour-list>
+  </template>
+</test-fixture>
+
+<script>describe("part-types tests",function(){var e;beforeEach(function(){e=fixture("basic")}),it("colour list",function(t){flush(function(){expect(e.list).to.be.ok,expect(e.list).to.have.length(133);var o=e.getColourName(503);expect(o).to.be.ok,expect(o).to.equal("Very Light Gray");var c=e.getColour(503);expect(c).to.be.ok,expect(c).to.equal("#E6E3DA");var r=e.getNamedColour("Very Light Gray");expect(r).to.be.ok,expect(r).to.equal("#E6E3DA"),e.recentUsed(503),flush(function(){expect(XP.toNumber(e.list[0].rb_color_id)).to.equal(503),t()})})})});</script>
+
+
+
+</body></html>

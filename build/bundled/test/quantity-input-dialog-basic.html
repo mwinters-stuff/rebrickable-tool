@@ -1,0 +1,27 @@
+<!DOCTYPE html><html><head>
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1,user-scalable=yes">
+  <title>quantity-input-dialog</title>
+
+  <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../bower_components/web-component-tester/browser.js"></script>
+  <script src="../bower_components/iron-test-helpers/mock-interactions.js"></script>
+  
+  <link rel="import" href="../bower_components/iron-test-helpers/iron-test-helpers.html">
+  <link rel="import" href="../src/quantity-input-dialog/quantity-input-dialog.html">
+
+</head>
+
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <quantity-input-dialog></quantity-input-dialog>
+    </template>
+  </test-fixture>
+
+  <script>function runAfterOpen(e,t){var n=function(){e.$$("paper-dialog").removeEventListener("iron-overlay-opened",n),Polymer.Base.async(t,1)};e.$$("paper-dialog").addEventListener("iron-overlay-opened",n),e.open()}describe("quantity-input-dialog tests",function(){var e,t;beforeEach(function(){e=fixture("basic")}),afterEach(function(){e.addEventListener("dialog-closed",t)}),it("tests the dialog",function(n){t=function(e){expect(e.detail.confirmed).to.be["true"],n()},e.addEventListener("dialog-closed",t),e.title="Title Text",e.label="Label Text",e.quantity=2,runAfterOpen(e,function(){flush(function(){var t=e.$$("h2");expect(t).to.be.ok,expect(t.innerText).to.equal("Title Text");var n=e.$$("div#label");expect(n).to.be.ok,expect(n.innerText.trim()).to.equal("Label Text");var o=e.$$("paper-input");expect(o).to.be.ok,expect(o.label).to.equal("Quantity:"),expect(o.value).to.equal(2),o.value=10,expect(e.quantity).to.equal(10),MockInteractions.tap(Polymer.dom(e.root).querySelector("[dialog-confirm]"))})})})});</script>
+
+
+
+
+</body></html>

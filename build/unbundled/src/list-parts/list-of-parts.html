@@ -1,0 +1,65 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+
+
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../colour-list/colour-list.html">
+<link rel="import" href="../show-part/show-part.html">
+<link rel="import" href="../quantity-input-dialog/quantity-input-dialog.html">
+<link rel="import" href="../move-part-to-list-dialog/move-part-to-list-dialog.html">
+
+</head><body><dom-module id="list-of-parts">
+  <template>
+    <style include="shared-styles">:host{display:block;}div.False{}div.True{color:red;}</style>
+    <colour-list id="colours"></colour-list>
+    <quantity-input-dialog id="_quantityInputDialog" title="Edit Part Quantity" on-dialog-closed="_onQuantityInputDialogClosed"></quantity-input-dialog>
+    <move-part-to-list-dialog id="_movePartDialog" part="{{_tempPartItem}}" user-hash="{{userHash}}" on-dialog-closed="_onMovePartDialogClosed"></move-part-to-list-dialog>
+    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_user_parts" params="{{_params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
+
+    <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text" content-type="application/x-www-form-urlencoded" on-response="_onSetUserPartsResponse"></iron-ajax>
+
+    <iron-data-table id="dataTable" items="[[parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled="" style$="height: [[_height]]px">
+      <data-table-column width="40px">
+        <template>
+          <iron-image src="[[item.part_img_url]]" preload="" style="width:40px; height:40px" sizing="contain"></iron-image>
+        </template>
+      </data-table-column>
+      <data-table-column align-right="" width="20px" name="Qty">
+        <template>
+          <div class$="[[item.edited]]">[[item.qty]]</div>
+        </template>
+      </data-table-column>
+      <data-table-column align-left="" width="60px">
+        <template>
+          <paper-icon-button icon="editor:mode-edit" part-item="[[item]]" on-tap="_onTapEditQuantity"></paper-icon-button>
+          <paper-icon-button icon="icons:arrow-forward" part-item="[[item]]" on-tap="_onTapMovePart"></paper-icon-button>
+        </template>
+      </data-table-column>
+      <data-table-column name="Part ID" width="50px" filter-by="part_id">
+        <template>
+          <div class$="[[item.edited]]">[[item.part_id]]</div>
+        </template>
+      </data-table-column>
+      <data-table-column name="Part" flex="500" filter-by="part_name">
+        <template>
+          <div class$="[[item.edited]]">[[item.part_name]]</div>
+        </template>
+      </data-table-column>
+      <data-table-column name="Colour" width="40px">
+        <template>
+          <div class="box" style="background-color: {{getColour(item.rb_color_id)}}">
+          </div>
+        </template>
+      </data-table-column>
+    </iron-data-table>
+    <show-part id="showPart"></show-part>
+  </template>
+  <script>!function(){"use strict";Polymer({is:"list-of-parts",properties:{partListId:{type:String,observer:"_onHashChanged"},userHash:{type:String,observer:"_onHashChanged",notify:!0},_params:{type:Object},partsChanged:{type:Boolean,value:!1,notify:!0},selectedPart:{type:Object,notify:!0},parts:{type:Object,notify:!0},disablePopup:{type:Boolean,value:!1},editable:{type:Boolean,value:!1},_height:{type:Number,value:400}},attached:function(){this.async(this._resizeTable),window.addEventListener("resize",function(){this.debounce("parts-resize",this._resizeTable,1e3)}.bind(this))},_resizeTable:function(){var t=document.getElementById("paperDrawerPanel"),e=document.getElementById("appHeader");t&&e&&this.set("_height",t.clientHeight-e.clientHeight-120)},_onSelectedChanged:function(t){!this.disablePopup&&t.detail&&t.detail.value&&this.$.showPart.show(t.detail.value.part_id),this.fire("selected-item-changed",t.detail)},getColour:function(t){return this.$.colours.getColour(t)},getColourName:function(t){return this.$.colours.getColourName(t)},_onHashChanged:function(){this.userHash&&this.partListId&&(this.set("parts",{}),this.set("_params",{key:"p4GLMlcPxJ",hash:this.userHash,partlist_id:this.partListId,format:"json"}),this.$.theAjax.generateRequest())},addPart:function(t,e,a,i,s){var r=XP.find(this.parts,function(e){return e.part_id===t&&e.rb_color_id===s});if(r){var n=XP.indexOf(this.parts,r);this.set("parts."+n+".qty",XP.toNumber(r.qty)+XP.toNumber(i)),this.set("parts."+n+".edited","True")}else this.push("parts",{part_id:t,part_name:a,part_type_id:e,rb_color_id:s,qty:i,edited:"True"}),this.set("parts",XP.sortBy(this.parts,"part_name"));this.set("partsChanged",!0)},_onTapEditQuantity:function(t){for(var e=null,a=0;a<t.path.length;a++)if(t.path[a].partItem){e=t.path[a].partItem;break}e&&(this._tempPartItem=e,this.$._quantityInputDialog.quantity=e.qty,this.$._quantityInputDialog.imgUrl=e.part_img_url,this.$._quantityInputDialog.label="Quantity of Part: "+e.part_id+e.part_name+" in Colour "+this.getColourName(e.rb_color_id),this.$._quantityInputDialog.open())},_onQuantityInputDialogClosed:function(t){if(t.detail.confirmed){var e=XP.indexOf(this.parts,this._tempPartItem);this.set("parts."+e+".qty",XP.toNumber(this.$._quantityInputDialog.quantity)),this.set("parts."+e+".edited","True"),this.set("partsChanged",!0)}this._tempPartItem=null},_setUserPartList:function(t,e){var a=[];XP.forEach(e,function(t){a.push(t.part_id+" "+t.rb_color_id+" "+t.qty)}),this.$.theAjaxSetUserParts.body={key:"p4GLMlcPxJ",hash:this.userHash,format:"json",partlist_id:t,parts:XP.join(a,",")},this.$.theAjaxSetUserParts.generateRequest()},_onSetUserPartsResponse:function(t){var e=XP.startsWith(t.detail.response,"SUCCESS");e&&(this.set("partsChanged",!1),this.$.theAjax.generateRequest()),this.async(this._saveCallback(e))},savePartList:function(t){this._saveCallback=t,this._setUserPartList(this.partListId,this.parts)},_handleResponse:function(t){XP.forEach(t.detail.response.parts,function(t){t.edited="False"}),this.set("parts",XP.sortBy(t.detail.response.parts,"part_name"))},filterPartId:function(t){this.set("dataTable.filter.0.filter",t)},changeQuantityOfPart:function(t,e){var a=XP.clone(this.parts),i=XP.find(a,function(e){return e.part_id===t.part_id&&e.rb_color_id===t.rb_color_id});i&&(i.qty=e,i.edited="True",this.set("parts",a))},_onTapMovePart:function(t){for(var e=null,a=0;a<t.path.length;a++)if(t.path[a].partItem){e=t.path[a].partItem;break}e&&(this._tempPartItem=e,this.$._movePartDialog.open())},_onMovePartDialogClosed:function(t){if(!t.detail.canceled){var e=XP.indexOf(this.parts,this._tempPartItem);this.set("parts."+e+".qty",this._tempPartItem.qty-XP.toNumber(this.$._movePartDialog.quantity)),this.set("parts."+e+".edited","True"),this.set("partsChanged",!0)}this._tempPartItem=null}})}();</script>
+</dom-module>
+</body></html>

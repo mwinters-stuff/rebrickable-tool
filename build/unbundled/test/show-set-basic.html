@@ -1,0 +1,26 @@
+<!DOCTYPE html><html><head>
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1,user-scalable=yes">
+  <title>show-set</title>
+
+  <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../bower_components/web-component-tester/browser.js"></script>
+
+  <script src="../bower_components/iron-test-helpers/mock-interactions.js"></script>
+  
+  <link rel="import" href="../bower_components/iron-test-helpers/iron-test-helpers.html">
+  <link rel="import" href="../src/show-set/show-set.html">
+
+</head>
+<body>
+
+<test-fixture id="basic">
+  <template>
+    <show-set></show-set>
+  </template>
+</test-fixture>
+
+<script>describe("show-set tests",function(){var e,t,r;beforeEach(function(){e=fixture("basic"),t=sinon.fakeServer.create(),t.respondWith("https://rebrickable.com/api/get_set?key=p4GLMlcPxJ&set_id=71011-1&format=json",[200,{"Content-Type":"application/json"},'[{"set_id":"71011-1","type":"set","pieces":"4","descr":"Farmer","theme":"Collectible Minifigures","year":"2016","img_tn":"http://rebrickable.com/img/sets-t/71011-1.jpg","img_sm":"http://rebrickable.com/img/sets-s/71011-1.jpg","img_big":"http://rebrickable.com/img/sets-b/71011-1.jpg"}]']),t.respondWith("POST","https://rebrickable.com/api/set_user_set",[200,{"Content-Type":"application/text"},"SUCCESS"]),t.respondWith("https://rebrickable.com/api/get_set_parts?key=p4GLMlcPxJ&set=71011-1&format=json",[200,{"Content-Type":"application/json"},'[{"set_id":"71011-1","descr":"Farmer","set_img_url":"https://img.rebrickable.com/img/sets-b/71011-1.jpg","parts":[{"part_id":"88646","qty":"1","ldraw_color_id":"0","type":1,"part_name":"Tile Special 4 x 3 with 4 Studs in Centre","color_name":"Black","part_img_url":"https://img.rebrickable.com/img/pieces/elements/6076678.jpg","element_id":"6076678","element_img_url":"https://img.rebrickable.com/img/pieces/elements/6076678.jpg","rb_color_id":0,"part_type_id":31},{"part_id":"970c00pb495","qty":"1","ldraw_color_id":"73","type":1,"part_name":"Medium Blue Hips and Legs with Dark Brown Boots","color_name":"Medium Blue","part_img_url":"https://img.rebrickable.com/img/ni.png","element_id":"6139200","element_img_url":"https://img.rebrickable.com?","rb_color_id":73,"part_type_id":6},{"part_id":"13788","qty":"1","ldraw_color_id":"84","type":1,"part_name":"Minifig Hat - Wide Brimmed","color_name":"Medium Dark Flesh","part_img_url":"https://img.rebrickable.com/img/pieces/84/13788.png","element_id":-1,"element_img_url":"https://img.rebrickable.com?","rb_color_id":84,"part_type_id":26},{"part_id":"95345","qty":"1","ldraw_color_id":"70","type":1,"part_name":"Minifigure Pitchfork [Soft]","color_name":"Reddish Brown","part_img_url":"https://img.rebrickable.com/img/pieces/elements/4624905.jpg","element_id":"4624905","element_img_url":"https://img.rebrickable.com/img/pieces/elements/4624905.jpg","rb_color_id":70,"part_type_id":26}]}]']),t.respondImmediately=!0}),afterEach(function(){t.restore(),e.removeEventListener("removed",r)}),it("show set",function(t){expect(e).to.be.ok,e.userHash="13213",e.setId="71011-1",e.setListName="Bobs",e.showing=!0,flush(function(){expect(e._data).to.be.ok,expect(e.$$(".title").innerText).to.equal("71011-1 Farmer"),expect(e.$$("#rowTheme").innerText).to.equal("Theme:	Collectible Minifigures"),expect(e.$$("#rowPieces").innerText).to.equal("Pieces:	4"),expect(e.$$("#rowYear").innerText).to.equal("Year:	2016"),expect(e.$$("#rowListName").innerText).to.equal("List:	Bobs");var r=e.$$("show-set-parts");expect(r).to.be.ok,expect(r.parts).to.be.ok,expect(r.parts).to.have.length(1),expect(r.parts[0].parts).to.be.ok,expect(r.parts[0].parts).to.have.length(4),t()})}),it("remove set",function(t){expect(e).to.be.ok,r=function(){expect(e.route).to.be.ok,expect(e.route.path).to.equal("/app/sets/12"),t()},e.addEventListener("removed",r),e.userHash="13213",e.setId="71011-1",e.setListName="Bobs",e.setListId=12,e.showing=!0,flush(function(){expect(e._data).to.be.ok,expect(e.$$(".title").innerText).to.equal("71011-1 Farmer"),MockInteractions.tap(Polymer.dom(e.root).querySelector('[icon="icons:delete"]')),flush(function(){var t=e.$$("#_questionRemove");expect(t).to.be.ok;var r=t.$$("paper-dialog");expect(r.opened).to.be["true"],expect(t.$$("div#content").innerText.trim()).to.equal("Do you want to remove set 71011-1 Farmer from list Bobs?"),MockInteractions.tap(Polymer.dom(t.root).querySelector("[dialog-confirm]"))})})})});</script>
+
+
+
+</body></html>

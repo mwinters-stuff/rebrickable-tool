@@ -1,0 +1,234 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<!-- Paper elements -->
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+
+<link rel="import" href="show-set-parts.html">
+<link rel="import" href="../input-dialog/question-dialog.html">
+
+<dom-module id="show-set">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+
+
+
+      iron-image.top {
+        height: 300px;
+        width: 400px;
+      }
+
+      neon-animated-pages{
+        height:100%;
+
+      }
+    </style>
+    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_set" params="{{_params}}" handle-as="json" last-response="{{_data}}"></iron-ajax>
+    <iron-ajax id="theAjaxSetUserSet" method="POST" url="https://rebrickable.com/api/set_user_set" content-type="application/x-www-form-urlencoded" handle-as="text" on-response="_onSetUserSetResponse"></iron-ajax>
+
+    <paper-toast id="toast">
+    </paper-toast>
+    <question-dialog id="_questionRemove" on-dialog-closed="_onRemoveDialogClosed">
+      Do you want to remove set <b>{{_data.0.set_id}} {{_data.0.descr}}</b> from list <b>{{setListName}}</b>?
+    </question-dialog>
+
+    <paper-material elevation="1">
+      <paper-tabs id="tabs" selected="{{_selectedTab}}">
+        <paper-tab>Details</paper-tab>
+        <paper-tab>Parts</paper-tab>
+      </paper-tabs>
+      <iron-pages  selected="{{_selectedTab}}" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+        <section>
+          <div style$="min-height: {{_height}}px">
+            <div class="horiztop">
+              <div class="aleft">
+                <div class="title">{{_data.0.set_id}} {{_data.0.descr}}</div>
+                <div>&nbsp; </div>
+                <table class="info">
+                  <tr id="rowTheme">
+                    <td>Theme:</td>
+                    <td>{{_data.0.theme}}</td>
+                  </tr>
+                  <tr id="rowPieces">
+                    <td>Pieces:</td>
+                    <td>{{_data.0.pieces}}</td>
+                  </tr>
+                  <tr id="rowYear">
+                    <td>Year:</td>
+                    <td>{{_data.0.year}}</td>
+                  </tr>
+                  <tr id="rowListName">
+                    <td>List:</td>
+                    <td>{{setListName}}</td>
+                  </tr>
+                </table>
+              </div>
+              <paper-fab style='position:absolute; bottom: 30px; right:24px' icon="icons:delete" on-click="_onRemoveClick"></paper-fab>
+            </div>
+            <div class="acenter">
+              <iron-image class="top" sizing="contain" src="{{_data.0.img_big}}"></iron-image>
+            </div>
+          </div>
+        </section>
+        <section>
+          <show-set-parts user-hash="{{userHash}}" set-id="{{_showSetId}}" table-height="{{_height}}"></show-set-parts>
+        </section>
+      </iron-pages>
+    </paper-material>
+
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'show-set',
+
+        properties: {
+          setId: {
+            type: String,
+            observer: '_onHashChanged',
+          },
+          userHash: {
+            type: String,
+            observer: '_onHashChanged',
+          },
+
+          route: {
+            type: Object,
+            notify: true,
+            value: {},
+          },
+
+          tabsToShow: {
+            type: Object,
+            notify: true,
+          },
+
+          showing: {
+            type: Boolean,
+            value: false,
+            observer: '_onShowingChanged'
+          },
+
+          setListId: {
+            type: Number,
+          },
+
+          setListName: {
+            type: String,
+          },
+
+          _data: {
+            type: Array,
+          },
+
+          _showSetId: {
+            type: Number,
+          },
+
+          _params: {
+            type: Object,
+          },
+
+          _selectedTab: {
+            type: Number,
+            value: 0,
+          },
+
+          _height: {
+            type: Number,
+            value: 400,
+          },
+
+        },
+
+        attached: function() {
+          this.async(this._resizeTable);
+
+          window.addEventListener('resize', function() {
+            this.debounce('parts-resize', this._resizeTable, 1000);
+          }.bind(this));
+        },
+
+        _resizeTable: function() {
+          var drawerPanel = document.getElementById('paperDrawerPanel');
+          var appHeader = document.getElementById('appHeader');
+          if (drawerPanel && appHeader) {
+            this.set('_height', drawerPanel.clientHeight - appHeader.clientHeight - 150 - this.$.tabs.clientHeight);
+          }
+        },
+
+        _onShowingChanged: function() {
+          if (this.showing) {
+            this.set('tabsToShow.tabs', []);
+
+          }
+          this.$.theAjax.auto = this.showing;
+        },
+
+        _onHashChanged: function() {
+          if (this.userHash && this.setId) {
+            this.set('_data', {});
+            this.set('_params', {
+              key: 'p4GLMlcPxJ',
+              set_id: this.setId,
+              format: 'json'
+            });
+            this.set('_showSetId', this.setId);
+          }
+        },
+
+        _onRemoveClick: function() {
+          this.$._questionRemove.open();
+        },
+
+        _onRemoveDialogClosed: function(e) {
+          if (e.detail.confirmed) {
+            this.$.theAjaxSetUserSet.body = {
+              'key': 'p4GLMlcPxJ',
+              'hash': this.userHash,
+              'format': 'json',
+              'set': this.setId,
+              'qty': 0,
+              'setlist_id': this.setListId
+            };
+            this.$.theAjaxSetUserSet.generateRequest();
+          }
+        },
+
+        _onSetUserSetResponse: function(e) {
+          if (XP.startsWith(e.detail.response, 'SUCCESS')) {
+            this.set('route.path', '/app/sets/' + this.setListId);
+          } else {
+            this.$.toast.text = 'Failed to remove set!';
+            this.$.toast.open();
+          }
+          this.fire('removed');
+        },
+      });
+    })();
+  </script>
+</dom-module>

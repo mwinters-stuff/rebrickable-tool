@@ -1,0 +1,77 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-data-table/iron-data-table.html">
+<link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+
+
+<link rel="import" href="../part-types/part-types.html">
+<link rel="import" href="../colour-list/colour-list.html">
+
+</head><body><dom-module id="part-search-dialog">
+  <template>
+    <style include="shared-styles">:host{display:block;}iron-data-table{height:200px;}paper-dialog{width:600px;}</style>
+    <part-types id="_partTypesElement" part-types="{{_partTypes}}"></part-types>
+    <colour-list id="_colourListElement" list="{{_colours}}"></colour-list>
+
+    <paper-dialog id="_dialog" on-iron-overlay-closed="_onDialogClosed">
+      <h2>Search MOC or Set</h2>
+      <paper-dropdown-menu id="_dropdownPartType" label="Part Type" selected-item="{{_selectedPartType}}" style="width:90%">
+        <paper-listbox id="_dropdownPartTypeList" class="dropdown-content">
+          <template is="dom-repeat" items="{{_partTypes}}">
+            <paper-item part_type_id="{{item.part_type_id}}">{{item.desc}}</paper-item>
+          </template>
+        </paper-listbox>
+      </paper-dropdown-menu>
+      <paper-dropdown-menu id="_dropdownColour" label="Part Colour" selected-item="{{_selectedPartColour}}" style="width:90%">
+        <paper-listbox id="_dropdownColourList" class="dropdown-content">
+          <template is="dom-repeat" items="{{_colours}}">
+            <paper-item rb_color_id="{{item.rb_color_id}}">
+              <div class="box" style="background-color: {{item.rgb}}"></div>{{item.name}}</paper-item>
+          </template>
+        </paper-listbox>
+      </paper-dropdown-menu>
+      <iron-a11y-keys id="_a11y" target="[[_targetKeys]]" keys="enter" on-keys-pressed="_onSearchDialogSearch"></iron-a11y-keys>
+      <paper-input autofocus="" id="_searchDialogInput" label="Search" value="{{_searchInput::input}}">
+        <paper-icon-button suffix="" icon="search" raised="" on-click="_onSearchDialogSearch" disabled="{{_searchTermsBad}}"></paper-icon-button>
+      </paper-input>
+      <iron-data-table id="dataTable" items="[[_dataSearch.results]]" selected-item="{{_selectedSearchPart}}" selection-enabled="" loading="{{_loading}}">
+        <data-table-column width="40px">
+          <template>
+            <iron-image src="[[item.img_url]]" preload="" style="width:40px; height:40px" sizing="contain"></iron-image>
+          </template>
+        </data-table-column>
+        <data-table-column name="ID" width="80px">
+          <template>[[item.part_id]]</template>
+        </data-table-column>
+        <data-table-column name="Description" flex="10">
+          <template>[[item.descr]]</template>
+        </data-table-column>
+      </iron-data-table>
+      <paper-input autofocus="" hidden$="{{!showQuantityInput}}" id="_quantityInput" label="Quantity" min="1" value="{{quantity}}" type="number">
+      </paper-input>
+
+      <div class="buttons">
+        <paper-button dialog-dismiss="">Cancel</paper-button>
+        <paper-button dialog-confirm="" disabled="{{!_searchDialogOk}}">Accept</paper-button>
+      </div>
+    </paper-dialog>
+    <iron-ajax id="theAjaxSearch" url="https://rebrickable.com/api/search" params="{{_paramsSearch}}" handle-as="json" last-response="{{_dataSearch}}">
+    </iron-ajax>
+
+
+  </template>
+  <script>!function(){"use strict";Polymer({is:"part-search-dialog",properties:{result:{type:Object,notify:!0},showQuantityInput:{type:Boolean,value:!1},quantity:{type:Number,value:1,notify:!0,observer:"_onSelectedSearchChanged"},colour:{type:Number,value:null,notify:!0},_paramsSearch:{type:Object},_loading:{type:Boolean,observer:"_onLoadingChanged"},_partTypes:{type:Array},_searchSetType:{type:String,value:"P"},_searchInput:{type:String,observer:"_searchTermsChanged",value:""},_selectedPartType:{type:Object,observer:"_searchTermsChanged",value:null},_selectedPartColour:{type:Object,observer:"_searchTermsChanged",value:null},_dataSearch:{type:Object,value:null},_colours:{type:Array},_selectedSearchPart:{type:Object,value:null,observer:"_onSelectedSearchChanged"},_searchDialogOk:{type:Boolean,value:!1},_searchTermsBad:{type:Boolean,value:!0},_targetKeys:{type:Object,value:function(){return this.$._searchDialogInput}}},_onSearchDialogSearch:function(){this._selectedPartType&&this._selectedPartColour&&(this.set("_paramsSearch",{key:"p4GLMlcPxJ",format:"json",type:this._searchSetType,part_type_id:XP.toNumber(this._selectedPartType.part_type_id),part_color:this._selectedPartColour.rb_color_id,query:this._searchInput}),this.$.theAjaxSearch.generateRequest())},_searchTermsChanged:function(){this.set("_searchTermsBad",""===this._searchInput)},_onSelectedSearchChanged:function(){this.set("_searchDialogOk",null!==this._selectedSearchPart)},_onDialogClosed:function(e){e.detail.confirmed&&(this.set("colour",this._selectedPartColour.rb_color_id),this.set("result",this._selectedSearchPart),this.$._partTypesElement.recentUsed(this._selectedPartType.part_type_id),this.$._colourListElement.recentUsed(this._selectedPartColour.rb_color_id),this.fire("accepted",this.result))},open:function(){this.$._dropdownPartTypeList.selected=0,this.$._dropdownColourList.selected=0,this.$._dialog.open()},_onLoadingChanged:function(){this.fire(this._loading?"loading-started":"loading-finished")}})}();</script>
+</dom-module>
+</body></html>
