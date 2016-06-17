@@ -43,11 +43,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <colour-list id="colours"></colour-list>
     <quantity-input-dialog id="_quantityInputDialog" title="Edit Part Quantity" on-dialog-closed="_onQuantityInputDialogClosed"></quantity-input-dialog>
     <move-part-to-list-dialog id="_movePartDialog" part="{{_tempPartItem}}" user-hash="{{userHash}}" on-dialog-closed="_onMovePartDialogClosed"></move-part-to-list-dialog>
-    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_user_parts" params="{{_params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
+    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_user_parts" params="{{_params}}" handle-as="json" on-response="_handleResponse" loading="{{_loading}}"></iron-ajax>
 
     <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text" content-type='application/x-www-form-urlencoded' on-response="_onSetUserPartsResponse"></iron-ajax>
 
-    <iron-data-table id="dataTable" items="[[parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled style$="height: [[_height]]px">
+    <iron-data-table id="dataTable" items="[[parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled style$="height: [[_height]]px" loading="{{_loading}}">
       <data-table-column width="40px">
         <template>
           <iron-image src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>

@@ -32,10 +32,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       url="https://rebrickable.com/api/get_user_sets"
       params="{{_params}}"
       handle-as="json"
-      last-response="{{_data}}" >
+      last-response="{{_data}}"
+      loading="{{_loading}}">
     </iron-ajax>
 
-    <iron-data-table id="dataTable" items="[[_data.0.sets]]" selection-enabled on-selected-item-changed="_onSelectedChanged" style$="height: [[_height]]px">
+    <iron-data-table id="dataTable" items="[[_data.0.sets]]" selection-enabled on-selected-item-changed="_onSelectedChanged" style$="height: [[_height]]px" loading="{{_loading}}">
       <data-table-column align-right width="20px">
         <template><iron-image  src="[[item.img_sm]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image></template>
       </data-table-column>

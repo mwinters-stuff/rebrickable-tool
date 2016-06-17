@@ -89,7 +89,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-button dialog-confirm disabled="{{!_searchDialogOk}}">Accept</paper-button>
       </div>
     </paper-dialog>
-    <iron-ajax id="theAjaxSearch" url="https://rebrickable.com/api/search" params="{{_paramsSearch}}" handle-as="json" last-response="{{_dataSearch}}">
+    <iron-ajax id="theAjaxSearch" url="https://rebrickable.com/api/search" params="{{_paramsSearch}}" handle-as="json" last-response="{{_dataSearch}}" loading="{{_loading}}">
     </iron-ajax>
 
 

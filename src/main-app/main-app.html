@@ -43,7 +43,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     iron-pages{
       height: 100%;
       position: relative;
+      background-color: #607D8B;
     }
+
+    paper-item {
+   --paper-item: {
+     cursor: pointer;
+   };
+ }
+
     </style>
     <app-route route="{{route}}"
       pattern="/app/list-sets/:setListId"
@@ -152,6 +160,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         _onPageChanged: function(page) {
           // load page import on demand.
+          this.set('tabsToShow',[]);
           this.importHref(
             this.resolveUrl('../' + page + '/' + page + '.html'), null, null, true);
         }

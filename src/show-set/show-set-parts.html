@@ -33,8 +33,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }*/
     </style>
     <colour-list id="colours"></colour-list>
-    <iron-ajax id="theAjaxParts" url="https://rebrickable.com/api/get_set_parts" params="{{_params}}" handle-as="json" last-response="{{parts}}"></iron-ajax>
-      <iron-data-table id="dataTable" items="[[parts.0.parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled style$="height: [[tableHeight]]px">
+    <iron-ajax id="theAjaxParts" url="https://rebrickable.com/api/get_set_parts" params="{{_params}}" handle-as="json" last-response="{{parts}}" loading="{{_loading}}"></iron-ajax>
+      <iron-data-table id="dataTable" items="[[parts.0.parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled style$="height: [[tableHeight]]px" loading="{{_loading}}">
         <data-table-column align-right width="40px">
           <template>
             <iron-image src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>

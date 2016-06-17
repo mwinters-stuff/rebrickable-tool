@@ -1,0 +1,30 @@
+{
+  "hosting": {
+    "public": "build/bundled",
+    "ignore": [
+      "bower_components/**",
+      "!bower_components/webcomponentsjs/webcomponents-lite.min.js",
+      "!bower_components/marked-element",
+      "!bower_components/platinum-sw",
+      "!bower_components/promise-polyfill",
+      "!bower_components/sw-toolbox",
+      "test/**",
+      "**/test/**",
+      "**/demo/**",
+      "bower.json",
+      "firebase.*",
+      "package.json",
+      "polymer.json",
+      "*.md",
+      "LICENSE",
+      "*.sh",
+      "*.log",
+      "wct.conf.js",
+      "deploy.txt"
+    ],
+    "rewrites": [{
+      "source": "**",
+      "destination": "/index.html"
+    }]
+  }
+}

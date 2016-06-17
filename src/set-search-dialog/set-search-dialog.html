@@ -35,7 +35,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       paper-dialog {
-        width: 600px;
+        width: 700px;
       }
     </style>
     <paper-dialog id="_dialog" on-iron-overlay-closed="_onDialogClosed">
@@ -62,10 +62,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <data-table-column name="ID" width="80px">
           <template>[[item.set_id]]</template>
         </data-table-column>
-        <data-table-column name="Theme" width="120px">
+        <data-table-column name="Theme" width="100px">
           <template>[[item.theme1]]</template>
         </data-table-column>
-        <data-table-column name="Description" flex="1">
+        <data-table-column name="Description" flex="10">
           <template>[[item.descr]]</template>
         </data-table-column>
       </iron-data-table>
@@ -75,7 +75,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-button dialog-confirm disabled="{{!_searchDialogOk}}">Accept</paper-button>
       </div>
     </paper-dialog>
-    <iron-ajax id="theAjaxSearch" url="https://rebrickable.com/api/search" params="{{_paramsSearch}}" handle-as="json" on-response="_handleResponseSearch">
+    <iron-ajax id="theAjaxSearch" url="https://rebrickable.com/api/search" params="{{_paramsSearch}}" handle-as="json" on-response="_handleResponseSearch" loading="{{_loading}}">
     </iron-ajax>
 
 

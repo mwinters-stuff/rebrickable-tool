@@ -39,7 +39,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
     </style>
-    <iron-ajax id="theAjaxtLists" method="GET" url="https://rebrickable.com/api/get_user_setlists" params="{{_params}}" handle-as="json" last-response="{{_data}}" ></iron-ajax>
+    <iron-ajax id="theAjaxtLists" method="GET" url="https://rebrickable.com/api/get_user_setlists" params="{{_params}}" handle-as="json" last-response="{{_data}}" loading="{{_loading}}"></iron-ajax>
     <iron-ajax id="theAjaxDeleteUserSet" method="POST" url="https://rebrickable.com/api/del_user_setlist" content-type="application/x-www-form-urlencoded" handle-as="text" on-response="_onDeleteSetListResponse"></iron-ajax>
     <iron-ajax id="theAjaxAddUserSet" method="POST" url="https://rebrickable.com/api/add_user_setlist" content-type="application/x-www-form-urlencoded" handle-as="text" on-response="_onAddSetListResponse"></iron-ajax>
 
@@ -54,7 +54,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <set-list-add-dialog id="_setListAddDialog" name="{{_setListAddName}}" use-as="{{_setListAddUseAs}}" on-accepted="_onSetListAddDialogAccepted"></set-list-add-dialog>
 
     <paper-material id="paperMaterial" elevation="1">
-      <iron-data-table id="dataTable" items="[[_data.sets]]" on-selected-item-changed="_onItemSelected" selection-enabled style$="height: [[_height]]px">
+      <iron-data-table id="dataTable" items="[[_data.sets]]" on-selected-item-changed="_onItemSelected" selection-enabled style$="height: [[_height]]px" loading="{{_loading}}">
         <data-table-column name="Name" flex="50">
           <template>[[item.name]]</template>
         </data-table-column>
