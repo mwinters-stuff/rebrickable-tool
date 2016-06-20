@@ -144,7 +144,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           expect(inputSearch).to.have.property('value', '4200');
 
           listener1 = function() {
-
+            element.removeEventListener('query-complete', listener1);
             expect(element._dataSearch).to.be.ok;
             expect(element._dataSearch).to.have.lengthOf(2);
             expect(buttonOk).to.have.property('disabled', true);
@@ -157,12 +157,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           };
 
           listener2 = function() {
-            element.removeEventListener('accepted', this);
+            element.removeEventListener('accepted', listener2);
             expect(element).to.have.property('result', element._dataSearch[0]);
             done();
           };
 
-          element.addEventListener('loading-finished', listener1);
+          element.addEventListener('query-complete', listener1);
           element.addEventListener('accepted', listener2);
 
           MockInteractions.pressEnter(Polymer.dom(element.root).querySelector('#_searchDialogInput'));
@@ -182,7 +182,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           expect(inputSearch).to.have.property('value', 'grader');
 
           listener1 = function() {
-            element.removeEventListener('loading-finished', this);
+            element.removeEventListener('query-complete', listener1);
             expect(element._dataSearch).to.be.ok;
             expect(element._dataSearch).to.have.lengthOf(4);
             expect(buttonOk).to.have.property('disabled', true);
@@ -195,12 +195,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           };
 
           listener2 = function() {
-            element.removeEventListener('accepted', this);
+            element.removeEventListener('accepted', listener2);
             expect(element).to.have.property('result', element._dataSearch[1]);
             done();
           };
 
-          element.addEventListener('loading-finished', listener1);
+          element.addEventListener('query-complete', listener1);
           element.addEventListener('accepted', listener2);
 
           MockInteractions.pressEnter(Polymer.dom(element.root).querySelector('#_searchDialogInput'));

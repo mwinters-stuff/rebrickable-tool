@@ -115,6 +115,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           _loading:{
             type: Boolean,
+            value: false,
             observer: '_onLoadingChanged',
           },
 
@@ -154,7 +155,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         _handleResponseSearch: function(response) {
           if (response.detail.response && response.detail.response.results) {
-            this._dataSearch = response.detail.response.results;
+            this.set('_dataSearch',response.detail.response.results);
+            this.fire('query-complete');
           }
         },
 
