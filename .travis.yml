@@ -19,6 +19,6 @@ addons:
   sauce_connect: false
 script:
   - xvfb-run wct
-  - gulp build-deploy-gh-pages
+#  - gulp build-deploy-gh-pages
 #  - "if [ \"${TRAVIS_PULL_REQUEST}\" = \"false\" ]; then wct -s 'default'; fi"
 dist: trusty
