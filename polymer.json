@@ -2,7 +2,6 @@
   "entrypoint": "index.html",
   "shell": "src/app-index/app-index.html",
   "fragments": [
-    "src/list-sets/list-sets.html",
     "src/list-parts/list-parts.html",
     "src/show-set/show-set.html",
     "src/manage-moc-parts/manage-moc-parts.html",

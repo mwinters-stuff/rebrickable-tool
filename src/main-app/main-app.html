@@ -28,8 +28,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/app-route/app-route.html">
 <link rel="import" href="../styles/shared-styles.html">
 
-<!-- <link rel="import" href="../list-sets/list-sets.html">
-<link rel="import" href="../list-parts/list-parts.html">
+<link rel="import" href="../list-sets/list-sets.html">
+<!-- <link rel="import" href="../list-parts/list-parts.html">
 <link rel="import" href="../show-set/show-set.html">
 <link rel="import" href="../manage-moc-parts/manage-moc-parts.html">
 <link rel="import" href="../manage-part-lists/manage-part-lists.html">
@@ -156,6 +156,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             notify: true,
           }
 
+        },
+
+        attached: function(){
+          if (!this.route.path || this.route.path === "\/") {
+            this.set('route.path', '/app/list-sets/');
+          }
         },
 
         _onPageChanged: function(page) {
