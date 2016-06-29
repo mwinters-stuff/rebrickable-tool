@@ -165,14 +165,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           _comparePartListsActive: Boolean,
           _manageSetListsActive: Boolean,
           _managePartListsActive: Boolean,
-    
+
 
         },
 
         attached: function(){
-          if (this.route && (!this.route.path || this.route.path === '\/')) {
-            this.set('route.path', '/app/list-sets/');
-          }
+          // if (this.route && (!this.route.path || this.route.path === '\/')) {
+          //   this.set('route.path', '/app/list-sets/');
+          // }
         },
 
         _onPageChanged: function(page) {

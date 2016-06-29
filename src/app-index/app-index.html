@@ -168,6 +168,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           _pageTail: {
             type: String,
+
           },
           _loginActive: {
             type: Boolean,
@@ -188,8 +189,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           _selectedTab: {
             type: Object,
-            observer: '_onTabChanged'
-          }
+            observer: '_onTabChanged',
+          },
+          route:{
+            type: Object,
+            notify: true,
+          },
         },
 
         created: function(){
@@ -207,7 +212,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if (!this.$.drawer.persistent) {
             this.$.drawer.close();
           }
-          if(e.detail.item && e.detail.item.route){
+          if(e.detail.item && e.detail.item.route && this.userHash !== ''){
             // console.log('select',e.detail);
             this.set('route.path',e.detail.item.route);
           }
@@ -217,14 +222,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if (this._selectedTab) {
             this.set('route.path', this._selectedTab.id);
           }
+
         },
 
         _onUnAuthorized: function() {
-          this.set('route.path', '/login');
+          this.async(function(){
+            this.set('route.path', '/login');
+          },100);
         },
 
         _onAuthorized: function() {
-          if (!this.route.path || this.route.path === '/login') {
+          if (!this.route.path || this.route.path === '/' || this.route.path === '/login') {
             this.set('route.path', '/app/list-sets/');
           }
         },
@@ -233,6 +241,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.$.logonThing.logout();
           this.set('route.path', '/login');
         },
+
 
 
       });
