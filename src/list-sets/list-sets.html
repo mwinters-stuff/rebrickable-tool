@@ -44,7 +44,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <list-of-sets id="_listOfSets" set-list-id="{{setListId}}"
         set-list-name="{{_getSetListName(setListId)}}"
         user-hash="{{userHash}}" route="{{route}}"
-        showing="{{showing}}"></list-of-sets>
+        showing="{{showing}}" client-space="{{clientSpace}}"></list-of-sets>
       <paper-fab  style='position:absolute; bottom: 30px; right:24px' icon="icons:add" on-click="_onAddClick"></paper-fab>
     </paper-material>
   </template>
@@ -95,6 +95,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           _data:{
             type: Array,
           },
+
+          clientSpace:{
+            type: Number,
+            defaultValue: 400,
+            notify: true,
+          },
+
         },
 
         _onHashChanged: function() {

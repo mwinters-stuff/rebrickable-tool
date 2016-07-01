@@ -18,6 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 
 <link rel="import" href="../colour-list/colour-list.html">
+<link rel="import" href="../styles/shared-styles.html">
 
 <dom-module id="show-part">
   <template>
@@ -31,7 +32,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       paper-toolbar {
-        margin-top: 0px;
+        margin-top: -24px;
       }
       paper-dialog{
         min-width: 400px;
@@ -55,7 +56,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <table>
               <tr id="rowName">
                 <td colspan="2">
-                  <div class="">{{_data.name}}</div>
+                  <div>{{_data.name}}</div>
                 </td>
               </tr>
               <tr id="rowCategory">
@@ -77,7 +78,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </div>
         </div>
 
-        <iron-data-table id="dataTable" items="[[_data.colors]]" selected-item="{{selectedPart}}" selection-enabled>
+        <iron-data-table items="[[_data.colors]]" selected-item="{{selectedPart}}" selection-enabled>
           <data-table-column name="Colour">
             <template>
               <div class="box" style="background-color: {{_getColour(item.rb_color_id)}}"></div>
@@ -90,6 +91,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <template>[[item.num_sets]]</template>
           </data-table-column>
         </iron-data-table>
+
       </div>
 
     </paper-dialog>
@@ -136,12 +138,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         _onCancelClicked: function() {
           this.$.dialog.close();
         },
-
-        // _handleResponse: function(response) {
-        //   if (response.detail.response) {
-        //     this. = response.detail.response;
-        //   }
-        // },
 
       });
     })();

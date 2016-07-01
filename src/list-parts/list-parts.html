@@ -32,8 +32,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <iron-ajax id="theAjax" auto="{{showing}}" url="https://rebrickable.com/api/get_user_part_lists" params="{{_params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
     <part-search-dialog id="partSearch" on-accepted="_onAddSearchAccepted" quantity="{{_addQuantity}}" colour="{{_addColour}}" show-quantity-input></part-search-dialog>
     <paper-material elevation="1">
-      <list-of-parts id="listOfParts" user-hash="{{userHash}}" part-list-id="{{partListId}}" parts-changed="{{_partsChanged}}" editable></list-of-parts>
-      <paper-fab  style='position:absolute; bottom: 30px; right:94px' icon="icons:save" on-click="_onSaveClick" hidden$="{{!_partsChanged}}"></paper-fab>
+      <list-of-parts id="listOfParts" user-hash="{{userHash}}" part-list-id="{{partListId}}" parts-changed="{{_partsChanged}}" editable client-space="{{clientSpace}}"></list-of-parts>
+      <div style='position:absolute; bottom: 30px; right:94px' hidden$="{{!_partsChanged}}">
+        <paper-fab icon="icons:save" on-click="_onSaveClick"  >
+        </paper-fab>
+      </div>
       <paper-fab  style='position:absolute; bottom: 30px; right:24px' icon="icons:add" on-click="_onAddClick"></paper-fab>
     </paper-material>
   </template>
@@ -75,7 +78,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           partListId: {
             type: Number,
             notify: true,
-          }
+            observer: '_onPartListIdChanged'
+          },
+
+          clientSpace:{
+            type: Number,
+            defaultValue: 400,
+            notify: true,
+          },
+
+          _partsChanged:{
+            type: Boolean,
+            value: false,
+          },
+
+
+        },
+
+        _onPartListIdChanged: function(){
+          this.set('_partsChanged',false);
         },
 
         _handleResponse: function(response) {

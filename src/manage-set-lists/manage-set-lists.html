@@ -54,7 +54,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <set-list-add-dialog id="_setListAddDialog" name="{{_setListAddName}}" use-as="{{_setListAddUseAs}}" on-accepted="_onSetListAddDialogAccepted"></set-list-add-dialog>
 
     <paper-material id="paperMaterial" elevation="1">
-      <iron-data-table id="dataTable" items="[[_data.sets]]" on-selected-item-changed="_onItemSelected" selection-enabled style$="height: [[_height]]px" loading="{{_loading}}">
+      <iron-data-table id="dataTable" items="[[_data.sets]]" on-selected-item-changed="_onItemSelected" selection-enabled style$="height: [[clientSpace]]px" loading="{{_loading}}">
         <data-table-column name="Name" flex="50">
           <template>[[item.name]]</template>
         </data-table-column>
@@ -100,11 +100,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           _data: {
             type: Object,
           },
-
-          _height: {
-            type: Number,
-            value: 400,
-          },
+          //
+          // _height: {
+          //   type: Number,
+          //   value: 400,
+          // },
 
           _setListItem: {
             type: Object,
@@ -121,6 +121,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           _setListAddUseAs:{
             type: String,
           },
+
+          clientSpace:{
+            type: Number,
+            defaultValue: 400,
+          },
+
 
         },
 
@@ -141,7 +147,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this.set('tabsToShow.tabs', []);
           }
           this.$.theAjaxtLists.auto = this.showing;
-          this._resizeTable();
+        //  this._resizeTable();
         },
 
         _typeToDescription: function(id) {
@@ -155,22 +161,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
 
-        attached: function() {
-          this.async(this._resizeTable);
+        // attached: function() {
+        //   this.async(this._resizeTable);
+        //
+        //   window.addEventListener('resize', function() {
+        //     this.debounce('parts-resize', this._resizeTable, 1000);
+        //   }.bind(this));
+        // },
 
-          window.addEventListener('resize', function() {
-            this.debounce('parts-resize', this._resizeTable, 1000);
-          }.bind(this));
-        },
+        // _resizeTable: function() {
+        //   this.set('_height', drawerPanel.clientHeight - appHeader.clientHeight - 120);
+        // }
 
-        _resizeTable: function() {
-          var drawerPanel = document.getElementById('paperDrawerPanel');
-          var appHeader = document.getElementById('appHeader');
-          if(drawerPanel && appHeader){
-            this.set('_height', drawerPanel.clientHeight - appHeader.clientHeight - 120);
-          }
-
-        },
+    //    },
 
         _onItemSelected: function(){
 

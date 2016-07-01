@@ -98,34 +98,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <iron-pages id="appPages" attr-for-selected="data-route" selected="{{page}}">
       <section data-route="list-sets" tabindex="-1">
-        <list-sets set-list-id="{{_setsData.setListId}}" tabs-to-show="{{tabsToShow}}" showing="{{_setsActive}}" user-hash="{{userHash}}" route="{{route}}"></list-sets>
+        <list-sets set-list-id="{{_setsData.setListId}}" tabs-to-show="{{tabsToShow}}" showing="{{_setsActive}}" user-hash="{{userHash}}" route="{{route}}" client-space="{{clientSpace}}"></list-sets>
       </section>
 
       <section data-route="list-parts" tabindex="-1">
-        <list-parts part-list-id="{{_partsData.partListId}}" tabs-to-show="{{tabsToShow}}" showing="{{_partsActive}}" user-hash="{{userHash}}"  route="{{route}}"></list-parts>
+        <list-parts part-list-id="{{_partsData.partListId}}" tabs-to-show="{{tabsToShow}}" showing="{{_partsActive}}" user-hash="{{userHash}}"  route="{{route}}" client-space="{{clientSpace}}"></list-parts>
       </section>
 
       <section data-route="show-set" tabindex="-1">
-        <show-set showing="{{_setActive}}"  tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}" set-id="{{_setData.setId}}"  set-list-id="{{_setData.setListId}}" set-list-name="{{_setData.setListName}}" route="{{route}}"></show-set>
+        <show-set showing="{{_setActive}}"  tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}" set-id="{{_setData.setId}}"  set-list-id="{{_setData.setListId}}" set-list-name="{{_setData.setListName}}" route="{{route}}" client-space="{{clientSpace}}"></show-set>
       </section>
 
       <section data-route="manage-moc-parts" tabindex="-1">
-        <manage-moc-parts showing="{{_manageMocPartsActive}}" tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}"  route="{{route}}"> </manage-moc-parts>
+        <manage-moc-parts showing="{{_manageMocPartsActive}}" tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}"  route="{{route}}" client-space="{{clientSpace}}"> </manage-moc-parts>
       </section>
 
       <section data-route="compare-set-parts" tabindex="-1">
-        <compare-set-parts showing="{{_compareSetPartsActive}}" tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}"  route="{{route}}"> </compare-set-parts>
+        <compare-set-parts showing="{{_compareSetPartsActive}}" tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}"  route="{{route}}" client-space="{{clientSpace}}"> </compare-set-parts>
       </section>
 
       <section data-route="compare-part-lists" tabindex="-1">
-        <compare-part-lists showing="{{_comparePartListsActive}}" tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}"  route="{{route}}"> </compare-part-lists>
+        <compare-part-lists showing="{{_comparePartListsActive}}" tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}"  route="{{route}}" client-space="{{clientSpace}}"> </compare-part-lists>
       </section>
 
       <section data-route="manage-set-lists" tabindex="-1">
-        <manage-set-lists showing="{{_manageSetListsActive}}" tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}"  route="{{route}}"> </manage-set-lists>
+        <manage-set-lists showing="{{_manageSetListsActive}}" tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}"  route="{{route}}" client-space="{{clientSpace}}"> </manage-set-lists>
       </section>
       <section data-route="manage-part-lists" tabindex="-1">
-        <manage-part-lists showing="{{_managePartListsActive}}" tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}"  route="{{route}}"> </manage-part-lists>
+        <manage-part-lists showing="{{_managePartListsActive}}" tabs-to-show="{{tabsToShow}}" user-hash="{{userHash}}"  route="{{route}}" client-space="{{clientSpace}}"> </manage-part-lists>
       </section>
     </iron-pages>
 
@@ -154,6 +154,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           tabsToShow:{
             type: Array,
             notify: true,
+          },
+
+          clientSpace:{
+            type: Number,
+            notify: true,
+            defaultValue: 400,
           },
 
           _partsData: Object,

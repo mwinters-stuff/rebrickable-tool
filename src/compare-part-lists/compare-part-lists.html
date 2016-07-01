@@ -61,8 +61,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <paper-toast id="toast">
     </paper-toast>
-    <list-of-parts hidden id="_partList1OfParts" user-hash="{{userHash}}" part-list-id="{{_selectedPartList1Id}}" parts="{{_set1Parts}}" disable-popup></list-of-parts>
-    <list-of-parts hidden id="_partList2OfParts" user-hash="{{userHash}}" part-list-id="{{_selectedPartList2Id}}" parts="{{_set2Parts}}" disable-popup></list-of-parts>
+    <div hidden>
+      <list-of-parts id="_partList1OfParts" user-hash="{{userHash}}" part-list-id="{{_selectedPartList1Id}}" parts="{{_set1Parts}}" disable-popup></list-of-parts>
+      <list-of-parts id="_partList2OfParts" user-hash="{{userHash}}" part-list-id="{{_selectedPartList2Id}}" parts="{{_set2Parts}}" disable-popup></list-of-parts>
+    </div>
 
     <paper-material elevation="1">
 

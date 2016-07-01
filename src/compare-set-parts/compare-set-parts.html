@@ -63,8 +63,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <paper-toast id="toast">
     </paper-toast>
-    <show-set-parts hidden set-id="{{_selectedSearchSet1.set_id}}" parts="{{_set1Parts}}" disable-popup></show-set-parts>
-    <show-set-parts hidden set-id="{{_selectedSearchSet2.set_id}}" parts="{{_set2Parts}}" disable-popup></show-set-parts>
+    <div hidden>
+      <show-set-parts set-id="{{_selectedSearchSet1.set_id}}" parts="{{_set1Parts}}" disable-popup></show-set-parts>
+      <show-set-parts set-id="{{_selectedSearchSet2.set_id}}" parts="{{_set2Parts}}" disable-popup></show-set-parts>
+    </div>
 
     <paper-material elevation="1">
 
@@ -84,7 +86,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <paper-icon-button icon="icons:save" on-click="_onSaveSet1PartsListClick" disabled="{{_buildSet1DontDisabled}}"></paper-icon-button>
             </paper-toolbar>
           </div>
-          <simple-part-list id="listTableDont" parts="[[_buildSet1DontParts]]" list-height="[[_height]]">
+          <simple-part-list id="listTableDont1" parts="[[_buildSet1DontParts]]" list-height="[[_height]]">
           </simple-part-list>
 
         </div>
@@ -101,7 +103,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <span class="space"></span>
             <paper-icon-button icon="icons:save" on-click="_onSaveSet2PartsListClick" disabled="{{_buildSet2DontDisabled}}"></paper-icon-button>
           </paper-toolbar>
-          <simple-part-list id="listTableDont" parts="[[_buildSet2DontParts]]" list-height="[[_height]]">
+          <simple-part-list id="listTableDont2" parts="[[_buildSet2DontParts]]" list-height="[[_height]]">
           </simple-part-list>
         </div>
       </div>

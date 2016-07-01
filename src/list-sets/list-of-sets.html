@@ -36,7 +36,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       loading="{{_loading}}">
     </iron-ajax>
 
-    <iron-data-table id="dataTable" items="[[_data.0.sets]]" selection-enabled on-selected-item-changed="_onSelectedChanged" style$="height: [[_height]]px" loading="{{_loading}}">
+    <iron-data-table id="dataTable" items="[[_data.0.sets]]" selection-enabled on-selected-item-changed="_onSelectedChanged" style$="height: [[clientSpace]]px" loading="{{_loading}}">
       <data-table-column align-right width="20px">
         <template><iron-image  src="[[item.img_sm]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image></template>
       </data-table-column>
@@ -91,28 +91,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Object,
         },
 
-        _height: {
+        clientSpace:{
           type: Number,
-          value: 400,
+          defaultValue: 400,
         },
+
       },
-
-      attached: function(){
-        this.async(this._resizeTable);
-
-        window.addEventListener('resize', function() {
-          this.debounce('parts-resize', this._resizeTable,1000);
-        }.bind(this));
-      },
-
-      _resizeTable: function() {
-        var drawerPanel = document.getElementById('paperDrawerPanel');
-        var appHeader = document.getElementById('appHeader');
-        if(drawerPanel && appHeader){
-          this.set('_height', drawerPanel.clientHeight - appHeader.clientHeight - 120);
-        }
-      },
-
 
       _onHashChanged: function() {
         this.set('_data',[]);

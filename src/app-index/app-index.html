@@ -144,7 +144,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </app-toolbar>
           </app-header>
 
-          <main-app tabs-to-show="{{_tabsToShow}}" user-hash="{{userHash}}" page="{{_pageData.page}}" route="{{route}}">
+          <main-app tabs-to-show="{{_tabsToShow}}" user-hash="{{userHash}}" page="{{_pageData.page}}" route="{{route}}" client-space="{{clientSpace}}">
           </main-app>
         </app-header-layout>
       </app-drawer-layout>
@@ -195,10 +195,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: Object,
             notify: true,
           },
+          clientSpace:{
+            type: Number,
+            notify: true,
+            defaultValue: 400,
+          },
         },
 
         created: function(){
           this.removeAttribute('unresolved');
+        },
+
+        attached: function() {
+          this.async(this._resizeTable);
+
+          window.addEventListener('resize', function() {
+            this.debounce('all-resize', this._resize, 200);
+          }.bind(this));
+          this.debounce('all-resize', this._resize, 200);
+        },
+
+        _resize: function(){
+          this.set('clientSpace',this.$.paperDrawerPanel.clientHeight - this.$.appHeader.clientHeight - 120);
         },
 
         _onPageActiveChanged: function() {
