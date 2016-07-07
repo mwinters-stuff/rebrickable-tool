@@ -59,6 +59,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <iron-ajax id="theAjaxAddPartLists" method="POST" url="https://rebrickable.com/api/add_user_partlist" handle-as="text" on-response="_onAddPartListResponse"></iron-ajax>
     <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text" on-response="_onSetUserPartsResponse"></iron-ajax>
 
+    <set-search-dialog id="_set1SearchDialog" result="{{_selectedSearchSet1}}"></set-search-dialog>
+    <set-search-dialog id="_set2SearchDialog" result="{{_selectedSearchSet2}}"></set-search-dialog>
+    <input-dialog id="_inputDialog"></input-dialog>
+
     <colour-list id="colours"></colour-list>
 
     <paper-toast id="toast">
@@ -108,9 +112,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
       </div>
     </paper-material>
-    <set-search-dialog id="_set1SearchDialog" result="{{_selectedSearchSet1}}"></set-search-dialog>
-    <set-search-dialog id="_set2SearchDialog" result="{{_selectedSearchSet2}}"></set-search-dialog>
-    <input-dialog id="_inputDialog"></input-dialog>
   </template>
   <script>
     (function() {

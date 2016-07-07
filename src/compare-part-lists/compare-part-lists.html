@@ -58,6 +58,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text" on-response="_onSetUserPartsResponse"></iron-ajax>
 
     <colour-list id="colours"></colour-list>
+    <input-dialog id="_inputDialog"></input-dialog>
 
     <paper-toast id="toast">
     </paper-toast>
@@ -114,7 +115,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
       </div>
     </paper-material>
-    <input-dialog id="_inputDialog"></input-dialog>
   </template>
   <script>
     (function() {

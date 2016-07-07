@@ -64,6 +64,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <colour-list id="colours"></colour-list>
 
+  <set-search-dialog id="_setSearchDialog" result="{{_selectedSearchSet}}" on-accepted="_searchSetDialogAccepted"></set-search-dialog>
+  <input-dialog id="_inputDialog"></input-dialog>
+
+  <paper-dialog id="partUseDialog" on-iron-overlay-closed="_partUseDialogClosed">
+    <h2>Use alternate part in Build</h2>
+    <div>
+      <iron-image src="[[_dontHaveSelectedPart.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
+      <!-- <iron-icon icon="icons:arrow-forward"></iron-icon>
+        <iron-image src="[[_partListSelectedPart.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image> -->
+    </div>
+    <div>Do you want to use part</div>
+    <div>{{_partListSelectedPart.part_id}} {{_partListSelectedPart.part_name}} which you have {{_partListSelectedPart.qty}} in {{getColourName(_partListSelectedPart.rb_color_id)}}</div>
+    <div>In place of {{_dontHaveSelectedPart.part_id}} {{_dontHaveSelectedPart.part_name}} which you need {{_dontHaveSelectedPart.qty}} in {{getColourName(_dontHaveSelectedPart.rb_color_id)}}</div>
+    <div>
+      <paper-input value="{{_usePartQty}}" min="0" max="{{_dontHaveSelectedPart.qty}}" type="number" label="Use"></paper-input>
+
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm>Ok</paper-button>
+      </div>
+    </div>
+  </paper-dialog>
+
   <paper-toast id="toast">
   </paper-toast>
 
@@ -167,29 +190,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
   </paper-material>
-
-  <set-search-dialog id="_setSearchDialog" result="{{_selectedSearchSet}}" on-accepted="_searchSetDialogAccepted"></set-search-dialog>
-  <input-dialog id="_inputDialog"></input-dialog>
-
-  <paper-dialog id="partUseDialog" on-iron-overlay-closed="_partUseDialogClosed">
-    <h2>Use alternate part in Build</h2>
-    <div>
-      <iron-image src="[[_dontHaveSelectedPart.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
-      <!-- <iron-icon icon="icons:arrow-forward"></iron-icon>
-        <iron-image src="[[_partListSelectedPart.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image> -->
-    </div>
-    <div>Do you want to use part</div>
-    <div>{{_partListSelectedPart.part_id}} {{_partListSelectedPart.part_name}} which you have {{_partListSelectedPart.qty}} in {{getColourName(_partListSelectedPart.rb_color_id)}}</div>
-    <div>In place of {{_dontHaveSelectedPart.part_id}} {{_dontHaveSelectedPart.part_name}} which you need {{_dontHaveSelectedPart.qty}} in {{getColourName(_dontHaveSelectedPart.rb_color_id)}}</div>
-    <div>
-      <paper-input value="{{_usePartQty}}" min="0" max="{{_dontHaveSelectedPart.qty}}" type="number" label="Use"></paper-input>
-
-      <div class="buttons">
-        <paper-button dialog-dismiss>Cancel</paper-button>
-        <paper-button dialog-confirm>Ok</paper-button>
-      </div>
-    </div>
-  </paper-dialog>
 
 </template>
 <script>

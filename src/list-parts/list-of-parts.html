@@ -42,6 +42,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }*/
     </style>
     <colour-list id="colours"></colour-list>
+    <show-part id="showPart"></show-part>
     <quantity-input-dialog id="_quantityInputDialog" title="Edit Part Quantity" on-dialog-closed="_onQuantityInputDialogClosed"></quantity-input-dialog>
     <move-part-to-list-dialog id="_movePartDialog" part="{{_tempPartItem}}" user-hash="{{userHash}}" on-dialog-closed="_onMovePartDialogClosed"></move-part-to-list-dialog>
     <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_user_parts" params="{{_params}}" handle-as="json" on-response="_handleResponse" loading="{{_loading}}"></iron-ajax>
@@ -82,7 +83,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </template>
       </data-table-column>
     </iron-data-table>
-    <show-part id="showPart"></show-part>
   </template>
   <script>
     (function() {
