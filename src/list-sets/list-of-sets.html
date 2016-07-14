@@ -107,6 +107,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             format: 'json',
             setlist_id: this.setListId,
           });
+          if(this.$.theAjax.lastRequest){
+            this.$.theAjax.lastRequest.xhr.abort();
+          }
           this.$.theAjax.generateRequest();
         }
       },
@@ -119,7 +122,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _onSelectedChanged: function(e) {
         if(e.detail && e.detail.value){
-          this.set('route.path','/app/show-set/' + e.detail.value.set_id + '/' + this.setListId + '/' + this.setListName);
+          this.set('route.path','/app/show-set/' + e.detail.value.set_id + '/' + this.setListId + '/' + this.setListName.replace(/ /g,'-'));
         }
       },
 

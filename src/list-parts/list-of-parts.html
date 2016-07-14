@@ -168,6 +168,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               partlist_id: this.partListId,
               format: 'json'
             });
+            if(this.$.theAjax.lastRequest){
+              this.$.theAjax.lastRequest.xhr.abort();
+            }
             this.$.theAjax.generateRequest();
           }
         },

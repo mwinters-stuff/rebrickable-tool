@@ -41,7 +41,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template>
     <style include="shared-styles">
     iron-pages{
-      height: 100%;
+      /*height: 100%;*/
       position: relative;
       background-color: #607D8B;
     }
@@ -96,7 +96,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       active="{{_managePartListsActive}}">
     </app-route>
 
-    <iron-pages id="appPages" attr-for-selected="data-route" selected="{{page}}">
+    <iron-pages id="appPages" attr-for-selected="data-route" selected="{{page}}" style$="height: [[_clientSpace]]px">
       <section data-route="list-sets" tabindex="-1">
         <list-sets set-list-id="{{_setsData.setListId}}" tabs-to-show="{{tabsToShow}}" showing="{{_setsActive}}" user-hash="{{userHash}}" route="{{route}}" client-space="{{clientSpace}}"></list-sets>
       </section>
@@ -156,12 +156,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             notify: true,
           },
 
+          outerClientSpace:{
+            type: Number,
+            defaultValue: 400,
+            observer: '_onOuterClientSpaceChanged'
+          },
+
           clientSpace:{
             type: Number,
             notify: true,
             defaultValue: 400,
+
           },
 
+          _clientSpace: Number,
           _partsData: Object,
           _partsActive: Boolean,
           _setData: Object,
@@ -181,11 +189,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           // }
         },
 
+        _onOuterClientSpaceChanged: function(){
+          this.set('_clientSpace',this.outerClientSpace - 32);
+          this.set('clientSpace',this.outerClientSpace - 32 - 64);
+        },
+
         _onPageChanged: function(page) {
           // load page import on demand.
           this.set('tabsToShow',[]);
-          this.importHref(
-            this.resolveUrl('../' + page + '/' + page + '.html'), null, null, true);
+          if(page !== 'list-sets'){
+            this.importHref(
+              this.resolveUrl('../' + page + '/' + page + '.html'), null, null, true);
+          }
         }
       });
     })();

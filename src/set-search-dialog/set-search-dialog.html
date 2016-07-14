@@ -150,6 +150,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: this._searchSetType,
             query: this._searchInput
           });
+          if(this.$.theAjaxSearch.lastRequest){
+            this.$.theAjaxSearch.lastRequest.xhr.abort();
+          }
           this.$.theAjaxSearch.generateRequest();
         },
 

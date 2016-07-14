@@ -84,7 +84,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               </paper-listbox>
             </paper-dropdown-menu>
             <paper-toolbar>
-              <div>{{_selectedPartList2Descr}} Parts not in {{_selectedPartList1Descr}}</div>
+              <div><span>{{_selectedPartList2Descr}}</span> Parts not in <span>{{_selectedPartList1Descr}}</span></div>
               <span class="space"></span>
               <paper-icon-button icon="icons:save" on-click="_onSaveSet1PartsListClick" disabled="{{_buildSet1DontDisabled}}"></paper-icon-button>
             </paper-toolbar>
@@ -106,7 +106,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </paper-listbox>
           </paper-dropdown-menu>
           <paper-toolbar>
-            <div>{{_selectedPartList1Descr}} Parts not in {{_selectedPartList2Descr}}</div>
+            <div><span>{{_selectedPartList1Descr}}</span> Parts not in <span>{{_selectedPartList2Descr}}</span></div>
             <span class="space"></span>
             <paper-icon-button icon="icons:save" on-click="_onSaveSet2PartsListClick" disabled="{{_buildSet2DontDisabled}}"></paper-icon-button>
           </paper-toolbar>
@@ -352,7 +352,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           );
         },
 
-        _savePartsList(dialogLabel, partListNameDefault, parts) {
+        _savePartsList: function(dialogLabel, partListNameDefault, parts) {
           this.$._inputDialog.title = 'Save Parts List';
           this.$._inputDialog.label = dialogLabel;
           this.$._inputDialog.value = partListNameDefault;

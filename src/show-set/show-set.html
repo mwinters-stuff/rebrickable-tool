@@ -51,7 +51,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <paper-toast id="toast">
     </paper-toast>
     <question-dialog id="_questionRemove" on-dialog-closed="_onRemoveDialogClosed">
-      Do you want to remove set <b>{{_data.0.set_id}} {{_data.0.descr}}</b> from list <b>{{setListName}}</b>?
+      Do you want to remove set <b>{{_data.0.set_id}} {{_data.0.descr}}</b> from list <b>{{_setListName}}</b>?
     </question-dialog>
 
     <paper-material elevation="1">
@@ -81,7 +81,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   </tr>
                   <tr id="rowListName">
                     <td>List:</td>
-                    <td>{{setListName}}</td>
+                    <td>{{_setListName}}</td>
                   </tr>
                 </table>
               </div>
@@ -139,6 +139,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           setListName: {
             type: String,
+            observer: '_onSetListNameChanged'
           },
 
           _data: {
@@ -169,7 +170,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             observer: '_onClientSpaceChanged',
           },
 
-
+          _setListName: String,
         },
 
         _onClientSpaceChanged: function() {
@@ -184,6 +185,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           }
           this.$.theAjax.auto = this.showing;
+        },
+
+        _onSetListNameChanged: function(){
+          this.set('_setListName',this.setListName.replace(/-/g,' '));
         },
 
         _onHashChanged: function() {
