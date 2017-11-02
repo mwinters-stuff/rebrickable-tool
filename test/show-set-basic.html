@@ -43,7 +43,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       server = sinon.fakeServer.create();
 
-      server.respondWith('https://rebrickable.com/api/get_set?key=p4GLMlcPxJ&set_id=71011-1&format=json',
+      server.respondWith('https://rebrickable.com/api/get_set?key=13b80cff544f288c7ec80c807e10f056&set_id=71011-1&format=json',
         [200,{'Content-Type': 'application/json'},
          '[{"set_id":"71011-1","type":"set","pieces":"4","descr":"Farmer","theme":"Collectible Minifigures","year":"2016","img_tn":"http:\/\/rebrickable.com\/img\/sets-t\/71011-1.jpg","img_sm":"http:\/\/rebrickable.com\/img\/sets-s\/71011-1.jpg","img_big":"http:\/\/rebrickable.com\/img\/sets-b\/71011-1.jpg"}]'
       ]);
@@ -53,7 +53,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
          'SUCCESS'
       ]);
 
-      server.respondWith('https://rebrickable.com/api/get_set_parts?key=p4GLMlcPxJ&set=71011-1&format=json',
+      server.respondWith('https://rebrickable.com/api/get_set_parts?key=13b80cff544f288c7ec80c807e10f056&set=71011-1&format=json',
         [200,{'Content-Type': 'application/json'},
          '[{"set_id":"71011-1","descr":"Farmer","set_img_url":"https:\/\/img.rebrickable.com\/img\/sets-b\/71011-1.jpg",'+
          '"parts":[{"part_id":"88646","qty":"1","ldraw_color_id":"0","type":1,"part_name":"Tile Special 4 x 3 with 4 Studs'+

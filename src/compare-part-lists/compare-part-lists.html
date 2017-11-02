@@ -42,7 +42,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       div.ch {
-        @apply(--layout-flex);
+        @apply --layout-flex;
         padding-right: 12px;
         padding-left: 12px;
         border-right: 1px solid #e3e3e3;
@@ -53,9 +53,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
     </style>
-    <iron-ajax id="theAjaxPartLists" method="GET" url="https://rebrickable.com/api/get_user_part_lists" params="{{_paramsPartLists}}" handle-as="json" last-response="{{_dataPartLists}}"></iron-ajax>
-    <iron-ajax id="theAjaxAddPartLists" method="POST" url="https://rebrickable.com/api/add_user_partlist" handle-as="text" on-response="_onAddPartListResponse"></iron-ajax>
-    <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text" on-response="_onSetUserPartsResponse"></iron-ajax>
+    <iron-ajax id="theAjaxPartLists" method="GET" url="https://rebrickable.com/api/v3/users/[[userHash]]/partlists/" params="{{_paramsPartLists}}" handle-as="json" last-response="{{_dataPartLists}}"></iron-ajax>
+    <iron-ajax id="theAjaxAddPartLists" method="POST" url="https://rebrickable.com/api/v3/users/[[userHash]]/partlists/" handle-as="text" on-response="_onAddPartListResponse"></iron-ajax>
+    <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/v3/users/[[userHash]]/partlists/" handle-as="text" on-response="_onSetUserPartsResponse"></iron-ajax>
 
     <colour-list id="colours"></colour-list>
     <input-dialog id="_inputDialog"></input-dialog>
@@ -248,7 +248,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         _onHashChanged: function() {
           if (this.userHash) {
             this._paramsPartLists = {
-              key: 'p4GLMlcPxJ',
+              key: '13b80cff544f288c7ec80c807e10f056',
               hash: this.userHash,
               format: 'json'
             };
@@ -391,11 +391,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         _addUserPartList: function(descr, type, callback) {
           this.$.theAjaxAddPartLists.contentType = 'application/x-www-form-urlencoded';
           var parms = {
-            'key': 'p4GLMlcPxJ',
-            'hash': this.userHash,
-            'format': 'json',
-            'descr': descr,
-            'type': type,
+            'key': '13b80cff544f288c7ec80c807e10f056',
+            'name': descr,
+            'is_buildable': true,
           };
 
           this._addUserPartListCallback = callback;
@@ -422,7 +420,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           this.$.theAjaxSetUserParts.contentType = 'application/x-www-form-urlencoded';
           this.$.theAjaxSetUserParts.body = {
-            'key': 'p4GLMlcPxJ',
+            'key': '13b80cff544f288c7ec80c807e10f056',
             'hash': this.userHash,
             'format': 'json',
             'partlist_id': partListId,

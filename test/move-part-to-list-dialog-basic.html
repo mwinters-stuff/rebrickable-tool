@@ -64,12 +64,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element = fixture('basic');
         server = sinon.fakeServer.create();
 
-        server.respondWith('https://rebrickable.com/api/get_user_part_lists?key=p4GLMlcPxJ&hash=p4GLMlcPxJ&format=json', [200, {
+        server.respondWith('https://rebrickable.com/api/get_user_part_lists?key=13b80cff544f288c7ec80c807e10f056&hash=13b80cff544f288c7ec80c807e10f056&format=json', [200, {
             'Content-Type': 'application/json'
           },
           '{"partlists":[{"partlist_id":1,"descr":"Main Parts","type":1,"qty":2615},{"partlist_id":3,"descr":"Parts for m1","type":2,"qty":709},{"partlist_id":4,"descr":"Extra Bits","type":2,"qty":33},{"partlist_id":5,"descr":"MOC-3247 8-Cylinder Radial Aircraft Engine","type":2,"qty":198}]}'
         ]);
-        server.respondWith('https://rebrickable.com/api/get_user_parts?key=p4GLMlcPxJ&hash=p4GLMlcPxJ&partlist_id=3&format=json', [200, {
+        server.respondWith('https://rebrickable.com/api/get_user_parts?key=13b80cff544f288c7ec80c807e10f056&hash=13b80cff544f288c7ec80c807e10f056&partlist_id=3&format=json', [200, {
             'Content-Type': 'application/json'
           },
           '{"parts":[{"part_id":"4459","rb_color_id":0,"ldraw_color_id":0,"qty":33,"part_name":"Technic Pin with Friction Ridges Lengthwise, without Center Slots","part_type_id":9,"part_url":"https:\/\/rebrickable.com\/parts\/4459","part_img_url":"https:\/\/img.rebrickable.com\/img\/pieces\/0\/4459.png"}]}'
@@ -92,7 +92,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
       it('tests moving a part to another part list', function(done) {
-        element.userHash = 'p4GLMlcPxJ';
+        element.userHash = '13b80cff544f288c7ec80c807e10f056';
         element.part = {
           'part_id': '10928',
           'rb_color_id': 72,

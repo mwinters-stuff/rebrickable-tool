@@ -84,13 +84,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         grid = element.$$('#dataTable');
         inputQuantity = element.$$('#_quantityInput');
 
-        server.respondWith('https://rebrickable.com/api/search?key=p4GLMlcPxJ&format=json&type=P&part_type_id=3&part_color=11&query=nothing', [200, {
+        server.respondWith('https://rebrickable.com/api/search?key=13b80cff544f288c7ec80c807e10f056&format=json&type=P&part_type_id=3&part_color=11&query=nothing', [200, {
             'Content-Type': 'application/json'
           },
           '{"results":[]}'
         ]);
 
-        server.respondWith('https://rebrickable.com/api/get_part_types?key=p4GLMlcPxJ&format=json', [200, {
+        server.respondWith('https://rebrickable.com/api/get_part_types?key=13b80cff544f288c7ec80c807e10f056&format=json', [200, {
             'Content-Type': 'application/json'
           },
           '{ "part_types": [{ "part_type_id": "3", "desc": "Bricks" }, {' +
@@ -102,7 +102,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           '"part_type_id": "22", "desc": "Bricks Wedged"  }]}'
         ]);
 
-        server.respondWith('https://rebrickable.com/api/search?key=p4GLMlcPxJ&format=json&type=P&part_type_id=20&part_color=10&query=Arch', [200, {
+        server.respondWith('https://rebrickable.com/api/search?key=13b80cff544f288c7ec80c807e10f056&format=json&type=P&part_type_id=20&part_color=10&query=Arch', [200, {
             'Content-Type': 'application/json'
           },
           '{"results":[{"part_id":"6182","descr":"Brick Arch 1 x 4 x 2","part_type":"Bricks Curved","part_type_id"' +

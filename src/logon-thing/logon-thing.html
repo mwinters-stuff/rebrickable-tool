@@ -46,7 +46,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         @apply(--layout-center-justified);
       }
     </style>
-    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_user_hash" params="{{_params}}" handle-as="text" on-response="_handleResponse"></iron-ajax>
+    <iron-ajax id="theAjax" method="POST" url="https://rebrickable.com/api/v3/users/_token/" params="{{_params}}" handle-as="json" on-response="_handleResponse" on-error="_handleError"></iron-ajax>
 
     <div class="whole">
       <div class="wholeh">
@@ -122,10 +122,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         doLogin: function() {
           this.set('_params',{
-            key: 'p4GLMlcPxJ',
-            email: this._inputUsername,
-            pass: this._inputPassword,
-            format: 'json'
+            key: '13b80cff544f288c7ec80c807e10f056',
+            username: this._inputUsername,
+            password: this._inputPassword
           });
           this.$.theAjax.generateRequest();
         },
@@ -151,6 +150,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.$.cookie.eraseCookie();
           this.set('_inputPassword','');
         },
+
+        _handleError: function(error) {
+          console.log(error)
+        }
 
       });
     })();

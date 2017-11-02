@@ -42,10 +42,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       element = fixture('basic');
       server = sinon.fakeServer.create();
 
-      server.respondWith('https://rebrickable.com/api/get_user_hash?key=p4GLMlcPxJ&email=joe%40bob.com&pass=secret&format=json',
+      server.respondWith('https://rebrickable.com/api/get_user_hash?key=13b80cff544f288c7ec80c807e10f056&email=joe%40bob.com&pass=secret&format=json',
         [200,{'Content-Type': 'application/text'},'12345678901234567890']);
 
-      server.respondWith('https://rebrickable.com/api/get_user_hash?key=p4GLMlcPxJ&email=jack%40bob.com&pass=sec&format=json',
+      server.respondWith('https://rebrickable.com/api/get_user_hash?key=13b80cff544f288c7ec80c807e10f056&email=jack%40bob.com&pass=sec&format=json',
         [200,{'Content-Type': 'application/text'},'INVALIDUSERPASS']);
 
       var cookie = element.$$('#cookie');
