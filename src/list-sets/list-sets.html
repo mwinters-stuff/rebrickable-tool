@@ -30,12 +30,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
     </style>
-    <iron-ajax id="theAjax" auto="{{showing}}" url="https://rebrickable.com/api/get_user_setlists" params="{{_params}}" handle-as="json" on-response="_handleResponse">
+    <iron-ajax id="theAjax" 
+      url="https://rebrickable.com/api/v3/users/[[userHash]]/setlists/" 
+      headers='{"Authorization": "key 13b80cff544f288c7ec80c807e10f056"}'
+      handle-as="json" on-response="_handleResponse" verbose
+      method="GET">
     </iron-ajax>
     <set-search-dialog id="_setSearchDialog" result="{{_selectedSearchSet}}" on-accepted="_searchSetDialogAccepted"></set-search-dialog>
-    <iron-ajax id="theAjaxSetUserSet" method="POST" url="https://rebrickable.com/api/set_user_set"
-      content-type = "application/x-www-form-urlencoded";
-      handle-as="text" on-response="_onSetUserSetResponse"></iron-ajax>
+    <iron-ajax id="theAjaxSetUserSet" 
+      method="POST" 
+      url="https://rebrickable.com/api/v3/users/[[userHash]]/setlists/[[setListId]]/sets/"
+      headers='{"Authorization": "key 13b80cff544f288c7ec80c807e10f056"}'
+      method='POST'      
+      content-type="application/json"
+      on-response="_onSetUserSetResponse"></iron-ajax>
 
       <paper-toast id="toast">
       </paper-toast>
@@ -61,9 +69,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             observer: '_onHashChanged',
           },
 
-          _params: {
-            type: String,
-          },
+          // _params: {
+          //   type: String,
+          // },
 
           showing: {
             type: Boolean,
@@ -94,6 +102,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           _data:{
             type: Array,
+            value: []
           },
 
           clientSpace:{
@@ -105,19 +114,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _onHashChanged: function() {
-          this._data = [];
-          if (this.userHash) {
-            this.set('_params', {
-              key: '13b80cff544f288c7ec80c807e10f056',
-              hash: this.userHash,
-              format: 'json'
-            });
+          // this._data = [];
+          if (this.userHash && this.userHash != '') {
+            this.$.theAjax.generateRequest();
+          //   this.set('_params', {
+          //     key: '13b80cff544f288c7ec80c807e10f056',
+          //     hash: this.userHash,
+          //     format: 'json'
+          //   });
           }
         },
 
         _getSetListName: function(id) {
+          id = parseInt(id);
           var set = XP.find(this._data, function(alist) {
-            return alist.setlist_id === id;
+            return alist.id === id;
           });
 
           if(set){
@@ -136,10 +147,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _handleResponse: function(response) {
-          if (response.detail.response) {
-            this._data = response.detail.response.sets;
+          if (response.detail.response && response.detail.response.results) {
+            this._data = response.detail.response.results;
             if (this._data.length > 0 && !this.setListId) {
-              this.setListId = !this._lastSetListId ? this._data[0].setlist_id : this._lastSetListId;
+              this.setListId = !this._lastSetListId ? this._data[0].id : this._lastSetListId;
               this.set('route.path','/app/list-sets/' + this.setListId);
             }
 
@@ -152,7 +163,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
               this._data.forEach(function(element) {
                 tabsToShow.tabs.push({
-                  route: '/app/list-sets/' + element.setlist_id,
+                  route: '/app/list-sets/' + element.id,
                   title: element.name,
                 });
               }.bind(this));
@@ -169,19 +180,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         _searchSetDialogAccepted: function() {
           //console.log('searched ', this._selectedSearchSet);
           //
-          this.$.theAjaxSetUserSet.body = {
-            'key': '13b80cff544f288c7ec80c807e10f056',
-            'hash': this.userHash,
-            'format': 'json',
-            'set': this._selectedSearchSet.set_id,
-            'qty': 1,
-            'setlist_id': this.setListId
-          };
+          this.$.theAjaxSetUserSet.body = [{
+            set_num: this._selectedSearchSet.set_num,
+            quantity: 1,
+            include_spares: true,
+          }];
           this.$.theAjaxSetUserSet.generateRequest();
         },
 
         _onSetUserSetResponse: function(e) {
-            if(XP.startsWith(e.detail.response,'SUCCESS')){
+            if(e.detail.status == 201){
               this.$.toast.text = 'Set added!';
               this.$.toast.open();
             }else{

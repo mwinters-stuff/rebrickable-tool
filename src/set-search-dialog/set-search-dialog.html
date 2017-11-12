@@ -43,8 +43,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <div class="horiz">
         <div>Search Types</div>
         <paper-radio-group selected="{{_searchSetType}}" attr-for-selected="name">
-          <paper-radio-button name="M">MOC's</paper-radio-button>
           <paper-radio-button name="S">Sets</paper-radio-button>
+          <paper-radio-button name="M">MOC's</paper-radio-button>
         </paper-radio-group>
       </div>
       <div class="horiz">
@@ -53,20 +53,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-icon-button suffix icon="search" raised on-click="_onSearchDialogSearch" disabled="{{_searchTermsBad}}"></paper-icon-button>
         </paper-input>
       </div>
-      <iron-data-table id="dataTable" items="[[_dataSearch]]" selected-item="{{_selectedSearchSet}}" selection-enabled loading="{{_loading}}">
+      <iron-data-table id="dataTable" items="[[_dataSearch.results]]" selected-item="{{_selectedSearchSet}}" selection-enabled
+        loading="{{_loading}}">
         <data-table-column width="40px">
           <template>
-            <iron-image src="[[item.img_tn]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
+            <iron-image src="[[item.set_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
           </template>
         </data-table-column>
         <data-table-column name="ID" width="80px">
-          <template>[[item.set_id]]</template>
+          <template>[[item.set_num]]</template>
         </data-table-column>
         <data-table-column name="Theme" width="100px">
-          <template>[[item.theme1]]</template>
+          <template>[[item.theme_id]]</template>
         </data-table-column>
-        <data-table-column name="Description" flex="10">
-          <template>[[item.descr]]</template>
+        <data-table-column name="Name" flex="10">
+          <template>[[item.name]]</template>
         </data-table-column>
       </iron-data-table>
 
@@ -75,13 +76,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-button dialog-confirm disabled="{{!_searchDialogOk}}">Accept</paper-button>
       </div>
     </paper-dialog>
-    <iron-ajax id="theAjaxSearch" url="https://rebrickable.com/api/search" params="{{_paramsSearch}}" handle-as="json" on-response="_handleResponseSearch" loading="{{_loading}}">
+    <iron-ajax id="theAjaxSearch" url="https://rebrickable.com/api/v3/lego/sets" headers='{"Authorization": "key 13b80cff544f288c7ec80c807e10f056"}'
+      params="{{_paramsSearch}}" handle-as="json" on-response="_handleResponseSearch" loading="{{_loading}}">
     </iron-ajax>
 
 
   </template>
   <script>
-    (function() {
+    (function () {
       'use strict';
 
       Polymer({
@@ -99,7 +101,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           _searchSetType: {
             type: String,
-            value: 'M',
+            value: 'S',
             observer: '_searchTermsChanged'
           },
 
@@ -109,11 +111,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
 
           _dataSearch: {
-            type: Array,
-            value: [],
+            type: Object,
+            value: {}
           },
 
-          _loading:{
+          _loading: {
             type: Boolean,
             value: false,
             observer: '_onLoadingChanged',
@@ -137,52 +139,74 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           _targetKeys: {
             type: Object,
-            value: function() {
+            value: function () {
               return this.$._searchDialogInput;
             }
           },
         },
 
-        _onSearchDialogSearch: function() {
-          this.set('_paramsSearch',{
-            key: '13b80cff544f288c7ec80c807e10f056',
-            format: 'json',
-            type: this._searchSetType,
-            query: this._searchInput
-          });
-          if(this.$.theAjaxSearch.lastRequest){
+        _onSearchDialogSearch: function () {
+          if (this._searchSetType === 'M') {
+            this.$.theAjaxSearch.url = 'https://rebrickable.com/api/v3/lego/mocs/' + this._searchInput + '/'
+
+          } else if (this._searchSetType === 'S') {
+            this.$.theAjaxSearch.url = 'https://rebrickable.com/api/v3/lego/sets'
+            this.set('_paramsSearch', {
+              search: this._searchInput
+            });
+          }
+
+          if (this.$.theAjaxSearch.lastRequest) {
             this.$.theAjaxSearch.lastRequest.xhr.abort();
           }
           this.$.theAjaxSearch.generateRequest();
         },
 
-        _handleResponseSearch: function(response) {
-          if (response.detail.response && response.detail.response.results) {
-            this.set('_dataSearch',response.detail.response.results);
+        _handleResponseSearch: function (response) {
+          if (response.detail.response) {
+            if (this._searchSetType === 'M') {
+              var result = {
+                count: 1,
+                results: [
+                  {
+                    set_num: response.detail.response.set_num,
+                    set_img_url: response.detail.response.moc_img_url,
+                    name: response.detail.response.name,
+                    theme_id: response.detail.response.theme_id
+                  }
+                ]
+              }
+              this.set('_dataSearch', result);
+
+
+            } else if (this._searchSetType === 'S') {
+              this.set('_dataSearch', response.detail.response);
+            }
+
             this.fire('query-complete');
           }
         },
 
-        _searchTermsChanged: function() {
+        _searchTermsChanged: function () {
           this.set('_searchTermsBad', this._searchSetType === '' || this._searchInput === '');
         },
 
-        _onSelectedSearchChanged: function() {
+        _onSelectedSearchChanged: function () {
           this.set('_searchDialogOk', this._selectedSearchSet);
         },
 
-        _onDialogClosed: function(closingReason) {
-          if(closingReason.detail.confirmed) {
+        _onDialogClosed: function (closingReason) {
+          if (closingReason.detail.confirmed) {
             this.set('result', this._selectedSearchSet);
             this.fire('accepted');
           }
         },
 
-        open: function() {
+        open: function () {
           this.$._dialog.open();
         },
 
-        _onLoadingChanged: function(){
+        _onLoadingChanged: function () {
           this.fire(this._loading ? 'loading-started' : 'loading-finished');
         },
 

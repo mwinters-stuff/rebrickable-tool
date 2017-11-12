@@ -31,22 +31,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       div.whole {
         height: 100%;
         width: 100%;
-        @apply(--layout-flex);
-        @apply(--layout-horizontal);
-        @apply(--layout-center-justified);
+        @apply --layout-flex;
+        @apply --layout-horizontal;
+        @apply --layout-center-justified;
       }
 
       div.wholeh {
-        @apply(--layout-vertical);
-        @apply(--layout-center-justified);
+        @apply --layout-vertical;
+        @apply --layout-center-justified;
       }
 
       div.horiz {
-        @apply(--layout-horizontal);
-        @apply(--layout-center-justified);
+        @apply --layout-horizontal;
+        @apply --layout-center-justified;
       }
     </style>
-    <iron-ajax id="theAjax" method="POST" url="https://rebrickable.com/api/v3/users/_token/" params="{{_params}}" handle-as="json" on-response="_handleResponse" on-error="_handleError"></iron-ajax>
+    <iron-ajax id="theAjax" method="POST" url="https://www.rebrickable.com/api/v3/users/_token/" 
+    body="{{_params}}" 
+    handle-as="json" 
+    on-response="_handleResponse" on-error="_handleError" verbose
+    content-type="application/x-www-form-urlencoded"
+    headers='{"Authorization": "key 13b80cff544f288c7ec80c807e10f056"}'></iron-ajax>
 
     <div class="whole">
       <div class="wholeh">
@@ -94,9 +99,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           _inputUsername:{
             type: String,
+            value: 'mathew@winters.nz'
           },
           _inputPassword:{
             type: String,
+            value: 'Cessna172'
           },
           _inputSaveLogin:{
             type: String,
@@ -122,7 +129,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         doLogin: function() {
           this.set('_params',{
-            key: '13b80cff544f288c7ec80c807e10f056',
+            // key: '13b80cff544f288c7ec80c807e10f056',
             username: this._inputUsername,
             password: this._inputPassword
           });
@@ -131,11 +138,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         _handleResponse: function(response) {
           if (response.detail.response) {
-            if (response.detail.response === 'INVALIDUSERPASS') {
+            if (response.detail.response.detail && response.detail.response.detail === 'Invalid Credentials') {
               this.$.failedToast.open();
               this.fire('auth-failed');
             } else {
-              this.userHash = response.detail.response;
+              this.userHash = response.detail.response.user_token;
               if (this._inputSaveLogin) {
                 this.set('_cookieValue',this.userHash);
                 this.$.cookie.createCookie();
@@ -152,7 +159,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _handleError: function(error) {
-          console.log(error)
+          this.$.failedToast.open();
+          this.fire('auth-failed');
         }
 
       });

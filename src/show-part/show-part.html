@@ -26,21 +26,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host {
         display: block;
       }
-
+      
       iron-data-table {
         height: 400px;
       }
-
-      paper-toolbar {
-        margin-top: -24px;
-      }
+      
       paper-dialog{
         min-width: 400px;
       }
     </style>
     <colour-list id="colours"></colour-list>
-    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_part" params="{{_params}}" handle-as="json" last-response="{{_data}}"></iron-ajax>
-
+    <iron-ajax id="theAjax" url="https://rebrickable.com/api/v3/lego/parts/[[_partId]]/" 
+      headers='{"Authorization": "key 13b80cff544f288c7ec80c807e10f056"}'
+      method='GET'
+      handle-as="json" 
+      last-response="{{_data}}">
+    </iron-ajax>
+    <iron-ajax id="theAjax2" url="https://rebrickable.com/api/v3/lego/parts/[[_partId]]/colors/" 
+      headers='{"Authorization": "key 13b80cff544f288c7ec80c807e10f056"}'
+      method='GET'
+      handle-as="json" 
+      last-response="{{_colourData}}">
+    </iron-ajax>
+  
+    
     <paper-dialog id="dialog" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
       <paper-toolbar>
         <span class="space"></span>
@@ -65,7 +74,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               </tr>
               <tr id="rowYears">
                 <td>Years:</td>
-                <td>{{_data.year1}} to {{_data.year2}}</td>
+                <td>{{_data.year_from}} to {{_data.year_to}}</td>
               </tr>
               <tr id="rowURL">
                 <td>URL:</td>
@@ -78,10 +87,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </div>
         </div>
 
-        <iron-data-table items="[[_data.colors]]" selected-item="{{selectedPart}}" selection-enabled>
-          <data-table-column name="Colour">
+        <iron-data-table items="[[_colourData.results]]" selected-item="{{selectedPart}}" selection-enabled>
+          <!-- <data-table-column name="Colour">
             <template>
               <div class="box" style="background-color: {{_getColour(item.rb_color_id)}}"></div>
+            </template>
+          </data-table-column> -->
+          <data-table-column align-right width="40px">
+            <template>
+              <iron-image src="[[item.part_img_url]]" preload fade style="width:40px; height:40px; background-color: white;" sizing="contain"></iron-image>
             </template>
           </data-table-column>
           <data-table-column name="">
@@ -90,7 +104,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <data-table-column align-right name="Num Sets" width="50px">
             <template>[[item.num_sets]]</template>
           </data-table-column>
-        </iron-data-table>
+          <data-table-column align-right name="Num Set Parts" width="70px">
+              <template>[[item.num_set_parts]]</template>
+            </data-table-column>
+          </iron-data-table>
 
       </div>
 
@@ -116,7 +133,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           _partId:{
             type: String,
           },
+          _data:{
+            type: Object,
+            observer: '_onDataChanged'
+          },
+          _colourData:{
+            type: Object,
+            observer: '_onDataChanged'
+          }
 
+        },
+
+        _onDataChanged: function(data){
+          console.log('show-part',data);
         },
 
         _getColour: function(colourid) {
@@ -125,13 +154,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         show: function(partId) {
           this._partId = partId;
-          this.set('_params', {
-            key: '13b80cff544f288c7ec80c807e10f056',
-            part_id: partId,
-            format: 'json',
-            inc_colors: 1
-          });
+          console.log('partid',this._partId);
           this.$.theAjax.generateRequest();
+          this.$.theAjax2.generateRequest();
           this.$.dialog.open();
         },
 

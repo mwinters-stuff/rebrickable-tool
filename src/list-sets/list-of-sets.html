@@ -29,31 +29,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
     <iron-ajax
       id="theAjax"
-      url="https://rebrickable.com/api/get_user_sets"
-      params="{{_params}}"
+      url="https://www.rebrickable.com/api/v3/users/[[userHash]]/setlists/[[setListId]]/sets/"
       handle-as="json"
       last-response="{{_data}}"
+      verbose
+      headers='{"Authorization": "key 13b80cff544f288c7ec80c807e10f056"}'
       loading="{{_loading}}">
     </iron-ajax>
 
-    <iron-data-table id="dataTable" items="[[_data.0.sets]]" selection-enabled on-selected-item-changed="_onSelectedChanged" style$="height: [[clientSpace]]px" loading="{{_loading}}">
+    <iron-data-table id="dataTable" items="[[_data.results]]" selection-enabled on-selected-item-changed="_onSelectedChanged" style$="height: [[clientSpace]]px" loading="{{_loading}}">
       <data-table-column align-right width="20px">
-        <template><iron-image  src="[[item.img_sm]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image></template>
+        <template><iron-image  src="[[item.set.set_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image></template>
       </data-table-column>
       <data-table-column align-right width="20px" name="Qty" >
-        <template>[[item.qty]]</template>
+        <template>[[item.quantity]]</template>
       </data-table-column>
       <data-table-column width="80px" name="ID" >
-        <template>[[item.set_id]]</template>
+        <template>[[item.set.set_num]]</template>
       </data-table-column>
       <data-table-column name="Description" flex="50">
-        <template>[[item.descr]]</template>
+        <template>[[item.set.name]]</template>
       </data-table-column>
       <data-table-column name="Pieces" align-right width="20px">
-        <template>[[item.pieces]]</template>
+        <template>[[item.set.num_parts]]</template>
       </data-table-column>
       <data-table-column name="Year" align-right width="20px">
-        <template>[[item.year]]</template>
+        <template>[[item.set.year]]</template>
       </data-table-column>
     </iron-data-table>
   </template>
@@ -86,11 +87,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         _data:{
           type: Array,
+          observer: '_onDataChanged',
         },
-        _params: {
-          type: Object,
-        },
-
         clientSpace:{
           type: Number,
           defaultValue: 400,
@@ -98,18 +96,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       },
 
+      _onDataChanged: function(data){
+        console.log(data);
+      },
+
       _onHashChanged: function() {
         this.set('_data',[]);
-        if(this.userHash && this.setListId)  {
-          this.set('_params',{
-            key: '13b80cff544f288c7ec80c807e10f056',
-            hash: this.userHash,
-            format: 'json',
-            setlist_id: this.setListId,
-          });
+        if(this.userHash && this.userHash != '' && this.setListId)  {
           if(this.$.theAjax.lastRequest){
             this.$.theAjax.lastRequest.xhr.abort();
           }
+          // this.$.theAjax.url = 'https://www.rebrickable.com/api/v3/users/' + this.userHash + '/setlists/' + this.setListId + '/sets/'
           this.$.theAjax.generateRequest();
         }
       },
@@ -122,7 +119,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _onSelectedChanged: function(e) {
         if(e.detail && e.detail.value){
-          this.set('route.path','/app/show-set/' + e.detail.value.set_id + '/' + this.setListId + '/' + this.setListName.replace(/ /g,'-'));
+          this.set('route.path','/app/show-set/' + e.detail.value.set.set_num + '/' + this.setListId + '/' + this.setListName.replace(/ /g,'-'));
         }
       },
 

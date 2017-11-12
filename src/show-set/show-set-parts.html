@@ -32,28 +32,39 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         height: 800px;
       }*/
     </style>
-    <colour-list id="colours"></colour-list>
     <show-part id="showPart"></show-part>
 
-    <iron-ajax id="theAjaxParts" url="https://rebrickable.com/api/get_set_parts" params="{{_params}}" handle-as="json" last-response="{{parts}}" loading="{{_loading}}"></iron-ajax>
-      <iron-data-table id="dataTable" items="[[parts.0.parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled style$="height: [[tableHeight]]px" loading="{{_loading}}">
+    <iron-ajax id="theAjaxParts" url="https://rebrickable.com/api/v3/lego/sets/[[_showSetId]]/parts/" 
+      headers='{"Authorization": "key 13b80cff544f288c7ec80c807e10f056"}'
+      method='GET'
+      auto
+      handle-as="json" 
+      last-response="{{_parts}}" 
+      loading="{{_loading}}">
+    </iron-ajax>
+      <iron-data-table id="dataTable" items="[[_parts.results]]" on-selected-item-changed="_onSelectedChanged" selection-enabled style$="height: [[tableHeight]]px" loading="{{_loading}}">
         <data-table-column align-right width="40px">
           <template>
-            <iron-image src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
+            <iron-image src="[[item.part.part_img_url]]" preload fade style="width:40px; height:40px; background-color: white;" sizing="contain"></iron-image>
           </template>
         </data-table-column>
         <data-table-column align-right width="20px" name="Qty">
-          <template>[[item.qty]]</template>
+          <template>[[item.quantity]]</template>
         </data-table-column>
-        <data-table-column name="Part ID" width="50px" filter-by="part_id">
-          <template>[[item.part_id]]</template>
+        <data-table-column name="Part ID" width="50px" filter-by="part.part_num">
+          <template>[[item.part.part_num]]</template>
         </data-table-column>
-        <data-table-column name="Name" flex="500" filter-by="part_name">
-          <template>[[item.part_name]]</template>
+        <data-table-column name="Name" flex="500" filter-by="part.name">
+          <template>[[item.part.name]]</template>
         </data-table-column>
-        <data-table-column name="Colour">
+        <data-table-column name="Colour"  filter-by="color.name">
           <template>
-            <div class="box" style="background-color: {{_getColour(item.rb_color_id)}}"></div>
+            [[item.color.name]]
+          </template>
+        </data-table-column>
+        <data-table-column>
+          <template>
+            <div class="box" style="background-color: #[[item.color.rgb]]; border:1px solid black"></div>
           </template>
         </data-table-column>
       </iron-data-table>
@@ -73,10 +84,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             observer: '_onHashChanged',
           },
 
-          parts: {
+          _parts: {
             type: Array,
             notify: true,
             value:[],
+            observer: '_onDataChanged'
           },
 
           disablePopup:{
@@ -91,31 +103,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: Number,
             value: 400,
           },
+          _showSetId: {
+            type: Number,
+            notify: true
+          },
         },
 
         _onHashChanged: function() {
-          if (this.setId) {
-            this.set('parts',{});
-            this.set('_params',{
-              key: '13b80cff544f288c7ec80c807e10f056',
-              set: this.setId,
-              format: 'json'
-            });
-            this.$.theAjaxParts.generateRequest();
+          if (this.userHash && this.setId) {
+            // this.set('parts',{});
+            // this.set('_params',{
+            //   key: '13b80cff544f288c7ec80c807e10f056',
+            // });
+            // this.$.theAjaxParts.generateRequest();
+            console.log('set id ',this.setId);
+            this.set('_showSetId', this.setId);
           }
         },
 
         _onSelectedChanged: function(e) {
           if(!this.disablePopup && e.detail && e.detail.value){
-            this.$.showPart.show(e.detail.value.part_id);
+            this.$.showPart.show(e.detail.value.part.part_num);
           }
           this.fire('selected-item-changed',e.detail);
         },
 
-        _getColour: function(rb_color_id) {
-          return this.$.colours.getColour(rb_color_id);
+       
+        _onDataChanged: function(data){
+          console.log('set-parts',data);
         },
-
       });
     })();
   </script>

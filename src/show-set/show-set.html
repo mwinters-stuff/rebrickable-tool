@@ -40,18 +40,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         width: 400px;
       }
 
-      neon-animated-pages{
-        height:100%;
+      neon-animated-pages {
+        height: 100%;
 
       }
     </style>
-    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_set" params="{{_params}}" handle-as="json" last-response="{{_data}}"></iron-ajax>
-    <iron-ajax id="theAjaxSetUserSet" method="POST" url="https://rebrickable.com/api/set_user_set" content-type="application/x-www-form-urlencoded" handle-as="text" on-response="_onSetUserSetResponse"></iron-ajax>
+    <iron-ajax id="theAjax" 
+      url="https://www.rebrickable.com/api/v3/lego/[[_type]]/[[_showSetId]]/" 
+      handle-as="json" 
+      last-response="{{_data}}" 
+      headers='{"Authorization": "key 13b80cff544f288c7ec80c807e10f056"}'>
+    </iron-ajax>
+    <iron-ajax id="theAjaxSetUserSet" 
+      method="DELETE" url="https://rebrickable.com/api/v3/users/[[userHash]]/setlists/[[setListId]]/sets/[[_showSetId]]/" 
+      verbose 
+      headers='{"Authorization": "key 13b80cff544f288c7ec80c807e10f056"}'
+      on-response="_onSetUserSetResponse"></iron-ajax>
 
     <paper-toast id="toast">
     </paper-toast>
     <question-dialog id="_questionRemove" on-dialog-closed="_onRemoveDialogClosed">
-      Do you want to remove set <b>{{_data.0.set_id}} {{_data.0.descr}}</b> from list <b>{{_setListName}}</b>?
+      Do you want to remove set
+      <b>{{_data.0.set_id}} {{_data.0.descr}}</b> from list
+      <b>{{_setListName}}</b>?
     </question-dialog>
 
     <paper-material elevation="1">
@@ -59,25 +70,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-tab>Details</paper-tab>
         <paper-tab>Parts</paper-tab>
       </paper-tabs>
-      <iron-pages  selected="{{_selectedTab}}" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+      <iron-pages selected="{{_selectedTab}}" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
         <section>
           <div style$="min-height: {{_height}}px">
             <div class="horiztop">
               <div class="aleft">
-                <div class="title">{{_data.0.set_id}} {{_data.0.descr}}</div>
+                <div class="title">{{_data.set_num}} {{_data.name}}</div>
                 <div>&nbsp; </div>
                 <table class="info">
                   <tr id="rowTheme">
                     <td>Theme:</td>
-                    <td>{{_data.0.theme}}</td>
+                    <td>{{_data.theme_id}}</td>
                   </tr>
                   <tr id="rowPieces">
                     <td>Pieces:</td>
-                    <td>{{_data.0.pieces}}</td>
+                    <td>{{_data.num_parts}}</td>
                   </tr>
                   <tr id="rowYear">
                     <td>Year:</td>
-                    <td>{{_data.0.year}}</td>
+                    <td>{{_data.year}}</td>
                   </tr>
                   <tr id="rowListName">
                     <td>List:</td>
@@ -88,7 +99,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <paper-fab style='position:absolute; bottom: 30px; right:24px' icon="icons:delete" on-click="_onRemoveClick"></paper-fab>
             </div>
             <div class="acenter">
-              <iron-image class="top" sizing="contain" src="{{_data.0.img_big}}"></iron-image>
+              <iron-image class="top" preload fade sizing="contain" style="background-color: white;" src="[[_imageUrl]]"></iron-image>
             </div>
           </div>
         </section>
@@ -100,7 +111,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   </template>
   <script>
-    (function() {
+    (function () {
       'use strict';
 
       Polymer({
@@ -144,6 +155,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           _data: {
             type: Array,
+            observer: '_onDataChanged'
+          },
+
+          _imageUrl:{
+            type: String,
+            computed: '_getImageUrl(_data)'
+          },
+
+          _type: {
+            type: String,
+            value: 'set'
           },
 
           _showSetId: {
@@ -164,7 +186,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             value: 400,
           },
 
-          clientSpace:{
+          clientSpace: {
             type: Number,
             defaultValue: 400,
             observer: '_onClientSpaceChanged',
@@ -173,13 +195,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           _setListName: String,
         },
 
-        _onClientSpaceChanged: function() {
+        _onDataChanged: function(data){
+          console.log('show-set',data);
+        },
+
+        _onClientSpaceChanged: function () {
           if (this.clientSpace) {
             this.set('_height', this.clientSpace - this.$.tabs.clientHeight);
           }
         },
 
-        _onShowingChanged: function() {
+        _onShowingChanged: function () {
           if (this.showing) {
             this.set('tabsToShow.tabs', []);
 
@@ -187,48 +213,54 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.$.theAjax.auto = this.showing;
         },
 
-        _onSetListNameChanged: function(){
-          this.set('_setListName',this.setListName.replace(/-/g,' '));
+        _onSetListNameChanged: function () {
+          this.set('_setListName', this.setListName.replace(/-/g, ' '));
         },
 
-        _onHashChanged: function() {
-          if (this.userHash && this.setId) {
+        _onHashChanged: function () {
+          if (this.userHash && this.userHash != '' && this.setId) {
             this.set('_data', {});
-            this.set('_params', {
-              key: '13b80cff544f288c7ec80c807e10f056',
-              set_id: this.setId,
-              format: 'json'
-            });
+            this.set('_type',XP.startsWith(this.setId, 'MOC') ? 'mocs' : 'sets');
             this.set('_showSetId', this.setId);
           }
         },
 
-        _onRemoveClick: function() {
+        _onRemoveClick: function () {
           this.$._questionRemove.open();
         },
 
-        _onRemoveDialogClosed: function(e) {
+        _onRemoveDialogClosed: function (e) {
           if (e.detail.confirmed) {
-            this.$.theAjaxSetUserSet.body = {
-              'key': '13b80cff544f288c7ec80c807e10f056',
-              'hash': this.userHash,
-              'format': 'json',
-              'set': this.setId,
-              'qty': 0,
-              'setlist_id': this.setListId
-            };
+            // this.$.theAjaxSetUserSet.body = {
+            //   'key': '13b80cff544f288c7ec80c807e10f056',
+            //   'hash': this.userHash,
+            //   'format': 'json',
+            //   'set': this.setId,
+            //   'qty': 0,
+            //   'setlist_id': this.setListId
+            // };
             this.$.theAjaxSetUserSet.generateRequest();
           }
         },
 
-        _onSetUserSetResponse: function(e) {
-          if (XP.startsWith(e.detail.response, 'SUCCESS')) {
-            this.set('route.path', '/app/sets/' + this.setListId);
+        _onSetUserSetResponse: function (e) {
+          if (e.detail.status == 204) {
+            this.set('route.path', '/app/list-sets/' + this.setListId);
           } else {
             this.$.toast.text = 'Failed to remove set!';
             this.$.toast.open();
           }
           this.fire('removed');
+        },
+
+        _getImageUrl: function(data){
+          if(data && data.set_img_url){
+            return data.set_img_url;
+          }
+          if(data && data.moc_img_url){
+            return data.moc_img_url;
+          }
+          return null;
         },
       });
     })();
