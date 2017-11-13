@@ -138,7 +138,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         _handleResponse: function(response) {
           if (response.detail.response) {
-            if (response.detail.response.detail && response.detail.response.detail === 'Invalid Credentials') {
+            if (response.detail.response.detail && response.detail.response.detail === 'Invalid credentials') {
               this.$.failedToast.open();
               this.fire('auth-failed');
             } else {

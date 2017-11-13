@@ -74,9 +74,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         buttonOk = element.$$('[dialog-confirm]');
         grid = element.$$('#dataTable');
         
-        server.respondWith('GET','https://rebrickable.com/api/v3/lego/sets/?search=nothing', [200, {
-            'Content-Type': 'application/json'
-          },
+        server.respondWith('GET','https://rebrickable.com/api/v3/lego/sets/?search=nothing', 
+          [200, {'Content-Type': 'application/json'},
           '{"count": 0, "next": null, "previous": null, "results": []}'
         ]);
 

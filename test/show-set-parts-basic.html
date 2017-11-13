@@ -16,6 +16,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../bower_components/web-component-tester/browser.js"></script>
+  <script src="show-set-parts-basic-1.js"></script>
 
   <!-- Step 1: import the element to test -->
   <link rel="import" href="../src/show-set/show-set-parts.html">
@@ -37,25 +38,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     beforeEach(function() {
       element = fixture('basic');
-
-      server = sinon.fakeServer.create();
-
-      server.respondWith('https://rebrickable.com/api/get_set_parts?key=13b80cff544f288c7ec80c807e10f056&set=71011-1&format=json',
-        [200,{'Content-Type': 'application/json'},
-         '[{"set_id":"71011-1","descr":"Farmer","set_img_url":"https:\/\/img.rebrickable.com\/img\/sets-b\/71011-1.jpg",'+
-         '"parts":[{"part_id":"88646","qty":"1","ldraw_color_id":"0","type":1,"part_name":"Tile Special 4 x 3 with 4 Studs'+
-         ' in Centre","color_name":"Black","part_img_url":"https:\/\/img.rebrickable.com\/img\/pieces\/elements\/6076678.jpg"'+
-         ',"element_id":"6076678","element_img_url":"https:\/\/img.rebrickable.com\/img\/pieces\/elements\/6076678.jpg","rb_col'+
-         'or_id":0,"part_type_id":31},{"part_id":"970c00pb495","qty":"1","ldraw_color_id":"73","type":1,"part_name":"Medium Blue'+
-         ' Hips and Legs with Dark Brown Boots","color_name":"Medium Blue","part_img_url":"https:\/\/img.rebrickable.com\/img\/ni.'+
-         'png","element_id":"6139200","element_img_url":"https:\/\/img.rebrickable.com?","rb_color_id":73,"part_type_id":6},{"part'+
-         '_id":"13788","qty":"1","ldraw_color_id":"84","type":1,"part_name":"Minifig Hat - Wide Brimmed","color_name":"Medium Dark'+
-         ' Flesh","part_img_url":"https:\/\/img.rebrickable.com\/img\/pieces\/84\/13788.png","element_id":-1,"element_img_url":'+
-         '"https:\/\/img.rebrickable.com?","rb_color_id":84,"part_type_id":26},{"part_id":"95345","qty":"1","ldraw_color_id":"70"'+
-         ',"type":1,"part_name":"Minifigure Pitchfork [Soft]","color_name":"Reddish Brown","part_img_url":"https:\/\/img.rebrickabl'+
-         'e.com\/img\/pieces\/elements\/4624905.jpg","element_id":"4624905","element_img_url":"https:\/\/img.rebrickable.com\/img\/pi'+
-         'eces\/elements\/4624905.jpg","rb_color_id":70,"part_type_id":26}]}]'
-      ]);
+      var rb = getResponseBody();
+      server.respondWith('https://www.rebrickable.com/api/v3/lego/sets/71011-1/parts/',
+        [200,{'Content-Type': 'application/json'},rb]);
 
 
     });

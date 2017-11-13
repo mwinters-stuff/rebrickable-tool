@@ -9,6 +9,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <html>
+
 <head>
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
   <title>logon-thing</title>
@@ -22,157 +23,183 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../src/logon-thing/logon-thing.html">
 
 </head>
+
 <body>
 
-<test-fixture id="basic">
-  <template>
-    <logon-thing></logon-thing>
-  </template>
-</test-fixture>
+  <test-fixture id="basic">
+    <template>
+      <logon-thing></logon-thing>
+    </template>
+  </test-fixture>
 
-<script>
-/*jshint -W030 */
-  describe('logon-thing tests', function() {
-    var element;
-    var server;
-    var listener;
+  <script>
+    /*jshint -W030 */
+    describe('logon-thing tests', function () {
+      var element;
+      var server;
+      var listener;
 
-    beforeEach(function() {
-      console.log('setup');
-      element = fixture('basic');
-      server = sinon.fakeServer.create();
+      beforeEach(function () {
+        console.log('setup');
+        element = fixture('basic');
+        Polymer.dom.flush();
+        server = sinon.fakeServer.create();
+        sinon.log = function(value){
+          console.log(value);
+        };
 
-      server.respondWith('https://rebrickable.com/api/get_user_hash?key=13b80cff544f288c7ec80c807e10f056&email=joe%40bob.com&pass=secret&format=json',
-        [200,{'Content-Type': 'application/text'},'12345678901234567890']);
+        server.respondWith('POST', 'https://www.rebrickable.com/api/v3/users/_token/',
+          [200, {'Content-Type': 'application/json'},
+            '{"user_token": "5507d2c33cac67629cc329af09a19ee1"}'
+        ]);
 
-      server.respondWith('https://rebrickable.com/api/get_user_hash?key=13b80cff544f288c7ec80c807e10f056&email=jack%40bob.com&pass=sec&format=json',
-        [200,{'Content-Type': 'application/text'},'INVALIDUSERPASS']);
+        // server.respondWith('https://rebrickable.com/api/get_user_hash?key=13b80cff544f288c7ec80c807e10f056&email=jack%40bob.com&pass=sec&format=json',
+        //   [200, { 'Content-Type': 'application/text' }, 'INVALIDUSERPASS']);
 
-      var cookie = element.$$('#cookie');
-      expect(cookie).to.be.ok;
-      cookie.eraseCookie();
-      server.respondImmediately = true;
-    });
+        var cookie = element.$$('#cookie');
+        expect(cookie).to.be.ok;
+        cookie.eraseCookie();
+        // server.respondImmediately = true;
+      });
 
-    afterEach(function() {
-      element.removeEventListener('authorized', listener);
-      element.removeEventListener('auth-failed', listener);
+      afterEach(function () {
+        element.removeEventListener('authorized', listener);
+        element.removeEventListener('auth-failed', listener);
 
-      server.restore();
-    });
+        server.restore();
+      });
 
-   it('use saved login', function(done) {
+      it('use saved login', function (done) {
+        var cookie = element.$$('#cookie');
 
-     listener = function() {
-       console.log('listener - cookie');
-       expect(element.userHash).to.be.ok;
-       expect(element.userHash).to.equal('12345678901234567890');
-       expect(element.$.cookie.readCookie()).to.equal('12345678901234567890');
-       done();
-    };
-    element.addEventListener('authorized',listener);
+        listener = function () {
+          element.removeEventListener('authorized', listener);
+          console.log('listener - cookie');
+          expect(element.userHash).to.be.ok;
+          expect(element.userHash).to.equal('12345678901234567890');
+          expect(element.$.cookie.readCookie()).to.equal('12345678901234567890');
+          done();
+        };
+        element.addEventListener('authorized', listener);
 
-     var cookie = element.$$('#cookie');
-     expect(cookie).to.be.ok;
-     cookie.value = '12345678901234567890';
-     cookie.createCookie();
+        expect(cookie).to.be.ok;
+        cookie.value = '12345678901234567890';
+        cookie.createCookie();
 
 
-   });
+      });
 
-    it('logon success', function(done) {
-  //    element.$.cookie.eraseCookie();
+      it('logon success', function (done) {
+        server.respondWith('POST', 'https://www.rebrickable.com/api/v3/users/_token/',
+          [200, {'Content-Type': 'application/json'},
+            '{"user_token": "5507d2c33cac67629cc329af09a19ee1"}'
+        ]);
 
-      element.userHash = '';
+        element.userHash = '';
 
-      listener = function() {
-        console.log('listener - success');
-        expect(element.userHash).to.be.ok;
-        expect(element.userHash).to.equal('12345678901234567890');
-        done();
-      };
+        listener = function () {
+          element.removeEventListener('authorized', listener);
+          console.log('listener - success');
+          expect(element.userHash).to.be.ok;
+          expect(element.userHash).to.equal('5507d2c33cac67629cc329af09a19ee1');
+          done();
+        };
 
-      element.addEventListener('authorized',listener);
+        element.addEventListener('authorized', listener);
 
-      var usernameElement = element.$$('#username');
-      expect(usernameElement).to.be.ok;
-      var passwordElement =  element.$$('#password');
-      expect(passwordElement).to.be.ok;
+        var usernameElement = element.$$('#username');
+        expect(usernameElement).to.be.ok;
+        var passwordElement = element.$$('#password');
+        expect(passwordElement).to.be.ok;
 
-      var loginButton = element.$$('#doit');
-      expect(loginButton).to.be.ok;
+        var loginButton = element.$$('#doit');
+        expect(loginButton).to.be.ok;
 
-      usernameElement.value = 'joe@bob.com';
-      passwordElement.value = 'secret';
-      flush(function() {
-        MockInteractions.tap(loginButton);
+        usernameElement.value = 'joe@bob.com';
+        passwordElement.value = 'secret';
+        flush(function () {
+          MockInteractions.tap(loginButton);
+          server.respond();
+        });
+      });
+
+
+      it('invalid username pass', function (done) {
+        server.respondWith('POST', 'https://www.rebrickable.com/api/v3/users/_token/',
+          [200, {'Content-Type': 'application/json'},
+            '{ "detail": "Invalid credentials"}'
+        ]);
+
+        element.userHash = '';
+
+        listener = function () {
+          element.removeEventListener('auth-failed', listener);
+          done();
+        };
+        element.addEventListener('auth-failed', listener);
+
+        var usernameElement = element.$$('#username');
+        expect(usernameElement).to.be.ok;
+        var passwordElement = element.$$('#password');
+        expect(passwordElement).to.be.ok;
+
+        var loginButton = element.$$('#doit');
+        expect(loginButton).to.be.ok;
+
+        usernameElement.value = 'jack@bob.com';
+        passwordElement.value = 'sec';
+        flush(function () {
+          MockInteractions.tap(loginButton);
+          server.respond();
+        });
+      });
+
+
+      it('save login', function (done) {
+        server.respondWith('POST', 'https://www.rebrickable.com/api/v3/users/_token/',
+          [200, {'Content-Type': 'application/json'},
+            '{"user_token": "5507d2c33cac67629cc329af09a19ee1"}'
+        ]);
+
+        //  element.$.cookie.eraseCookie();
+        listener = function () {
+          console.log('listener - save');
+          element.removeEventListener('authorized', listener);
+    
+          expect(element.userHash).to.be.ok;
+          expect(element.userHash).to.equal('5507d2c33cac67629cc329af09a19ee1');
+          expect(element.$.cookie.readCookie()).to.equal('5507d2c33cac67629cc329af09a19ee1');
+          done();
+        };
+        element.addEventListener('authorized', listener);
+        element.userHash = '';
+
+
+        var usernameElement = element.$$('#username');
+        expect(usernameElement).to.be.ok;
+        var passwordElement = element.$$('#password');
+        expect(passwordElement).to.be.ok;
+
+        var saveloginElement = element.$$('#savelogin');
+        expect(saveloginElement).to.be.ok;
+        expect(saveloginElement.checked).to.be.false;
+
+        var loginButton = element.$$('#doit');
+        expect(loginButton).to.be.ok;
+
+        usernameElement.value = 'joe@bob.com';
+        passwordElement.value = 'secret';
+        saveloginElement.checked = true;
+        flush(function () {
+
+
+          MockInteractions.tap(loginButton);
+          server.respond();
+        });
       });
     });
-
-
-    it('invalid username pass', function(done) {
-    //  element.$.cookie.eraseCookie();
-
-      element.userHash = '';
-
-      listener = function() {
-        done();
-      };
-      element.addEventListener('auth-failed',listener);
-
-      var usernameElement = element.$$('#username');
-      expect(usernameElement).to.be.ok;
-      var passwordElement =  element.$$('#password');
-      expect(passwordElement).to.be.ok;
-
-      var loginButton = element.$$('#doit');
-      expect(loginButton).to.be.ok;
-
-      usernameElement.value = 'jack@bob.com';
-      passwordElement.value = 'sec';
-      flush(function() {
-        MockInteractions.tap(loginButton);
-      });
-    });
-
-
-    it('save login', function(done) {
-    //  element.$.cookie.eraseCookie();
-      listener = function() {
-        console.log('listener - save');
-        expect(element.userHash).to.be.ok;
-        expect(element.userHash).to.equal('12345678901234567890');
-        expect(element.$.cookie.readCookie()).to.equal('12345678901234567890');
-        done();
-      };
-    element.addEventListener('authorized',listener);
-      element.userHash = '';
-
-
-      var usernameElement = element.$$('#username');
-      expect(usernameElement).to.be.ok;
-      var passwordElement =  element.$$('#password');
-      expect(passwordElement).to.be.ok;
-
-      var saveloginElement =  element.$$('#savelogin');
-      expect(saveloginElement).to.be.ok;
-      expect(saveloginElement.checked).to.be.false;
-
-      var loginButton = element.$$('#doit');
-      expect(loginButton).to.be.ok;
-
-      usernameElement.value = 'joe@bob.com';
-      passwordElement.value = 'secret';
-      saveloginElement.checked = true;
-      flush(function() {
-
-
-        MockInteractions.tap(loginButton);
-      //  server.respond();
-      });
-    });
-  });
-</script>
+  </script>
 
 </body>
+
 </html>
