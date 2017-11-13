@@ -73,41 +73,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         inputSearch = element.$$('#_searchDialogInput');
         buttonOk = element.$$('[dialog-confirm]');
         grid = element.$$('#dataTable');
-
-        server.respondWith('https://rebrickable.com/api/search?key=13b80cff544f288c7ec80c807e10f056&format=json&type=S&query=nothing', [200, {
+        
+        server.respondWith('GET','https://rebrickable.com/api/v3/lego/sets/?search=nothing', [200, {
             'Content-Type': 'application/json'
           },
-          '{"results":[]}'
+          '{"count": 0, "next": null, "previous": null, "results": []}'
         ]);
 
-        server.respondWith('https://rebrickable.com/api/search?key=13b80cff544f288c7ec80c807e10f056&format=json&type=S&query=4200', [200, {
+        server.respondWith('GET','https://rebrickable.com/api/v3/lego/sets/?search=4200', [200, {
             'Content-Type': 'application/json'
           },
-          '{"results":[{"set_id":"42006-1-b1","year":"2013","pieces":"622","theme1":"Technic","theme2":"Model","theme3"' +
-          ':"Construction","accessory":0,"kit":0,"descr":"Tracked Tractor","url":"https:\/\/rebrickable.com\/sets\/4200' +
-          '6-1-b1\/tracked-tractor-construction-2013","img_tn":"https:\/\/rebrickable.com\/img\/sets-t\/42006-1-b1.jpg","im' +
-          'g_sm":"https:\/\/rebrickable.com\/img\/sets-s\/42006-1-b1.jpg","img_big":"https:\/\/rebrickable.com\/img\/sets-b\/42' +
-          '006-1-b1.jpg"},{"set_id":"42006-1","year":"2013","pieces":"721","theme1":"Technic","theme2":null,"theme3":nul' +
-          'l,"accessory":0,"kit":0,"descr":"Excavator","url":"https:\/\/rebrickable.com\/sets\/42006-1\/excavator-technic-2' +
-          '013","img_tn":"https:\/\/rebrickable.com\/img\/sets-t\/42006-1.jpg","img_sm":"https:\/\/rebrickable.com\/img\/set' +
-          's-s\/42006-1.jpg","img_big":"https:\/\/rebrickable.com\/img\/sets-b\/42006-1.jpg"}]}'
+          '{ "count": 10,  "next": null,  "previous": null,  "results": [ ' +
+          '{"set_num": "42000-1","name": "Grand Prix Racer","year": 2013,"theme_id": 12,"num_parts": 1139,"set_img_url": "https://m.rebrickable.com/media/sets/42000-1.jpg","set_url": "https://rebrickable.com/sets/42000-1/grand-prix-racer/","last_modified_dt": "2016-05-29T00:29:36.697576Z"}, ' +
+          '{"set_num": "4200-1","name": "Mining 4 x 4","year": 2012,"theme_id": 56,"num_parts": 101,"set_img_url": "https://m.rebrickable.com/media/sets/4200-1.jpg","set_url": "https://rebrickable.com/sets/4200-1/mining-4-x-4/","last_modified_dt": "2016-05-29T00:29:37.404553Z"}, ' +
+          '{"set_num": "42001-1","name": "Mini Off-Roader","year": 2013,"theme_id": 1,"num_parts": 100,"set_img_url": "https://m.rebrickable.com/media/sets/42001-1.jpg","set_url": "https://rebrickable.com/sets/42001-1/mini-off-roader/","last_modified_dt": "2016-04-23T12:24:25.283264Z"}, ' +
+          '{"set_num": "42002-1","name": "Hovercraft","year": 2013,"theme_id": 1,"num_parts": 169,"set_img_url": "https://m.rebrickable.com/media/sets/42002-1.jpg","set_url": "https://rebrickable.com/sets/42002-1/hovercraft/","last_modified_dt": "2015-04-02T13:52:34.627917Z"}, ' +
+          '{"set_num": "42004-1","name": "Mini Backhoe Loader","year": 2013,"theme_id": 7,"num_parts": 246,"set_img_url": "https://m.rebrickable.com/media/sets/42004-1.jpg","set_url": "https://rebrickable.com/sets/42004-1/mini-backhoe-loader/","last_modified_dt": "2016-05-29T00:29:37.698504Z"}, ' +
+          '{"set_num": "42005-1","name": "Monster Truck","year": 2013,"theme_id": 1,"num_parts": 328,"set_img_url": "https://m.rebrickable.com/media/sets/42005-1.jpg","set_url": "https://rebrickable.com/sets/42005-1/monster-truck/","last_modified_dt": "2015-11-15T21:57:28.368922Z"}, ' +
+          '{"set_num": "42006-1","name": "Excavator","year": 2013,"theme_id": 1,"num_parts": 719,"set_img_url": "https://m.rebrickable.com/media/sets/42006-1.jpg","set_url": "https://rebrickable.com/sets/42006-1/excavator/","last_modified_dt": "2016-05-29T00:29:38.009470Z"}, ' +
+          '{"set_num": "42007-1","name": "Moto Cross Bike","year": 2013,"theme_id": 1,"num_parts": 253,"set_img_url": "https://m.rebrickable.com/media/sets/42007-1.jpg","set_url": "https://rebrickable.com/sets/42007-1/moto-cross-bike/","last_modified_dt": "2016-03-14T17:37:04.081708Z"}, ' +
+          '{"set_num": "42008-1","name": "Service Truck","year": 2013,"theme_id": 1,"num_parts": 1275,"set_img_url": "https://m.rebrickable.com/media/sets/42008-1.jpg","set_url": "https://rebrickable.com/sets/42008-1/service-truck/","last_modified_dt": "2016-05-29T00:29:39.029041Z"}, ' +
+          '{"set_num": "42009-1","name": "Mobile Crane MK II","year": 2013,"theme_id": 7,"num_parts": 2606,"set_img_url": "https://m.rebrickable.com/media/sets/42009-1.jpg","set_url": "https://rebrickable.com/sets/42009-1/mobile-crane-mk-ii/","last_modified_dt": "2016-05-29T00:29:40.224423Z"} ' +
+          ']}'
         ]);
-        server.respondWith('https://rebrickable.com/api/search?key=13b80cff544f288c7ec80c807e10f056&format=json&type=M&query=grader', [200, {
+        server.respondWith('GET','https://rebrickable.com/api/v3/lego/mocs/MOC-2352/', [200, {
             'Content-Type': 'application/json'
           },
-          '{"results":[{"set_id":"MOC-4569","year":"2016","pieces":"69","theme1":"Creator","theme2":null,"theme3":null,"accessory":0' +
-          ',"kit":0,"descr":"Grader","url":"https:\/\/rebrickable.com\/mocs\/Zagdima\/grader","img_tn":"https:\/\/rebrickable.com\/im' +
-          'g\/sets-t\/MOC-4569.jpg","img_sm":"https:\/\/rebrickable.com\/img\/sets-s\/MOC-4569.jpg","img_big":"https:\/\/rebrickable.c' +
-          'om\/img\/sets-b\/MOC-4569.jpg"},{"set_id":"MOC-1367","year":"2014","pieces":"254","theme1":"Technic","theme2":"Model","them' +
-          'e3":"Construction","accessory":0,"kit":0,"descr":"Grader","url":"https:\/\/rebrickable.com\/mocs\/tomik\/grader","img_tn":"h' +
-          'ttps:\/\/rebrickable.com\/img\/sets-t\/MOC-1367.jpg","img_sm":"https:\/\/rebrickable.com\/img\/sets-s\/MOC-1367.jpg","img_b' +
-          'ig":"https:\/\/rebrickable.com\/img\/sets-b\/MOC-1367.jpg"},{"set_id":"MOC-1113","year":"2013","pieces":"103","theme1":"Tech' +
-          'nic","theme2":null,"theme3":null,"accessory":0,"kit":0,"descr":"Road Grader","url":"https:\/\/rebrickable.com\/mocs\/kgodwi' +
-          'n\/road-grader","img_tn":"https:\/\/rebrickable.com\/img\/sets-t\/MOC-1113.jpg","img_sm":"https:\/\/rebrickable.com\/img\/set' +
-          's-s\/MOC-1113.jpg","img_big":"https:\/\/rebrickable.com\/img\/sets-b\/MOC-1113.jpg"},{"set_id":"MOC-2352","year":"2014","pie' +
-          'ces":"618","theme1":"Technic","theme2":"Model","theme3":"Construction","accessory":0,"kit":0,"descr":"Grader CAT 24M","url":"h' +
-          'ttps:\/\/rebrickable.com\/mocs\/higgins91\/niveleuse-cat-24m","img_tn":"https:\/\/rebrickable.com\/img\/sets-t\/MOC-2352.jpg",' +
-          '"img_sm":"https:\/\/rebrickable.com\/img\/sets-s\/MOC-2352.jpg","img_big":"https:\/\/rebrickable.com\/img\/sets-b\/MOC-2352.jpg"}]}'
+          '{  "set_num": "MOC-2352",  "name": "Grader CAT 24M",  "year": 2014,  "theme_id": 7,  "num_parts": 618,  "moc_img_url": "https://m.rebrickable.com/media/mocs/moc-2352.jpg",  "moc_url": "https://rebrickable.com/mocs/MOC-2352/higgins91/grader-cat-24m/",  "designer_name": "higgins91",  "designer_url": "https://rebrickable.com/users/higgins91/mocs/"}'
         ]);
       });
 
@@ -120,8 +112,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           expect(buttonOk).to.be.ok;
           expect(grid).to.be.ok;
 
-          expect(radioMOC).to.have.property('checked', true);
-          expect(radioSet).to.have.property('checked', false);
+          expect(radioMOC).to.have.property('checked', false);
+          expect(radioSet).to.have.property('checked', true);
 
           expect(inputSearch).to.have.property('value', '');
           expect(buttonOk).to.have.property('disabled', true);
@@ -141,24 +133,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           expect(radioMOC).to.have.property('checked', false);
           expect(radioSet).to.have.property('checked', true);
           element._searchInput = '4200';
-          expect(inputSearch).to.have.property('value', '4200');
+          expect(inputSearch).to.have.property('value','4200');
 
           listener1 = function() {
             element.removeEventListener('query-complete', listener1);
             expect(element._dataSearch).to.be.ok;
-            expect(element._dataSearch).to.have.lengthOf(2);
+            expect(element._dataSearch).to.have.property('results').with.lengthOf(10);
             expect(buttonOk).to.have.property('disabled', true);
-            expect(grid).to.have.property('size', 2);
+            expect(grid).to.have.property('size', 10);
 
             grid.selectItem(0);
             expect(buttonOk).to.have.property('disabled', false);
-            expect(element).to.have.property('_selectedSearchSet', element._dataSearch[0]);
+            expect(element).to.have.property('_selectedSearchSet',element._dataSearch.results[0]);
             MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-confirm]'));
           };
 
           listener2 = function() {
             element.removeEventListener('accepted', listener2);
-            expect(element).to.have.property('result', element._dataSearch[0]);
+            expect(element).to.have.property('result', element._dataSearch.results[0]);
             done();
           };
 
@@ -178,25 +170,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           expect(radioMOC).to.have.property('checked', true);
           expect(radioSet).to.have.property('checked', false);
-          element._searchInput = 'grader';
-          expect(inputSearch).to.have.property('value', 'grader');
+          element._searchInput = 'MOC-2352';
+          expect(inputSearch).to.have.property('value', 'MOC-2352');
 
           listener1 = function() {
             element.removeEventListener('query-complete', listener1);
             expect(element._dataSearch).to.be.ok;
-            expect(element._dataSearch).to.have.lengthOf(4);
+            expect(element._dataSearch).to.have.property('results').with.lengthOf(1);
             expect(buttonOk).to.have.property('disabled', true);
-            expect(grid).to.have.property('size', 4);
+            expect(grid).to.have.property('size', 1);
 
-            grid.selectItem(1);
+            grid.selectItem(0);
             expect(buttonOk).to.have.property('disabled', false);
-            expect(element).to.have.property('_selectedSearchSet', element._dataSearch[1]);
+            expect(element).to.have.property('_selectedSearchSet', element._dataSearch.results[0]);
             MockInteractions.tap(Polymer.dom(element.root).querySelector('[dialog-confirm]'));
           };
 
           listener2 = function() {
             element.removeEventListener('accepted', listener2);
-            expect(element).to.have.property('result', element._dataSearch[1]);
+            expect(element).to.have.property('result', element._dataSearch.results[0]);
             done();
           };
 
@@ -221,16 +213,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           expect(inputSearch).to.have.property('value', 'nothing');
 
           listener1 = function() {
+            element.removeEventListener('query-complete', listener1);
 
             expect(element._dataSearch).to.be.ok;
-            expect(element._dataSearch).to.have.lengthOf(0);
+            expect(element._dataSearch).to.have.property('results').with.lengthOf(0);
             expect(buttonOk).to.have.property('disabled', true);
             expect(grid).to.have.property('size', 0);
 
             done();
           };
 
-          element.addEventListener('loading-finished', listener1);
+          element.addEventListener('query-complete', listener1);
 
           MockInteractions.pressEnter(Polymer.dom(element.root).querySelector('#_searchDialogInput'));
           server.respond();

@@ -77,7 +77,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </div>
     </paper-dialog>
     <iron-ajax id="theAjaxSearch" url="https://rebrickable.com/api/v3/lego/sets" headers='{"Authorization": "key 13b80cff544f288c7ec80c807e10f056"}'
-      params="{{_paramsSearch}}" handle-as="json" on-response="_handleResponseSearch" loading="{{_loading}}">
+      params="{{_paramsSearch}}" handle-as="json" on-response="_handleResponseSearch" loading="{{_loading}}"
+      method="GET">
     </iron-ajax>
 
 
@@ -150,10 +151,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this.$.theAjaxSearch.url = 'https://rebrickable.com/api/v3/lego/mocs/' + this._searchInput + '/'
 
           } else if (this._searchSetType === 'S') {
-            this.$.theAjaxSearch.url = 'https://rebrickable.com/api/v3/lego/sets'
-            this.set('_paramsSearch', {
-              search: this._searchInput
-            });
+            this.$.theAjaxSearch.url = 'https://rebrickable.com/api/v3/lego/sets/?search=' + this._searchInput;
           }
 
           if (this.$.theAjaxSearch.lastRequest) {
