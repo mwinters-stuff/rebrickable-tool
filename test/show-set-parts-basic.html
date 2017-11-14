@@ -38,8 +38,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     beforeEach(function() {
       element = fixture('basic');
+      server = sinon.fakeServer.create();
+      sinon.log = function(value){
+        console.log(value);
+      };
+      
       var rb = getResponseBody();
-      server.respondWith('https://www.rebrickable.com/api/v3/lego/sets/71011-1/parts/',
+      server.respondWith('GET','https://www.rebrickable.com/api/v3/lego/sets/71011-1/parts/',
         [200,{'Content-Type': 'application/json'},rb]);
 
 
@@ -51,16 +56,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     it('show part', function(done) {
       expect(element).to.be.ok;
-      element.setId = '71011-1';
 
-      flush(function() {
-        expect(element.parts).to.be.ok;
-        expect(element.parts).to.have.length(1);
-        expect(element.parts[0].parts).to.be.ok;
-        expect(element.parts[0].parts).to.have.length(4);
+      listener1 = function() {
+        element.removeEventListener('query-complete', listener1);
+        expect(element._parts).to.be.ok;
+        expect(element._parts.results).to.be.ok;
+        expect(element._parts.results).to.have.length(1);
+        expect(element._parts.results[0].parts).to.be.ok;
+        expect(element._parts.results[0].parts).to.have.length(4);
 
         done();
-      });
+      };
+
+      element.addEventListener('query-complete', listener1);
+      element.setId = '71011-1';
       server.respond();
 
     });

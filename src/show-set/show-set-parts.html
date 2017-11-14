@@ -34,10 +34,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
     <show-part id="showPart"></show-part>
 
-    <iron-ajax id="theAjaxParts" url="https://rebrickable.com/api/v3/lego/sets/[[_showSetId]]/parts/" 
+    <iron-ajax id="theAjaxParts" url="https://www.rebrickable.com/api/v3/lego/sets/[[_showSetId]]/parts/" 
       headers='{"Authorization": "key 13b80cff544f288c7ec80c807e10f056"}'
       method='GET'
-      auto
       handle-as="json" 
       last-response="{{_parts}}" 
       loading="{{_loading}}">
@@ -85,9 +84,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
 
           _parts: {
-            type: Array,
+            type: Object,
             notify: true,
-            value:[],
+            value:{},
             observer: '_onDataChanged'
           },
 
@@ -110,14 +109,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _onHashChanged: function() {
-          if (this.userHash && this.setId) {
+          if (this.setId) {
             // this.set('parts',{});
             // this.set('_params',{
             //   key: '13b80cff544f288c7ec80c807e10f056',
             // });
-            // this.$.theAjaxParts.generateRequest();
             console.log('set id ',this.setId);
             this.set('_showSetId', this.setId);
+            this.$.theAjaxParts.generateRequest();
           }
         },
 
@@ -131,6 +130,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        
         _onDataChanged: function(data){
           console.log('set-parts',data);
+          if(data){
+            this.fire('query-complete');
+          }
         },
       });
     })();
