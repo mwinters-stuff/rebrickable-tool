@@ -188,7 +188,7 @@ function getResponseBody(){
         "inv_part_id": 197344,
         "part": {
           "part_num": "87621pr0001",
-          "name": "Pig 1x4x1 2/3 \"NO.1\"",
+          "name": "Pig 1x4x1 2/3 NO.1",
           "part_cat_id": 28,
           "part_url": "https://rebrickable.com/parts/87621pr0001/pig-1x4x1-23-no1/",
           "part_img_url": "https://m.rebrickable.com/media/parts/elements/6139203.jpg",

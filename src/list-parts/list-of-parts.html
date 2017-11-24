@@ -45,19 +45,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <show-part id="showPart"></show-part>
     <quantity-input-dialog id="_quantityInputDialog" title="Edit Part Quantity" on-dialog-closed="_onQuantityInputDialogClosed"></quantity-input-dialog>
     <move-part-to-list-dialog id="_movePartDialog" part="{{_tempPartItem}}" user-hash="{{userHash}}" on-dialog-closed="_onMovePartDialogClosed"></move-part-to-list-dialog>
-    <iron-ajax id="theAjax" url="https://rebrickable.com/api/get_user_parts" params="{{_params}}" handle-as="json" on-response="_handleResponse" loading="{{_loading}}"></iron-ajax>
+    <iron-ajax id="theAjax" 
+      url="https://www.rebrickable.com/api/v3/users/[[userHash]]/partlists/[[partListId]]/parts/" 
+      headers='{"Authorization": "key 13b80cff544f288c7ec80c807e10f056"}'
+      method='GET'
+      handle-as="json" 
+      on-response="_handleResponse" 
+      loading="{{_loading}}"></iron-ajax>
 
     <iron-ajax id="theAjaxSetUserParts" method="POST" url="https://rebrickable.com/api/set_user_parts" handle-as="text" content-type='application/x-www-form-urlencoded' on-response="_onSetUserPartsResponse"></iron-ajax>
 
     <iron-data-table id="dataTable" items="[[parts]]" on-selected-item-changed="_onSelectedChanged" selection-enabled style$="height: [[clientSpace]]px" loading="{{_loading}}">
       <data-table-column width="40px">
         <template>
-          <iron-image src="[[item.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
+          <iron-image src="[[item.part.part_img_url]]" preload style="width:40px; height:40px;" sizing="contain"></iron-image>
         </template>
       </data-table-column>
       <data-table-column align-right width="20px" name="Qty">
         <template>
-          <div class$="[[item.edited]]">[[item.qty]]</div>
+          <div class$="[[item.edited]]">[[item.quantity]]</div>
         </template>
       </data-table-column>
       <data-table-column align-left width="60px">
@@ -66,19 +72,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-icon-button icon="icons:arrow-forward" part-item="[[item]]" on-tap="_onTapMovePart"></paper-icon-button>
         </template>
       </data-table-column>
-      <data-table-column name="Part ID" width="50px" filter-by="part_id">
+      <data-table-column name="Part Number" width="50px" filter-by="part.part_num">
         <template>
-          <div class$="[[item.edited]]">[[item.part_id]]</div>
+          <div class$="[[item.edited]]">[[item.part.part_num]]</div>
         </template>
       </data-table-column>
-      <data-table-column name="Part" flex="500" filter-by="part_name">
+      <data-table-column name="Part" flex="500" filter-by="part.name">
         <template>
-          <div class$="[[item.edited]]">[[item.part_name]]</div>
+          <div class$="[[item.edited]]">[[item.part.name]]</div>
         </template>
       </data-table-column>
       <data-table-column name="Colour" width="40px">
         <template>
-          <div class="box" style="background-color: {{getColour(item.rb_color_id)}}">
+          <div class="box" style="background-color: #[[item.color.rgb]]">
           </div>
         </template>
       </data-table-column>
@@ -145,8 +151,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _onSelectedChanged: function(e) {
-          if (!this.disablePopup && e.detail && e.detail.value) {
-            this.$.showPart.show(e.detail.value.part_id);
+          if (!this.disablePopup && e.detail && e.detail.value && e.detail.value.part.part_num) {
+            this.$.showPart.show(e.detail.value.part.part_num);
           }
           this.fire('selected-item-changed', e.detail);
         },
@@ -162,12 +168,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         _onHashChanged: function() {
           if (this.userHash && this.partListId) {
             this.set('parts', {});
-            this.set('_params', {
-              key: '13b80cff544f288c7ec80c807e10f056',
-              hash: this.userHash,
-              partlist_id: this.partListId,
-              format: 'json'
-            });
+            // this.set('_params', {
+            //   key: '13b80cff544f288c7ec80c807e10f056',
+            //   hash: this.userHash,
+            //   partlist_id: this.partListId,
+            //   format: 'json'
+            // });
             if(this.$.theAjax.lastRequest){
               this.$.theAjax.lastRequest.xhr.abort();
             }
@@ -263,10 +269,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _handleResponse: function(response) {
-          XP.forEach(response.detail.response.parts, function(part) {
-            part.edited = 'False';
-          });
-          this.set('parts', XP.sortBy(response.detail.response.parts, 'part_name'));
+          if(response.detail.response){
+            XP.forEach(response.detail.response.results, function(part) {
+              part.edited = 'False';
+            });
+            this.set('parts', XP.sortBy(response.detail.response.results, 'part.name'));
+          }
         },
 
         filterPartId: function(partId) {

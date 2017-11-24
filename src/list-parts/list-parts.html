@@ -29,7 +29,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <paper-toast id="toast">
     </paper-toast>
 
-    <iron-ajax id="theAjax" auto="{{showing}}" url="https://rebrickable.com/api/get_user_part_lists" params="{{_params}}" handle-as="json" on-response="_handleResponse"></iron-ajax>
+    <iron-ajax id="theAjax" 
+      auto="{{showing}}" 
+      url="https://www.rebrickable.com/api/v3/users/[[userHash]]/partlists/" 
+      headers='{"Authorization": "key 13b80cff544f288c7ec80c807e10f056"}'
+      method='GET'
+      handle-as="json" 
+      on-response="_handleResponse"></iron-ajax>
     <part-search-dialog id="partSearch" on-accepted="_onAddSearchAccepted" quantity="{{_addQuantity}}" colour="{{_addColour}}" show-quantity-input></part-search-dialog>
     <paper-material elevation="1">
       <list-of-parts id="listOfParts" user-hash="{{userHash}}" part-list-id="{{partListId}}" parts-changed="{{_partsChanged}}" editable client-space="{{clientSpace}}"></list-of-parts>
@@ -101,9 +107,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         _handleResponse: function(response) {
           if (response.detail.response) {
-            this._data = response.detail.response.partlists;
+            this._data = response.detail.response.results;
             if (this._data.length > 0 && !this.partListId) {
-              this.set('route.path','/app/list-parts/' + this._data[0].partlist_id);
+              this.set('route.path','/app/list-parts/' + this._data[0].id);
             }
 
             if (this.showing) {
@@ -115,8 +121,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
               this._data.forEach(function(element) {
                 tabsToShow.tabs.push({
-                  route: '/app/list-parts/' + element.partlist_id,
-                  title: element.descr,
+                  route: '/app/list-parts/' + element.id,
+                  title: element.name,
                 });
               }.bind(this));
               this.set('tabsToShow', tabsToShow);
@@ -126,11 +132,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _onHashChanged: function() {
-          this.set('_params',{
-            key: '13b80cff544f288c7ec80c807e10f056',
-            hash: this.userHash,
-            format: 'json'
-          });
+          // this.set('_params',{
+          //   key: '13b80cff544f288c7ec80c807e10f056',
+          //   hash: this.userHash,
+          //   format: 'json'
+          // });
         },
 
         _onAddClick: function() {

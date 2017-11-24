@@ -86,7 +86,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _data:{
-          type: Array,
+          type: Object,
           observer: '_onDataChanged',
         },
         clientSpace:{
@@ -97,7 +97,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       _onDataChanged: function(data){
-        console.log(data);
+        console.log('_onDataChanged', data);
       },
 
       _onHashChanged: function() {
@@ -119,6 +119,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _onSelectedChanged: function(e) {
         if(e.detail && e.detail.value){
+          console.log('_onSelectedchanged', e.detail.value);
           this.set('route.path','/app/show-set/' + e.detail.value.set.set_num + '/' + this.setListId + '/' + this.setListName.replace(/ /g,'-'));
         }
       },

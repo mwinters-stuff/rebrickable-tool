@@ -35,6 +35,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   describe('show-set-parts tests', function() {
     var element;
     var server;
+    // var data = getResponseBody();
 
     beforeEach(function() {
       element = fixture('basic');
@@ -43,10 +44,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         console.log(value);
       };
       
-      var rb = getResponseBody();
+      
       server.respondWith('GET','https://www.rebrickable.com/api/v3/lego/sets/71011-1/parts/',
-        [200,{'Content-Type': 'application/json'},rb]);
-
+      function(xhr, id){
+        xhr.respond(200, { "Content-Type": "application/json" }, getResponseBody());
+      });
+        // [200,{'Content-Type': 'application/json'},function='getResponseBodyrb]);
+        server.respondImmediately = true;
 
     });
 
@@ -61,16 +65,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element.removeEventListener('query-complete', listener1);
         expect(element._parts).to.be.ok;
         expect(element._parts.results).to.be.ok;
-        expect(element._parts.results).to.have.length(1);
-        expect(element._parts.results[0].parts).to.be.ok;
-        expect(element._parts.results[0].parts).to.have.length(4);
+        expect(element._parts.results).to.have.length(7);
+        expect(element._parts.results[0].quantity).to.equal(1);
+        expect(element._parts.results[0].part.part_num).to.equal('88646');
 
         done();
       };
 
       element.addEventListener('query-complete', listener1);
       element.setId = '71011-1';
-      server.respond();
+      // server.respond();
 
     });
 

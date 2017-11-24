@@ -39,6 +39,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       method='GET'
       handle-as="json" 
       last-response="{{_parts}}" 
+      on-response="_onResponse"
       loading="{{_loading}}">
     </iron-ajax>
       <iron-data-table id="dataTable" items="[[_parts.results]]" on-selected-item-changed="_onSelectedChanged" selection-enabled style$="height: [[tableHeight]]px" loading="{{_loading}}">
@@ -86,7 +87,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           _parts: {
             type: Object,
             notify: true,
-            value:{},
+            value: null,
             observer: '_onDataChanged'
           },
 
@@ -110,7 +111,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         _onHashChanged: function() {
           if (this.setId) {
-            // this.set('parts',{});
+            this.set('_parts',{});
             // this.set('_params',{
             //   key: '13b80cff544f288c7ec80c807e10f056',
             // });
@@ -126,13 +127,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
           this.fire('selected-item-changed',e.detail);
         },
-
-       
-        _onDataChanged: function(data){
-          console.log('set-parts',data);
-          if(data){
+        
+        _onResponse: function (e) {
+          console.log('response',e);
+          if (e.detail.status == 200) {
             this.fire('query-complete');
           }
+        },
+       
+        _onDataChanged: function(data,data2){
+          console.log('set-parts',data,data2);
         },
       });
     })();

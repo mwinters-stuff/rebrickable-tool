@@ -32,7 +32,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       
       paper-dialog{
-        min-width: 400px;
+        min-width: 500px;
       }
     </style>
     <colour-list id="colours"></colour-list>
@@ -78,7 +78,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               </tr>
               <tr id="rowURL">
                 <td>URL:</td>
-                <td>{{_data.part_url}}</td>
+                <td><a href="[[_data.part_url]]">Click</a></td>
               </tr>
             </table>
           </div>
@@ -98,7 +98,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <iron-image src="[[item.part_img_url]]" preload fade style="width:40px; height:40px; background-color: white;" sizing="contain"></iron-image>
             </template>
           </data-table-column>
-          <data-table-column name="">
+          <data-table-column name="" flex="500">
             <template>[[item.color_name]]</template>
           </data-table-column>
           <data-table-column align-right name="Num Sets" width="50px">

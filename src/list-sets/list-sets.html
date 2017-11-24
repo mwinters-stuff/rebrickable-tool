@@ -75,6 +75,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           showing: {
             type: Boolean,
+            observer: '_onHashChanged'
           },
 
           tabsToShow: {
@@ -115,7 +116,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         _onHashChanged: function() {
           // this._data = [];
-          if (this.userHash && this.userHash != '') {
+          if (this.userHash && this.userHash != '' && this.showing) {
             this.$.theAjax.generateRequest();
           //   this.set('_params', {
           //     key: '13b80cff544f288c7ec80c807e10f056',
